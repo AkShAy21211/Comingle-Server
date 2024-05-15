@@ -1,0 +1,34 @@
+# Dependency directories
+node_modules/
+dist/
+
+# Environment variables
+.env
+
+# Build artifacts
+*.js
+*.map
+
+# TypeScript build directory
+*.tsbuildinfo
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Logs and debugging
+logs/
+*.log
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# npm package files
+package-lock.json
