@@ -27,5 +27,4 @@ const startServer = async ()=>{
 startServer();
 
 
-import NodeMailer from "./infrastructure/utils/sendMail";
 

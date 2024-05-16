@@ -41,7 +41,7 @@ class UserUseCase implements IUserUseCase {
         this._sendMail.sendEmail(userData.email, parseInt(OTP));
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-          expiresIn: "1m",
+          expiresIn: "2m",
         });
 
         await this._OtpRepo.createOtpAndCollection(userData.email, OTP);
@@ -68,13 +68,11 @@ class UserUseCase implements IUserUseCase {
         if (userOtp) {
           if (userOtp?.otp === otp) {
             const userToken = this._jwt.createToken(decodeToken._id, "user");
-
             await this._reposotory.verifyUserStatus(decodeToken.email);
-
             const userData = await this._reposotory.findUserByemail(
-            decodeToken.email
+              decodeToken.email
             );
-            
+
             return {
               status: true,
               userData,
@@ -96,6 +94,25 @@ class UserUseCase implements IUserUseCase {
       }
     } catch (error: any) {
       console.log(error);
+    }
+  }
+
+  async resendOtp(token: string): Promise<any> {
+    try {
+      const decodeToken = this._jwt.verifyToken(token);
+      if (decodeToken) {
+        const otp = this._generateOtp.generateOTP();
+        await this._OtpRepo.createOtpAndCollection(decodeToken?.email, otp);
+        await this._sendMail.sendEmail(decodeToken?.email, parseInt(otp));
+        return {status:true, message:`New OTP has send to ${decodeToken?.email}`}
+      }else{
+        return {status:true, message:`Something went wrong `}
+
+      }
+    } catch (error) {
+
+      console.log(error);
+      
     }
   }
 }

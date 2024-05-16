@@ -5,6 +5,7 @@ interface IUserUseCase{
 
     signUpandSendOtp(userData:User):Promise<any>;
     verifyUserByEmailOtp(token:string,otp:string):Promise<any>;
+    resendOtp(token:string):Promise<any>;
 
 }
 
