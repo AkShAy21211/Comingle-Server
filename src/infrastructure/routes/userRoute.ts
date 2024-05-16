@@ -37,7 +37,10 @@ router.post('/signup',(req,res)=>{
 
     controller.SignUpAndDendOtp(req,res)
 })
+router.post('/signup/verify-otp',(req,res)=>{
 
+    controller.VerifyUserByEmailOtp(req,res)
+})
 
 
 

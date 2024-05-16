@@ -8,6 +8,7 @@ import IMail from "./interface/email/IMail";
 import GenerateOtp from "../infrastructure/utils/generateOtp";
 import OtpReposotory from "../infrastructure/repository/otpRepo";
 import NodeMailer from "../infrastructure/utils/sendMail";
+import Otp from "../domain/opt";
 
 class UserUseCase implements IUserUseCase {
   constructor(
@@ -17,22 +18,18 @@ class UserUseCase implements IUserUseCase {
     private _generateOtp: GenerateOtp,
     private _OtpRepo: OtpReposotory,
     private _sendMail: NodeMailer
-  ) {
+  ) {}
 
-  }
-
-  async signUpandSendOtp(userData: User): Promise<any> {
+  async signUpandSendOtp(userData: User) {
     try {
-
-      if(!userData.name || !userData.email || !userData.password){
-
-        return {status:false,message:"All feilds required"}
+      if (!userData.name || !userData.email || !userData.password) {
+        return { status: false, message: "All feilds required" };
       }
 
       const userFound = await this._reposotory.findUserByemail(userData.email);
 
       if (userFound) {
-        return { status: false, message: "User already exists." };
+        return { status: false, message: "User already exists please login." };
       } else {
         const payload: { email: string; role: string } = {
           email: userData.email,
@@ -41,7 +38,7 @@ class UserUseCase implements IUserUseCase {
 
         const OTP = this._generateOtp.generateOTP();
 
-         this._sendMail.sendEmail(userData.email, parseInt(OTP));
+        this._sendMail.sendEmail(userData.email, parseInt(OTP));
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
           expiresIn: "1m",
@@ -55,17 +52,52 @@ class UserUseCase implements IUserUseCase {
 
         await this._reposotory.saveUserToDb(userData);
 
-        return { status: true, token: jwtToken};
+        return { status: true, token: jwtToken };
       }
-    } catch (error:any) {
+    } catch (error: any) {
+      console.log("error occured", error.message);
+    }
+  }
 
+  async verifyUserByEmailOtp(token: string, otp: string) {
+    const decodeToken = this._jwt.verifyToken(token);
+    try {
+      if (decodeToken) {
+        const userOtp = await this._OtpRepo.getOtp(decodeToken.email);
 
-      console.log('error occured',error.message);
-      
+        if (otp) {
+          if (userOtp?.otp === otp) {
+            const userToken = this._jwt.createToken(decodeToken._id, "user");
+
+            await this._reposotory.verifyUserStatus(decodeToken.email);
+
+            const userData = await this._reposotory.findUserByemail(
+            decodeToken.email
+            );
+            
+            return {
+              status: true,
+              userData,
+              token: userToken,
+              message: `Verfication success welcome to comingle ${userData?.name}`,
+            };
+          } else {
+            return {
+              status: false,
+              message: "Ivalid OTP",
+            };
+          }
+        } else {
+          return {
+            status: false,
+            message: "OTP has expired",
+          };
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
     }
   }
 }
-
-
 
 export default UserUseCase;
