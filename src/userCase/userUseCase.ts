@@ -106,8 +106,7 @@ class UserUseCase implements IUserUseCase {
         await this._sendMail.sendEmail(decodeToken?.email, parseInt(otp));
         return {status:true, message:`New OTP has send to ${decodeToken?.email}`}
       }else{
-        return {status:true, message:`Something went wrong `}
-
+        return {status:false, message:`Something went wrong `}
       }
     } catch (error) {
 
