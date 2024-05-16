@@ -65,7 +65,7 @@ class UserUseCase implements IUserUseCase {
       if (decodeToken) {
         const userOtp = await this._OtpRepo.getOtp(decodeToken.email);
 
-        if (otp) {
+        if (userOtp) {
           if (userOtp?.otp === otp) {
             const userToken = this._jwt.createToken(decodeToken._id, "user");
 
