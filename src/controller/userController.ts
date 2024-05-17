@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import UserUseCase from "../userCase/userUseCase";
 import IUserController from "../userCase/interface/user/IuserController";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 class UserController implements IUserController {
   constructor(private _userUserCase: UserUseCase) {}
@@ -62,6 +64,25 @@ class UserController implements IUserController {
       }
     } catch (error) {
       res.status(500).json({ message: "internal server error" });
+    }
+  }
+
+  async SignInUser(req: Request, res: Response): Promise<void> {
+    try {
+      const loginResponse = await this._userUserCase.signinUser(
+        req.body.email,
+        req.body.password
+      );
+
+      if (loginResponse.status) {
+        res.status(200).json(loginResponse);
+      } else {
+        res.status(400).json(loginResponse);
+      }
+    } catch (error: any) {
+      res.status(500).json(error.message);
+
+      console.log(error);
     }
   }
 }

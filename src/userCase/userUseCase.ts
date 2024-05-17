@@ -114,6 +114,36 @@ class UserUseCase implements IUserUseCase {
       
     }
   }
+
+
+async signinUser(email: string, password: string): Promise<any> {
+  try {
+    const findUser = await this._reposotory.findUserByemail(email);
+
+    if (!findUser) {
+      return { status: false, message: 'User does not exist. Please register.' };
+    }
+
+    if (findUser.isBlocked) {
+      return { status: false, message: 'You have been blocked by admin.' };
+    }
+
+    const matchPassword = await this._bcrypt.Decryption(password, findUser.password);
+
+    if (!matchPassword) {
+      return { status: false, message: 'Invalid login credentials.' };
+    }
+
+    const token = this._jwt.createToken(findUser._id, 'user');
+
+    return { status: true, token: token,userData:findUser, message: 'Login successful.' };
+
+  } catch (error) {
+    console.error('Error during user sign-in:', error);
+    return { status: false, message: 'An error occurred during sign-in. Please try again later.' };
+  }
+}
+
 }
 
 export default UserUseCase;

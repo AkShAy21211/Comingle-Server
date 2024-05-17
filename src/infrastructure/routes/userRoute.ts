@@ -47,5 +47,9 @@ router.post('/signup/verify-otp/resend',(req,res)=>{
     controller.ResendOtp(req,res)
 })
 
+router.post('/signin',(req,res)=>{
+    
+    controller.SignInUser(req,res)
+})
 
 export default router;
