@@ -4,11 +4,9 @@ import Bcrypt from "../infrastructure/utils/hashPassword";
 import IUserReop from "./interface/user/IUserRepo";
 import IUserUseCase from "./interface/user/IUserUseCase";
 import jwt from "jsonwebtoken";
-import IMail from "./interface/email/IMail";
 import GenerateOtp from "../infrastructure/utils/generateOtp";
 import OtpReposotory from "../infrastructure/repository/otpRepo";
 import NodeMailer from "../infrastructure/utils/sendMail";
-import Otp from "../domain/opt";
 
 class UserUseCase implements IUserUseCase {
   constructor(

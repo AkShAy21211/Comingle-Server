@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import UserUseCase from "../userCase/userUseCase";
 import IUserController from "../userCase/interface/user/IuserController";
-import { ParamsDictionary } from "express-serve-static-core";
-import { ParsedQs } from "qs";
+
 
 class UserController implements IUserController {
   constructor(private _userUserCase: UserUseCase) {}

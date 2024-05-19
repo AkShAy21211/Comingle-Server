@@ -3,8 +3,9 @@ import cors from "cors";
 import http from "http";
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv";
+import createAdmin from "../utils/createAdmin";
 import userRoute from "../routes/userRoute";
-
+import adminRote from "../routes/adminRoute";
 dotenv.config();
 
 
@@ -17,6 +18,7 @@ export const expressServer = ()=>{
         app.use(express.json({limit:"50mb"}));
         app.use(express.urlencoded({extended:true}));
         app.use(cookieParser());
+        createAdmin();
         
 
         //====cors =====//
@@ -30,6 +32,7 @@ export const expressServer = ()=>{
     );
 
     app.use('/user',userRoute);
+    app.use('/admin',adminRote);
 
   
     const server  = http.createServer(app);
