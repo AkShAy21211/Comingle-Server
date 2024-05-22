@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import GenerateOtp from "../infrastructure/utils/generateOtp";
 import OtpReposotory from "../infrastructure/repository/otpRepo";
 import NodeMailer from "../infrastructure/utils/sendMail";
-
+import uploadProfileBackground from "../infrastructure/utils/uploadToCloudnary";
 class UserUseCase implements IUserUseCase {
   constructor(
     private _reposotory: IUserReop,
@@ -102,46 +102,115 @@ class UserUseCase implements IUserUseCase {
         const otp = this._generateOtp.generateOTP();
         await this._OtpRepo.createOtpAndCollection(decodeToken?.email, otp);
         await this._sendMail.sendEmail(decodeToken?.email, parseInt(otp));
-        return {status:true, message:`New OTP has send to ${decodeToken?.email}`}
-      }else{
-        return {status:false, message:`Something went wrong `}
+        return {
+          status: true,
+          message: `New OTP has send to ${decodeToken?.email}`,
+        };
+      } else {
+        return { status: false, message: `Something went wrong ` };
       }
     } catch (error) {
-
       console.log(error);
-      
     }
   }
 
+  async signinUser(email: string, password: string): Promise<any> {
+    try {
+      const findUser = await this._reposotory.findUserByemail(email);
 
-async signinUser(email: string, password: string): Promise<any> {
-  try {
-    const findUser = await this._reposotory.findUserByemail(email);
+      if (!findUser) {
+        return {
+          status: false,
+          message: "User does not exist. Please register.",
+        };
+      }
 
-    if (!findUser) {
-      return { status: false, message: 'User does not exist. Please register.' };
+      if (findUser.isBlocked) {
+        return { status: false, message: "You have been blocked by admin." };
+      }
+
+      const matchPassword = await this._bcrypt.Decryption(
+        password,
+        findUser.password
+      );
+
+      if (!matchPassword) {
+        return { status: false, message: "Invalid login credentials." };
+      }
+
+      const token = this._jwt.createToken(findUser._id, "user");
+
+      const filterUser = {
+        _id: findUser._id,
+        token: token,
+        name: findUser.name,
+        email: findUser.email,
+        isVerfied: findUser.isVerified,
+        isBlocked: findUser.isBlocked,
+        profile: findUser.profile,
+      };
+
+      return {
+        status: true,
+        userData: filterUser,
+        message: "Login successful.",
+      };
+    } catch (error) {
+      console.error("Error during user sign-in:", error);
+      return {
+        status: false,
+        message: "An error occurred during sign-in. Please try again later.",
+      };
     }
-
-    if (findUser.isBlocked) {
-      return { status: false, message: 'You have been blocked by admin.' };
-    }
-
-    const matchPassword = await this._bcrypt.Decryption(password, findUser.password);
-
-    if (!matchPassword) {
-      return { status: false, message: 'Invalid login credentials.' };
-    }
-
-    const token = this._jwt.createToken(findUser._id, 'user');
-
-    return { status: true, token: token,userData:findUser, message: 'Login successful.' };
-
-  } catch (error) {
-    console.error('Error during user sign-in:', error);
-    return { status: false, message: 'An error occurred during sign-in. Please try again later.' };
   }
-}
 
+  async getUserProfile(id: string): Promise<any> {
+    try {
+      const user = await this._reposotory.findUserById(id);
+
+      if (user) {
+        return {
+          status: true,
+          user: user,
+        };
+      } else {
+        return {
+          status: false,
+          message: "User not found",
+        };
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateUserProfileImages(
+    id: string,
+    imagePath: string,
+    type: string
+  ): Promise<any> {
+    try {
+      const userData = {
+        [`${type === "background" ? "profile.background" : "profile.image"}`]:
+          imagePath,
+      };
+
+      const updateUser = await this._reposotory.updateUser(id, userData);
+
+      if (updateUser) {
+        return {
+          status: true,
+          user: updateUser,
+          message:`${type} updated`
+        };
+      } else {
+        return {
+          status: false,
+          message: "Something went wrong",
+        };
+      }
+    } catch (error) {}
+  }
 }
 
 export default UserUseCase;

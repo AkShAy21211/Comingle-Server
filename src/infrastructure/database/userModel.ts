@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, {Schema } from "mongoose";
 import User from "../../domain/user";
 
 const userSchema = new Schema<User>(
@@ -25,21 +25,51 @@ const userSchema = new Schema<User>(
       type: Boolean,
       default: false,
     },
+
     profile: {
-      type: {
-        image: String,
-        bio: String,
-        age: Number,
-        country: String,
-        gender: String,
-        isPremium: Boolean,
-        followers: Number,
-        following: Number,
-        posts: Number,
+      image: {
+        type: String,
       },
-      default: {},
+      background: {
+        type: String,
+      },
+      bio: {
+        type: String,
+        default: "",
+      },
+      age: {
+        type: Number,
+      },
+      country: {
+        type: String,
+        default: "",
+      },
+      gender: {
+        type: String,
+        default: "",
+      },
+      isPremium: {
+        type: Boolean,
+        default: false,
+      },
+      followers: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      following: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
+      posts: {
+        type: Number,
+      },
     },
   },
+
   {
     timestamps: true,
   }

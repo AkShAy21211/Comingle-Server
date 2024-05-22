@@ -9,13 +9,14 @@ interface User{
     isBlocked:boolean;
     profile:{
         image:string;
+        background:string;
         bio:string;
         age:number;
         country:string;
         gender:string;
         isPremium:boolean;
-        followers:number;
-        following:number;
+        followers:string[];
+        following:string[];
         posts:number;
     }
     timestamp:Date;

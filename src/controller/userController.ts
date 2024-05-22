@@ -1,8 +1,17 @@
 import { Request, Response } from "express";
 import UserUseCase from "../userCase/userUseCase";
 import IUserController from "../userCase/interface/user/IuserController";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
-
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: {
+      id: string;
+      role: string;
+    };
+  }
+}
 class UserController implements IUserController {
   constructor(private _userUserCase: UserUseCase) {}
 
@@ -13,14 +22,14 @@ class UserController implements IUserController {
       );
 
       if (signUpResponse?.status) {
-        res
-          .cookie("userToken", signUpResponse.token, {
-            expires: new Date(Date.now() + 25892000000),
-            secure: true,
-            httpOnly: true,
-          })
-          .status(201)
-          .json(signUpResponse);
+        res.cookie("userToken", signUpResponse.token, {
+          expires: new Date(Date.now() + 25892000000),
+          secure: true,
+          httpOnly: true,
+          sameSite: "lax",
+        });
+
+        res.status(201).json(signUpResponse);
       } else {
         res.status(400).json(signUpResponse);
       }
@@ -33,6 +42,7 @@ class UserController implements IUserController {
   async VerifyUserByEmailOtp(req: Request, res: Response): Promise<void> {
     try {
       const userToken = req.cookies.userToken;
+
       const verifyOtpResponse = await this._userUserCase.verifyUserByEmailOtp(
         userToken,
         req.body.otp
@@ -81,6 +91,43 @@ class UserController implements IUserController {
     } catch (error: any) {
       res.status(500).json(error.message);
 
+      console.log(error);
+    }
+  }
+
+  async GetUserProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const userResponse = await this._userUserCase.getUserProfile(
+        req.user?.id as string
+      );
+
+      if (userResponse.status) {
+        res.status(200).json(userResponse);
+      } else {
+        res.status(400).json("User not found");
+      }
+    } catch (error: any) {
+      res.status(500).json(error.message);
+      console.log(error);
+    }
+  }
+
+  async UpdateUserPofileImages(req: Request, res: Response): Promise<void> {
+    try {
+      const updateUserResponse =
+        await this._userUserCase.updateUserProfileImages(
+          req.user?.id as string,
+          req.file?.path as string,
+          req.body.type
+        );
+
+      if (updateUserResponse.status) {
+        res.status(200).json(updateUserResponse);
+      } else {
+        res.status(400).json(updateUserResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "internal server error" });
       console.log(error);
     }
   }
