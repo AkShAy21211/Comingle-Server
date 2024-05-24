@@ -51,7 +51,7 @@ class UserReposotory implements IUserReop {
     
       try {
         
-        const updateUser = await UserModel.findOneAndUpdate({_id:id},images,{new:true}).lean();
+        const updateUser = await UserModel.findOneAndUpdate({_id:id},{$set:images},{new:true}).lean();
 
         return updateUser;
       } catch (error) {
@@ -65,7 +65,7 @@ class UserReposotory implements IUserReop {
     try {
       
 
-      const updatesUser  = await UserModel.findOneAndUpdate({_id:id},data,{new:true}).select("-password").lean();
+      const updatesUser  = await UserModel.findOneAndUpdate({_id:id},{$set:data},{new:true}).select("-password").lean();
 
       return updatesUser;
       

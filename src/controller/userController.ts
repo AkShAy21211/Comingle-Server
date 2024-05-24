@@ -129,6 +129,7 @@ class UserController implements IUserController {
   async UpdateUserPofileImages(req: Request, res: Response): Promise<void> {
     try {
 
+      console.log(req.file?.path);
       
       
       const updateUserResponse =
@@ -154,8 +155,9 @@ class UserController implements IUserController {
   async UpdateUserDetails(req: Request, res: Response): Promise<void> {
     try {
       
+      console.log(req.body);
       
-      const updateUserResponse = await this._userUserCase.updateUserDetails(req.user?.id as string ,req.body.userData);
+      const updateUserResponse = await this._userUserCase.updateUserDetails(req.user?.id as string ,req.body);
 
       if(updateUserResponse.status){ 
 
