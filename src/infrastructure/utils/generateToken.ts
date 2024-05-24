@@ -5,6 +5,8 @@ import path from 'path';
 dotenv.config({path:path.resolve(__dirname,"../../.env")});
 
 
+
+
 class TokenManager {
    
     private _secret:string;
@@ -26,10 +28,14 @@ class TokenManager {
     }
 
 
+
    
     verifyToken(token: string): JwtPayload | null {
         try {
-            const decodedToken = jwt.verify(token, this._secret) as JwtPayload;
+            
+            
+            const decodedToken = jwt.verify(token, this._secret,{}) as JwtPayload;
+            
             return decodedToken;
         } catch (error) {
             console.error('Token verification failed:', error);

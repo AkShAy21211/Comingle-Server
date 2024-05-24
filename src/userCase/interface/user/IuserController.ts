@@ -9,6 +9,7 @@ interface IUserController{
     SignInUser(req:Request,res:Response):Promise<void>;
     GetUserProfile(req:Request,res:Response):Promise<void>;
     UpdateUserPofileImages(req:Request,res:Response):Promise<void>;
+    UpdateUserDetails(req:Request,res:Response):Promise<void>;
     
 }
 

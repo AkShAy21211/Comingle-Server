@@ -9,6 +9,7 @@ import OtpReposotory from "../repository/otpRepo";
 import NodeMailer from "../utils/sendMail";
 import { authenticate } from "../middleware/auth";
 import { profileUploader } from "../middleware/multer";
+import cookieParser from "cookie-parser";
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -69,4 +70,10 @@ router.patch(
     controller.UpdateUserPofileImages(req, res);
   }
 );
+
+
+router.patch("/profile/update/info",authenticate,(req,res)=>{
+
+  controller.UpdateUserDetails(req,res)
+})
 export default router;

@@ -11,6 +11,7 @@ declare module 'express-serve-static-core' {
 }
 
 export function authenticate(req:Request, res:Response, next:NextFunction) {
+    
     const authHeader = req.headers['authorization'];
     try {
         if (authHeader) {

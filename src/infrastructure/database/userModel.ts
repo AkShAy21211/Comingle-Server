@@ -13,6 +13,10 @@ const userSchema = new Schema<User>(
       required: true,
       unique: true,
     },
+    phone:{
+      type:Number,
+      required:false,
+    },
     password: {
       type: String,
       required: true,
@@ -65,7 +69,8 @@ const userSchema = new Schema<User>(
         },
       ],
       posts: {
-        type: Number,
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Post'
       },
     },
   },

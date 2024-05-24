@@ -18,8 +18,8 @@ class UserReposotory implements IUserReop {
   }
   async findUserByemail(email: string): Promise<User | null | undefined> {
     try {
-      let existingUser = await UserModel.findOne({ email: email });
-      return existingUser ? existingUser.toObject() : null;
+      let existingUser = await UserModel.findOne({ email: email }).lean();
+      return existingUser ? existingUser : null;
       
     } catch (error: any) {
       console.log(error);
@@ -28,7 +28,7 @@ class UserReposotory implements IUserReop {
 
   async verifyUserStatus(email: string): Promise<any> {
     try {
-      await UserModel.findOneAndUpdate({ email: email }, { isVerified: true });
+      await UserModel.findOneAndUpdate({ email: email }, { isVerified: true }).lean();
     } catch (error) {
       console.log(error);
     }
@@ -37,9 +37,9 @@ class UserReposotory implements IUserReop {
  async findUserById(id: string): Promise<User | null | undefined> {
     try {
       
-      const user = await UserModel.findById(id).select("-password");
+      const user = await UserModel.findById(id).select("-password").lean();
 
-      return user? user.toObject():null;
+      return user? user:null;
     } catch (error) {
       
       console.log(error);
@@ -51,7 +51,7 @@ class UserReposotory implements IUserReop {
     
       try {
         
-        const updateUser = await UserModel.findOneAndUpdate({_id:id},images,{new:true});
+        const updateUser = await UserModel.findOneAndUpdate({_id:id},images,{new:true}).lean();
 
         return updateUser;
       } catch (error) {
@@ -65,7 +65,7 @@ class UserReposotory implements IUserReop {
     try {
       
 
-      const updatesUser  = await UserModel.findOneAndUpdate({_id:id},data);
+      const updatesUser  = await UserModel.findOneAndUpdate({_id:id},data,{new:true}).select("-password").lean();
 
       return updatesUser;
       

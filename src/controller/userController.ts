@@ -1,8 +1,6 @@
-import { Request, Response } from "express";
+import { json, Request, Response } from "express";
 import UserUseCase from "../userCase/userUseCase";
 import IUserController from "../userCase/interface/user/IuserController";
-import { ParamsDictionary } from "express-serve-static-core";
-import { ParsedQs } from "qs";
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -22,14 +20,24 @@ class UserController implements IUserController {
       );
 
       if (signUpResponse?.status) {
-        res.cookie("userToken", signUpResponse.token, {
+
+        console.log(signUpResponse);
+        
+        res.cookie("token", signUpResponse.token, {
           expires: new Date(Date.now() + 25892000000),
-          secure: true,
+          secure: false,
           httpOnly: true,
-          sameSite: "lax",
+          sameSite:"strict",
         });
 
-        res.status(201).json(signUpResponse);
+
+
+
+        
+
+        console.log('agter registration',req.cookies.token);
+        
+        res.status(201).json({status:signUpResponse.status});
       } else {
         res.status(400).json(signUpResponse);
       }
@@ -41,8 +49,12 @@ class UserController implements IUserController {
 
   async VerifyUserByEmailOtp(req: Request, res: Response): Promise<void> {
     try {
-      const userToken = req.cookies.userToken;
+      const userToken = req.cookies.token;
 
+      console.log(userToken);
+      
+
+      
       const verifyOtpResponse = await this._userUserCase.verifyUserByEmailOtp(
         userToken,
         req.body.otp
@@ -97,6 +109,8 @@ class UserController implements IUserController {
 
   async GetUserProfile(req: Request, res: Response): Promise<void> {
     try {
+
+      
       const userResponse = await this._userUserCase.getUserProfile(
         req.user?.id as string
       );
@@ -114,6 +128,9 @@ class UserController implements IUserController {
 
   async UpdateUserPofileImages(req: Request, res: Response): Promise<void> {
     try {
+
+      
+      
       const updateUserResponse =
         await this._userUserCase.updateUserProfileImages(
           req.user?.id as string,
@@ -121,6 +138,7 @@ class UserController implements IUserController {
           req.body.type
         );
 
+        
       if (updateUserResponse.status) {
         res.status(200).json(updateUserResponse);
       } else {
@@ -129,6 +147,28 @@ class UserController implements IUserController {
     } catch (error) {
       res.status(500).json({ message: "internal server error" });
       console.log(error);
+    }
+  }
+
+
+  async UpdateUserDetails(req: Request, res: Response): Promise<void> {
+    try {
+      
+      
+      const updateUserResponse = await this._userUserCase.updateUserDetails(req.user?.id as string ,req.body.userData);
+
+      if(updateUserResponse.status){ 
+
+        res.status(200).json(updateUserResponse);
+      }else{
+
+        res.status(400).json(updateUserResponse);
+
+      }
+    
+    } catch (error) {
+      
+      res.status(500).json({message:"Internal server error"});
     }
   }
 }

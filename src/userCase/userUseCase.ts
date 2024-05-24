@@ -39,7 +39,7 @@ class UserUseCase implements IUserUseCase {
         this._sendMail.sendEmail(userData.email, parseInt(OTP));
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-          expiresIn: "2m",
+          expiresIn: "3m",
         });
 
         await this._OtpRepo.createOtpAndCollection(userData.email, OTP);
@@ -59,6 +59,8 @@ class UserUseCase implements IUserUseCase {
 
   async verifyUserByEmailOtp(token: string, otp: string) {
     const decodeToken = this._jwt.verifyToken(token);
+
+    
     try {
       if (decodeToken) {
         const userOtp = await this._OtpRepo.getOtp(decodeToken.email);
@@ -197,6 +199,8 @@ class UserUseCase implements IUserUseCase {
 
       const updateUser = await this._reposotory.updateUser(id, userData);
 
+      console.log(updateUser);
+      
       if (updateUser) {
         return {
           status: true,
@@ -210,6 +214,39 @@ class UserUseCase implements IUserUseCase {
         };
       }
     } catch (error) {}
+  }
+
+  async updateUserDetails(id: string, userData: User): Promise<any> {
+    try {
+
+
+      
+      const updatedUser = await this._reposotory.updateUser(id,userData);
+
+
+      if(updatedUser){
+
+
+        return {
+          status:true,
+          user:updatedUser,
+          message:"Profile updated successfully"
+        }
+      }else{
+
+         return {
+          status:false,
+          user:updatedUser,
+          message:"Something went wrong"
+        }
+      }
+
+    } catch (error) {
+      
+
+      console.log(error);
+      
+    }
   }
 }
 
