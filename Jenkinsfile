@@ -6,15 +6,18 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Repositories') {
+        stage('Checkout Backend') {
             steps {
-                script {
-                    dir('backend') {
-                        git url: 'https://github.com/AkShAy21211/Comingle-Server.git', branch: 'main'
-                    }
-                    dir('frontend') {
-                        git url: 'https://github.com/AkShAy21211/Comingle-Client.git', branch: 'main'
-                    }
+                dir('backend') {
+                    git url: 'https://github.com/AkShAy21211/Comingle-Server.git', branch: 'main'
+                }
+            }
+        }
+
+        stage('Checkout Frontend') {
+            steps {
+                dir('frontend') {
+                    git url: 'https://github.com/AkShAy21211/Comingle-Client.git', branch: 'main'
                 }
             }
         }
