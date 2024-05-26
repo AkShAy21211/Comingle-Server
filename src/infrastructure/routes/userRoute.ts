@@ -9,7 +9,7 @@ import OtpReposotory from "../repository/otpRepo";
 import NodeMailer from "../utils/sendMail";
 import { authenticate } from "../middleware/auth";
 import { profileUploader } from "../middleware/multer";
-import cookieParser from "cookie-parser";
+import passport from 'passport'
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -76,4 +76,18 @@ router.patch("/profile/update/info",authenticate,(req,res)=>{
 
   controller.UpdateUserDetails(req,res)
 })
+
+
+
+/// google auth 
+
+router.get('/auth/google',passport.authenticate("google",{scope:['profile','email']}));
+
+router.get('/auth/google/callback',passport.authenticate("google",{session:false}),(req,res)=>{
+
+  controller.LoginWithGoogle(req,res)
+});
+
+
+
 export default router;

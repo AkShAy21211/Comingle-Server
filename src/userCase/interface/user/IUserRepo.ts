@@ -9,6 +9,8 @@ interface IUserReop{
     verifyUserStatus(email:string):Promise<void>;
     findUserById(id:string):Promise<User | null |undefined>;
     updateUser(id:string,data:any):Promise<User | null | undefined>;
+    findUser(id:string,email:string):Promise<User | null | undefined>;
+    createUser(userData:any):Promise<User | null | undefined>;
     
 }
 

@@ -19,7 +19,6 @@ const userSchema = new Schema<User>(
     },
     password: {
       type: String,
-      required: true,
     },
     isVerified: {
       type: Boolean,
@@ -73,6 +72,11 @@ const userSchema = new Schema<User>(
         ref:'Post'
       },
     },
+    googleId:{
+      type:String,
+      
+    }
+
   },
 
   {

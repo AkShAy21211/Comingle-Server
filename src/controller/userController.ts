@@ -1,6 +1,7 @@
 import { json, Request, Response } from "express";
 import UserUseCase from "../userCase/userUseCase";
 import IUserController from "../userCase/interface/user/IuserController";
+import passport from "passport";
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -104,6 +105,33 @@ class UserController implements IUserController {
       res.status(500).json(error.message);
 
       console.log(error);
+    }
+  }
+
+
+  async LoginWithGoogle(req: Request, res: Response): Promise<void> {
+    
+    try {
+     
+     const googleSignUpResponse = await this._userUserCase.googleLogin(req.user);
+     console.log(googleSignUpResponse);
+   
+     if(!googleSignUpResponse){
+           res.status(401).json({ message: 'Authentication failed' });
+
+     }
+
+     res.cookie("token", googleSignUpResponse.token, {
+          expires: new Date(Date.now() + 25892000000),
+          secure: false,
+          httpOnly: true,
+          sameSite:"strict",
+        });
+
+     res.status(200).redirect(`http://localhost:5173/login/success?token=${googleSignUpResponse.token}`)
+
+    } catch (error) {
+      
     }
   }
 

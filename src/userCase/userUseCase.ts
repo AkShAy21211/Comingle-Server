@@ -8,6 +8,7 @@ import GenerateOtp from "../infrastructure/utils/generateOtp";
 import OtpReposotory from "../infrastructure/repository/otpRepo";
 import NodeMailer from "../infrastructure/utils/sendMail";
 import uploadProfileBackground from "../infrastructure/utils/uploadToCloudnary";
+import { log } from 'console';
 class UserUseCase implements IUserUseCase {
   constructor(
     private _reposotory: IUserReop,
@@ -245,6 +246,28 @@ class UserUseCase implements IUserUseCase {
       
 
       console.log(error);
+      
+    }
+  }
+
+  async googleLogin(user: any): Promise<any> {
+    
+    try {
+      
+      
+      const token  = this._jwt.createToken(user._id,'user');
+
+      return {
+        statu:true,
+        token:token,
+        // user:user
+      }
+
+
+    } catch (error) {
+
+      console.log(error);
+      
       
     }
   }

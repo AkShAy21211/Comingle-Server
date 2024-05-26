@@ -20,6 +20,8 @@ interface User{
         following:string[];
         posts:number;
     }
+    googleId: string;
+
     timestamp:Date;
     
 }

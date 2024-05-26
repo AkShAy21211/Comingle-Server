@@ -76,6 +76,39 @@ class UserReposotory implements IUserReop {
       
     }
   }
+
+  async findUser(id: string,email:string): Promise<User | null | undefined> {
+    
+    try {
+
+      const user = await UserModel.findOne({$or:[
+        {googleId:id},
+        {email:email}
+      ]});
+
+      return user;
+      
+    } catch (error) {
+      
+      console.log(error);
+      
+    }
+  }
+
+async  createUser(userData: any): Promise<User | null | undefined> {
+    
+    try {
+
+      const user = new UserModel(userData);
+
+      await user.save();
+
+      return user.toObject()
+      
+    } catch (error) {
+      
+    }
+  }
   
 }
 
