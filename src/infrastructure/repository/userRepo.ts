@@ -65,7 +65,7 @@ class UserReposotory implements IUserReop {
     try {
       
 
-      const updatesUser  = await UserModel.findOneAndUpdate({_id:id},{$set:data},{new:true}).select("-password").lean();
+      const updatesUser  = await UserModel.findOneAndUpdate({_id:id},{$set:{...data}},{new:true}).select("-password").lean();
 
       return updatesUser;
       

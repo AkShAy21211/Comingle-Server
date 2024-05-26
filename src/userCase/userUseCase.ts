@@ -8,7 +8,7 @@ import GenerateOtp from "../infrastructure/utils/generateOtp";
 import OtpReposotory from "../infrastructure/repository/otpRepo";
 import NodeMailer from "../infrastructure/utils/sendMail";
 import uploadProfileBackground from "../infrastructure/utils/uploadToCloudnary";
-import { log } from 'console';
+import { log } from "console";
 class UserUseCase implements IUserUseCase {
   constructor(
     private _reposotory: IUserReop,
@@ -37,7 +37,7 @@ class UserUseCase implements IUserUseCase {
 
         const OTP = this._generateOtp.generateOTP();
 
-        this._sendMail.sendEmail(userData.email, parseInt(OTP));
+        this._sendMail.sendEmail(userData.email, parseInt(OTP),"One Time Password for Commingle Account Verification");
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
           expiresIn: "3m",
@@ -61,7 +61,6 @@ class UserUseCase implements IUserUseCase {
   async verifyUserByEmailOtp(token: string, otp: string) {
     const decodeToken = this._jwt.verifyToken(token);
 
-    
     try {
       if (decodeToken) {
         const userOtp = await this._OtpRepo.getOtp(decodeToken.email);
@@ -104,7 +103,7 @@ class UserUseCase implements IUserUseCase {
       if (decodeToken) {
         const otp = this._generateOtp.generateOTP();
         await this._OtpRepo.createOtpAndCollection(decodeToken?.email, otp);
-        await this._sendMail.sendEmail(decodeToken?.email, parseInt(otp));
+        await this._sendMail.sendEmail(decodeToken?.email, parseInt(otp),"One Time Password for Commingle Account Verification");
         return {
           status: true,
           message: `New OTP has send to ${decodeToken?.email}`,
@@ -201,12 +200,12 @@ class UserUseCase implements IUserUseCase {
       const updateUser = await this._reposotory.updateUser(id, userData);
 
       console.log(updateUser);
-      
+
       if (updateUser) {
         return {
           status: true,
           user: updateUser,
-          message:`${type} updated`
+          message: `${type} updated`,
         };
       } else {
         return {
@@ -219,55 +218,102 @@ class UserUseCase implements IUserUseCase {
 
   async updateUserDetails(id: string, userData: User): Promise<any> {
     try {
+      const updatedUser = await this._reposotory.updateUser(id, userData);
 
-
-      
-      const updatedUser = await this._reposotory.updateUser(id,userData);
-
-
-      if(updatedUser){
-
-
+      if (updatedUser) {
         return {
-          status:true,
-          user:updatedUser,
-          message:"Profile updated successfully"
-        }
-      }else{
-
-         return {
-          status:false,
-          user:updatedUser,
-          message:"Something went wrong"
-        }
+          status: true,
+          user: updatedUser,
+          message: "Profile updated successfully",
+        };
+      } else {
+        return {
+          status: false,
+          user: updatedUser,
+          message: "Something went wrong",
+        };
       }
-
     } catch (error) {
-      
+      console.log(error);
+    }
+  }
+
+  async googleLogin(user: any): Promise<any> {
+    try {
+      const token = this._jwt.createToken(user._id, "user");
+
+      return {
+        statu: true,
+        token: token,
+        // user:user
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async forgotPassword(email: string): Promise<any> {
+    try {
+      const user = await this._reposotory.findUserByemail(email);
+
+      if (user) {
+        const otp = this._generateOtp.generateOTP();
+        await this._OtpRepo.createOtpAndCollection(email, otp);
+        await this._sendMail.sendEmail(email, parseInt(otp),"One Time Password for Commingle Password Change");
+         const payload: { email: string; role: string ,id:string} = {
+          id:user._id,
+          email: user.email,
+          role: "user",
+        };
+        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
+          expiresIn: "6m",
+        });
+        return {
+          status: true,
+          token:jwtToken,
+          message: `OTP sent to ${email}`,
+        };
+      } else {
+        return {
+          status: false,
+          message: `User not found`,
+        };
+      }
+    } catch (error) {
+
 
       console.log(error);
       
     }
   }
 
-  async googleLogin(user: any): Promise<any> {
-    
+  async setNewPassWord(token:string,password: string): Promise<any> {
+     
     try {
-      
-      
-      const token  = this._jwt.createToken(user._id,'user');
+      const decode =  this._jwt.verifyToken(token)
+      if(decode){
+        const hashedPassword = await this._bcrypt.Encryption(password);
+        const userData = {
 
-      return {
-        statu:true,
-        token:token,
-        // user:user
+          password:hashedPassword
+        }
+         await this._reposotory.updateUser(decode.id,userData);
+
+
+         return {
+          status:true,
+          message:'Password changed sucessfully'
+         }
+      }else{
+
+          return {
+          status:false,
+          message:'Something went wrong'
+         }
       }
-
+     
 
     } catch (error) {
-
-      console.log(error);
-      
       
     }
   }

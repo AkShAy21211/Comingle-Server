@@ -1,7 +1,7 @@
 interface IMail{
 
 
-    sendEmail(to:string,otp:number):Promise<any>;
+    sendEmail(to:string,otp:number,subject:string):Promise<any>;
 }
 
 

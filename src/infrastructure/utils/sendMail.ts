@@ -18,7 +18,7 @@ class NodeMailer implements IMail {
     });
   }
 
-  async sendEmail(to: string, otp: number): Promise<any> {
+  async sendEmail(to: string, otp: number,subject:string): Promise<any> {
    
     let mailOptions = {
       from: {
@@ -26,9 +26,9 @@ class NodeMailer implements IMail {
         address: process.env.GMAIL_ID || ""
       },
       to: to,
-      subject: "One Time Password for Commingle Account Verification",
+      subject: subject,
       html: `
-        <h2>One Time Password for Commingle Account Verification</h2>
+        <h2>${subject}</h2>
         <p>Dear User,</p>
         <p>Your One Time Password (OTP) for verifying your Commingle account is: <strong style="font-size:15px">${otp}</strong></p>
         <p>Please use this OTP to complete the verification process.</p>

@@ -10,7 +10,9 @@ interface IUserUseCase{
     getUserProfile(id:string):Promise<any>;
     updateUserProfileImages(id:string,imagePth:string,type:string):Promise<any>; 
     updateUserDetails(id:string,userData:User):Promise<any>; 
-    googleLogin(user:any):Promise<any>; 
+    googleLogin(user:any):Promise<any>;
+    forgotPassword(email:string):Promise<any>;
+    setNewPassWord(token:string,password:string):Promise<any>; 
 
 }
 

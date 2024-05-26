@@ -11,6 +11,8 @@ interface IUserController{
     UpdateUserPofileImages(req:Request,res:Response):Promise<void>;
     UpdateUserDetails(req:Request,res:Response):Promise<void>;
     LoginWithGoogle(req:Request,res:Response):Promise<void>;
+    Forgotassword(req:Request,res:Response):Promise<void>;
+    SetNewPassword(req:Request,res:Response):Promise<void>;
     
 }
 

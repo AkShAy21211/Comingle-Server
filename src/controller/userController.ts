@@ -2,6 +2,8 @@ import { json, Request, Response } from "express";
 import UserUseCase from "../userCase/userUseCase";
 import IUserController from "../userCase/interface/user/IuserController";
 import passport from "passport";
+import { ParamsDictionary } from "express-serve-static-core";
+import { ParsedQs } from "qs";
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -21,24 +23,18 @@ class UserController implements IUserController {
       );
 
       if (signUpResponse?.status) {
-
         console.log(signUpResponse);
-        
+
         res.cookie("token", signUpResponse.token, {
           expires: new Date(Date.now() + 25892000000),
           secure: false,
           httpOnly: true,
-          sameSite:"strict",
+          sameSite: "strict",
         });
 
+        console.log("agter registration", req.cookies.token);
 
-
-
-        
-
-        console.log('agter registration',req.cookies.token);
-        
-        res.status(201).json({status:signUpResponse.status});
+        res.status(201).json({ status: signUpResponse.status });
       } else {
         res.status(400).json(signUpResponse);
       }
@@ -53,9 +49,7 @@ class UserController implements IUserController {
       const userToken = req.cookies.token;
 
       console.log(userToken);
-      
 
-      
       const verifyOtpResponse = await this._userUserCase.verifyUserByEmailOtp(
         userToken,
         req.body.otp
@@ -75,7 +69,9 @@ class UserController implements IUserController {
 
   async ResendOtp(req: Request, res: Response): Promise<void> {
     try {
-      const token = req.cookies.userToken;
+      const token = req.cookies.token;
+
+      console.log(token);
 
       const resendResponse = await this._userUserCase.resendOtp(token);
 
@@ -108,37 +104,34 @@ class UserController implements IUserController {
     }
   }
 
-
   async LoginWithGoogle(req: Request, res: Response): Promise<void> {
-    
     try {
-     
-     const googleSignUpResponse = await this._userUserCase.googleLogin(req.user);
-     console.log(googleSignUpResponse);
-   
-     if(!googleSignUpResponse){
-           res.status(401).json({ message: 'Authentication failed' });
+      const googleSignUpResponse = await this._userUserCase.googleLogin(
+        req.user
+      );
+      console.log(googleSignUpResponse);
 
-     }
+      if (!googleSignUpResponse) {
+        res.status(401).json({ message: "Authentication failed" });
+      }
 
-     res.cookie("token", googleSignUpResponse.token, {
-          expires: new Date(Date.now() + 25892000000),
-          secure: false,
-          httpOnly: true,
-          sameSite:"strict",
-        });
+      res.cookie("token", googleSignUpResponse.token, {
+        expires: new Date(Date.now() + 25892000000),
+        secure: false,
+        httpOnly: true,
+        sameSite: "strict",
+      });
 
-     res.status(200).redirect(`http://localhost:5173/login/success?token=${googleSignUpResponse.token}`)
-
-    } catch (error) {
-      
-    }
+      res
+        .status(200)
+        .redirect(
+          `http://localhost:5173/login/success?token=${googleSignUpResponse.token}`
+        );
+    } catch (error) {}
   }
 
   async GetUserProfile(req: Request, res: Response): Promise<void> {
     try {
-
-      
       const userResponse = await this._userUserCase.getUserProfile(
         req.user?.id as string
       );
@@ -156,10 +149,8 @@ class UserController implements IUserController {
 
   async UpdateUserPofileImages(req: Request, res: Response): Promise<void> {
     try {
-
       console.log(req.file?.path);
-      
-      
+
       const updateUserResponse =
         await this._userUserCase.updateUserProfileImages(
           req.user?.id as string,
@@ -167,7 +158,6 @@ class UserController implements IUserController {
           req.body.type
         );
 
-        
       if (updateUserResponse.status) {
         res.status(200).json(updateUserResponse);
       } else {
@@ -179,26 +169,66 @@ class UserController implements IUserController {
     }
   }
 
-
   async UpdateUserDetails(req: Request, res: Response): Promise<void> {
     try {
-      
       console.log(req.body);
-      
-      const updateUserResponse = await this._userUserCase.updateUserDetails(req.user?.id as string ,req.body);
 
-      if(updateUserResponse.status){ 
+      const updateUserResponse = await this._userUserCase.updateUserDetails(
+        req.user?.id as string,
+        req.body
+      );
 
+      if (updateUserResponse.status) {
         res.status(200).json(updateUserResponse);
-      }else{
-
+      } else {
         res.status(400).json(updateUserResponse);
-
       }
-    
     } catch (error) {
-      
-      res.status(500).json({message:"Internal server error"});
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async Forgotassword(req: Request, res: Response): Promise<void> {
+    try {
+      const forgetResponse = await this._userUserCase.forgotPassword(
+        req.body.email
+      );
+
+      if (forgetResponse.status) {
+        res.cookie("token", forgetResponse.token, {
+          expires: new Date(Date.now() + 6 * 60 * 1000),
+          secure: false,
+          httpOnly: true,
+          sameSite: "strict",
+        });
+
+        res.status(200).json(forgetResponse);
+      } else {
+        res.status(400).json(forgetResponse);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "internal server error" });
+    }
+  }
+
+  async SetNewPassword(req: Request, res: Response): Promise<void> {
+    try {
+      const token = req.cookies.token;
+      const updatedResponse = await this._userUserCase.setNewPassWord(
+        token,
+        req.body.password
+      );
+
+      if (updatedResponse.status) {
+        res.clearCookie("token");
+        res.status(200).json(updatedResponse);
+      } else {
+        res.status(400).json(updatedResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "internal server error" });
+      console.log(error);
     }
   }
 }

@@ -90,4 +90,15 @@ router.get('/auth/google/callback',passport.authenticate("google",{session:false
 
 
 
+//////////// forger password ////////////////////
+router.post('/forgot-password',(req,res)=>{
+  controller.Forgotassword(req,res)
+})
+
+
+router.post('/new-password',(req,res)=>{
+
+  controller.SetNewPassword(req,res);
+})
+
 export default router;
