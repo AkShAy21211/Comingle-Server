@@ -1,15 +1,21 @@
 import express from "express";
-import UserController from "../../controller/userController";
-import UserUseCase from "../../userCase/userUseCase";
+import AuthController from "../../adapters/controllers/user/authController";
+import AuthUseCase from "../../userCase/user/authUseCase";
 import GenerateOtp from "../utils/generateOtp";
 import UserReposotory from "../repository/userRepo";
 import TokenManager from "../utils/generateToken";
 import Bcrypt from "../utils/hashPassword";
 import OtpReposotory from "../repository/otpRepo";
 import NodeMailer from "../utils/sendMail";
-import { authenticate } from "../middleware/auth";
-import { profileUploader } from "../middleware/multer";
+import { authenticate } from '../middleware/auth';
+import { uploadProfile } from "../utils/uploadToCloudnary";
 import passport from 'passport'
+import ProfileController from "../../adapters/controllers/user/profileController";
+import ProfileUseCase from "../../userCase/user/profileUseCase";
+import InteractionController from "../../adapters/controllers/user/interactionController";
+import InteractionUseCase from "../../userCase/user/interactionUseCase";
+import Follow from '../../domain/entities/follow';
+import FollowReposotory from "../repository/followRepo";
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -17,7 +23,11 @@ const bcrypt = new Bcrypt();
 const sendMail = new NodeMailer();
 const OtpRepo = new OtpReposotory();
 
-const userUseCase = new UserUseCase(
+
+
+
+///////////////// USER AUTH CONTROLLER ///////////////////////////
+const authUseCase = new AuthUseCase(
   userReposotory,
   jwt,
   bcrypt,
@@ -26,79 +36,124 @@ const userUseCase = new UserUseCase(
   sendMail
 );
 
-const controller = new UserController(userUseCase);
+const authController = new AuthController(authUseCase);
+
+///////////////// USER PROFILEcONTROLLER ///////////////////////////////
+
+const profileUseCase = new ProfileUseCase(
+  userReposotory,
+  jwt,
+  bcrypt,
+  generateOTP,
+  OtpRepo,
+  sendMail
+)
+
+const profileController = new ProfileController(profileUseCase);
+
+
+
+//////////////////// USER INTERACTION CONTROLLER //////////////////////////////////////
+
+const followRepo = new FollowReposotory();
+const interactionUseCase = new InteractionUseCase(followRepo)
+const interactionController  = new InteractionController(interactionUseCase);
 
 const router = express.Router();
 
+
+///////////////// AUTHENTICATION CONTROLLER ROUTES ////////////////////////////////////
 router.post("/signup", (req, res) => {
-  controller.SignUpAndDendOtp(req, res);
+  authController.signUpAndDendOtp(req, res);
 });
 router.post("/signup/verify-otp", (req, res) => {
-  controller.VerifyUserByEmailOtp(req, res);
+  authController.verifyUserByEmailOtp(req, res);
 });
 
 router.post("/signup/verify-otp/resend", (req, res) => {
-  controller.ResendOtp(req, res);
+  authController.resendOtp(req, res);
 });
 
 router.post("/signin", (req, res) => {
-  controller.SignInUser(req, res);
+  authController.signInUser(req, res);
+});
+
+
+///////////////// GOOGLE AUTH /////////////////////////////////////////////////////////////
+
+
+router.get('/auth/google',passport.authenticate("google",{scope:['profile','email']}));
+
+router.get('/auth/google/callback',passport.authenticate("google",{session:false}),(req,res)=>{
+
+  authController.loginWithGoogle(req,res)
+});
+
+
+
+
+
+////////////////////    PROFILE CONTROLLER ROUTES ///////////////////////////////////////////
+
+
+router.get("/profile", authenticate, (req, res) => {
+  profileController.getUserProfile(req, res);
 });
 
 router.get("/profile", authenticate, (req, res) => {
-  controller.GetUserProfile(req, res);
-});
-
-router.get("/profile", authenticate, (req, res) => {
-  controller.GetUserProfile(req, res);
+  profileController.getUserProfile(req, res);
 });
 
 router.patch(
   "/profile/update/cover",
   authenticate,
-  profileUploader.single("image"),
+  uploadProfile,
   (req, res) => {
-    controller.UpdateUserPofileImages(req, res);
+    profileController.updateUserPofileImages(req, res);
   }
 );
 
 router.patch(
   "/profile/update/dp",
   authenticate,
-  profileUploader.single("image"),
+  uploadProfile,
   (req, res) => {
-    controller.UpdateUserPofileImages(req, res);
+    profileController.updateUserPofileImages(req, res);
   }
 );
 
 
 router.patch("/profile/update/info",authenticate,(req,res)=>{
 
-  controller.UpdateUserDetails(req,res)
+  profileController.updateUserDetails(req,res)
 })
 
 
 
-/// google auth 
-
-router.get('/auth/google',passport.authenticate("google",{scope:['profile','email']}));
-
-router.get('/auth/google/callback',passport.authenticate("google",{session:false}),(req,res)=>{
-
-  controller.LoginWithGoogle(req,res)
-});
 
 
-
-//////////// forger password ////////////////////
+//////////// forget password ////////////////////
 router.post('/forgot-password',(req,res)=>{
-  controller.Forgotassword(req,res)
+  profileController.forgotassword(req,res)
 })
 
 
 router.post('/new-password',(req,res)=>{
 
-  controller.SetNewPassword(req,res);
+  profileController.setNewPassword(req,res);
 })
+
+
+
+
+
+
+///////////////// USER FOLLOW/UNFOOLLOW REQUEST ROUTES
+
+router.post('/follow-request',authenticate,(req,res)=>{
+
+  interactionController.followUser(req,res);
+})
+
 
 export default router;

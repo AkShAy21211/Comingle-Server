@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose";
-import  Posts  from "../../domain/post";
+import  Posts  from "../../domain/entities/post";
 
 
 const postSchema = new Schema<Posts>({

@@ -1,10 +1,10 @@
-import Admin from "../domain/admin";
-import TokenManager from "../infrastructure/utils/generateToken";
-import Bcrypt from "../infrastructure/utils/hashPassword";
-import IAdminReposotory from "./interface/admin/adminIRepo";
-import IAdminUseCase from "./interface/admin/adminIUseCase";
+import Admin from "../../domain/entities/admin";
+import TokenManager from "../../infrastructure/utils/generateToken";
+import Bcrypt from "../../infrastructure/utils/hashPassword";
+import IAdminReposotory from "../../domain/interfaces/admin/adminIRepo";
+import IAuthUseCase from '../../domain/interfaces/admin/IAuthUseCase';
 
-class AdminUseCase implements IAdminUseCase {
+class AuthUseCase implements IAuthUseCase {
   constructor(
     private _reposotory: IAdminReposotory,
     private _jwt: TokenManager,
@@ -52,4 +52,4 @@ class AdminUseCase implements IAdminUseCase {
 
 }
 
-export default AdminUseCase;
+export default AuthUseCase;

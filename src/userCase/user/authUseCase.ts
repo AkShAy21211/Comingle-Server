@@ -1,15 +1,14 @@
-import User from "../domain/user";
-import TokenManager from "../infrastructure/utils/generateToken";
-import Bcrypt from "../infrastructure/utils/hashPassword";
-import IUserReop from "./interface/user/IUserRepo";
-import IUserUseCase from "./interface/user/IUserUseCase";
+import User from "../../domain/entities/user";
+import TokenManager from "../../infrastructure/utils/generateToken";
+import Bcrypt from "../../infrastructure/utils/hashPassword";
+import IUserReop from "../../domain/interfaces/user/IUserRepo";
 import jwt from "jsonwebtoken";
-import GenerateOtp from "../infrastructure/utils/generateOtp";
-import OtpReposotory from "../infrastructure/repository/otpRepo";
-import NodeMailer from "../infrastructure/utils/sendMail";
-import uploadProfileBackground from "../infrastructure/utils/uploadToCloudnary";
-import { log } from "console";
-class UserUseCase implements IUserUseCase {
+import GenerateOtp from "../../infrastructure/utils/generateOtp";
+import OtpReposotory from "../../infrastructure/repository/otpRepo";
+import NodeMailer from "../../infrastructure/utils/sendMail";
+import IAuthUseCase from "../../domain/interfaces/user/IAuthUseCase";
+
+class AuthUseCase implements IAuthUseCase {
   constructor(
     private _reposotory: IUserReop,
     private _jwt: TokenManager,
@@ -25,6 +24,8 @@ class UserUseCase implements IUserUseCase {
         return { status: false, message: "All feilds required" };
       }
 
+      console.log(userData);
+      
       const userFound = await this._reposotory.findUserByemail(userData.email);
 
       if (userFound) {
@@ -145,11 +146,7 @@ class UserUseCase implements IUserUseCase {
       const filterUser = {
         _id: findUser._id,
         token: token,
-        name: findUser.name,
-        email: findUser.email,
-        isVerfied: findUser.isVerified,
-        isBlocked: findUser.isBlocked,
-        profile: findUser.profile,
+        authenticated:token?true:false
       };
 
       return {
@@ -166,77 +163,7 @@ class UserUseCase implements IUserUseCase {
     }
   }
 
-  async getUserProfile(id: string): Promise<any> {
-    try {
-      const user = await this._reposotory.findUserById(id);
-
-      if (user) {
-        return {
-          status: true,
-          user: user,
-        };
-      } else {
-        return {
-          status: false,
-          message: "User not found",
-        };
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async updateUserProfileImages(
-    id: string,
-    imagePath: string,
-    type: string
-  ): Promise<any> {
-    try {
-      const userData = {
-        [`${type === "background" ? "profile.background" : "profile.image"}`]:
-          imagePath,
-      };
-
-      const updateUser = await this._reposotory.updateUser(id, userData);
-
-      console.log(updateUser);
-
-      if (updateUser) {
-        return {
-          status: true,
-          user: updateUser,
-          message: `${type} updated`,
-        };
-      } else {
-        return {
-          status: false,
-          message: "Something went wrong",
-        };
-      }
-    } catch (error) {}
-  }
-
-  async updateUserDetails(id: string, userData: User): Promise<any> {
-    try {
-      const updatedUser = await this._reposotory.updateUser(id, userData);
-
-      if (updatedUser) {
-        return {
-          status: true,
-          user: updatedUser,
-          message: "Profile updated successfully",
-        };
-      } else {
-        return {
-          status: false,
-          user: updatedUser,
-          message: "Something went wrong",
-        };
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  
 
   async googleLogin(user: any): Promise<any> {
     try {
@@ -245,78 +172,15 @@ class UserUseCase implements IUserUseCase {
       return {
         statu: true,
         token: token,
-        // user:user
+        authenticated:token?true:false
+
       };
     } catch (error) {
       console.log(error);
     }
   }
 
-  async forgotPassword(email: string): Promise<any> {
-    try {
-      const user = await this._reposotory.findUserByemail(email);
-
-      if (user) {
-        const otp = this._generateOtp.generateOTP();
-        await this._OtpRepo.createOtpAndCollection(email, otp);
-        await this._sendMail.sendEmail(email, parseInt(otp),"One Time Password for Commingle Password Change");
-         const payload: { email: string; role: string ,id:string} = {
-          id:user._id,
-          email: user.email,
-          role: "user",
-        };
-        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-          expiresIn: "6m",
-        });
-        return {
-          status: true,
-          token:jwtToken,
-          message: `OTP sent to ${email}`,
-        };
-      } else {
-        return {
-          status: false,
-          message: `User not found`,
-        };
-      }
-    } catch (error) {
-
-
-      console.log(error);
-      
-    }
-  }
-
-  async setNewPassWord(token:string,password: string): Promise<any> {
-     
-    try {
-      const decode =  this._jwt.verifyToken(token)
-      if(decode){
-        const hashedPassword = await this._bcrypt.Encryption(password);
-        const userData = {
-
-          password:hashedPassword
-        }
-         await this._reposotory.updateUser(decode.id,userData);
-
-
-         return {
-          status:true,
-          message:'Password changed sucessfully'
-         }
-      }else{
-
-          return {
-          status:false,
-          message:'Something went wrong'
-         }
-      }
-     
-
-    } catch (error) {
-      
-    }
-  }
+  
 }
 
-export default UserUseCase;
+export default AuthUseCase;

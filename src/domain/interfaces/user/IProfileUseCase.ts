@@ -1,0 +1,17 @@
+import User from "../../entities/user";
+
+interface IProfileUserCase {
+  getUserProfile(id: string): Promise<any>;
+  forgotPassword(email: string): Promise<any>;
+  setNewPassWord(token: string, password: string): Promise<any>;
+  updateUserProfileImages(
+    id: string,
+    imagePth: string,
+    type: string
+  ): Promise<any>;
+  updateUserDetails(id: string, userData: User): Promise<any>;
+}
+
+
+
+export default IProfileUserCase;

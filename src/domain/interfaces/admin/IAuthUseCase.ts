@@ -1,4 +1,4 @@
-import Admin from "../../../domain/admin";
+import Admin from "../../entities/admin";
 
 
 interface IAdminUseCase{

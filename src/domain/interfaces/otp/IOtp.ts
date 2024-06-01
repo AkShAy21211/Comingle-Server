@@ -1,4 +1,4 @@
-import Otp from "../../../domain/opt";
+import Otp from "../../entities/opt";
 
 interface IOtp {
 

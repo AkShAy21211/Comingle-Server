@@ -9,9 +9,10 @@ import adminRote from "../routes/adminRoute";
 import '../config/passport'
 export const expressServer = () => {
   try {
+
     const app = express();
-    app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+    app.use(express.json());
     app.use(cookieParser());
     app.use(passport.initialize());
 

@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import IMail from "../../userCase/interface/email/IMail";
+import IMail from "../../domain/interfaces/email/IMail";
 import dotenv from "dotenv"
 import path from 'path';
 

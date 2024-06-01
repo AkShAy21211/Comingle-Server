@@ -1,5 +1,5 @@
-import Otp from "../../domain/opt";
-import IOtp from "../../userCase/interface/otp/IOtp";
+import Otp from "../../domain/entities/opt";
+import IOtp from "../../domain/interfaces/otp/IOtp";
 import optModel from "../database/otpModel";
 
 class OtpReposotory implements IOtp{

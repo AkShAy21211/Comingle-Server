@@ -1,13 +1,16 @@
 import { Request, Response } from "express";
-import IAdminController from "../userCase/interface/admin/adminIController";
-import AdminUseCase from "../userCase/adminUseCase";
+import AuthUseCase from "../../../userCase/admin/authUseCase";
 
-class AdminController implements IAdminController {
-  constructor(private _adminUseCase: AdminUseCase) {}
 
-  async SignInAdmin(req: Request, res: Response): Promise<void> {
+
+
+
+class AuthController  {
+  constructor(private _authUseCase: AuthUseCase) {}
+
+  async signInAdmin(req: Request, res: Response): Promise<void> {
     try {
-      const signUpResponse = await this._adminUseCase.signInAdmin(req.body);
+      const signUpResponse = await this._authUseCase.signInAdmin(req.body);
 
       if (signUpResponse?.status) {
         res
@@ -29,7 +32,8 @@ class AdminController implements IAdminController {
   }
 
 
+
 }
 
 
-export default AdminController;
+export default AuthController;

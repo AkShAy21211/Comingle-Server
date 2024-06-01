@@ -1,5 +1,5 @@
-import Admin from "../../domain/admin";
-import IAdminReposotory from "../../userCase/interface/admin/adminIRepo";
+import Admin from "../../domain/entities/admin";
+import IAdminReposotory from "../../domain/interfaces/admin/adminIRepo";
 import adminModel from "../database/adminModel";
 
 class AdminReposotory implements IAdminReposotory {

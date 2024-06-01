@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Admin from "../../domain/admin";
+import Admin from "../../domain/entities/admin";
 
 
 const adminSchema = new mongoose.Schema<Admin>({

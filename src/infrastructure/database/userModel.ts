@@ -1,5 +1,5 @@
-import mongoose, {Schema } from "mongoose";
-import User from "../../domain/user";
+import mongoose, { Schema } from "mongoose";
+import User from "../../domain/entities/user";
 
 const userSchema = new Schema<User>(
   {
@@ -12,10 +12,11 @@ const userSchema = new Schema<User>(
       type: String,
       required: true,
       unique: true,
+      trim: true,
     },
-    phone:{
-      type:Number,
-      required:false,
+    phone: {
+      type: Number,
+      required: false,
     },
     password: {
       type: String,
@@ -28,7 +29,6 @@ const userSchema = new Schema<User>(
       type: Boolean,
       default: false,
     },
-
     profile: {
       image: {
         type: String,
@@ -67,22 +67,25 @@ const userSchema = new Schema<User>(
           ref: "User",
         },
       ],
-      posts: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Post'
-      },
+      posts: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Post",
+        },
+      ],
     },
-    googleId:{
-      type:String,
-      
-    }
-
+    googleId: {
+      type: String,
+      required: false, 
+    },
   },
-
   {
     timestamps: true,
   }
 );
+
+
+userSchema.index({ email: 1 }, { unique: true });
 
 const UserModel = mongoose.model<User>("User", userSchema);
 
