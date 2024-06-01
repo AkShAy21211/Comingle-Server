@@ -1,8 +1,9 @@
 interface Follow {
-  _id?: string;
+  _id: string;
   requester: string;
   recipient: string;
-  timestamp: Date;
+  status:string;
+  timestamp?: Date;
 }
 
 export default Follow;

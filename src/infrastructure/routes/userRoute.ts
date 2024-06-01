@@ -56,7 +56,7 @@ const profileController = new ProfileController(profileUseCase);
 //////////////////// USER INTERACTION CONTROLLER //////////////////////////////////////
 
 const followRepo = new FollowReposotory();
-const interactionUseCase = new InteractionUseCase(followRepo)
+const interactionUseCase = new InteractionUseCase(followRepo,userReposotory)
 const interactionController  = new InteractionController(interactionUseCase);
 
 const router = express.Router();
@@ -154,6 +154,15 @@ router.post('/follow-request',authenticate,(req,res)=>{
 
   interactionController.followUser(req,res);
 })
+
+
+
+///////////////// GET ALL THE USERS ////////////////////////////////////
+
+router.get('/list-all',authenticate,(req,res)=>{
+
+  interactionController.getAllUsers(req,res);
+});
 
 
 export default router;

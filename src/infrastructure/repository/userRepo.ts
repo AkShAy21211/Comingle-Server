@@ -105,6 +105,22 @@ class UserReposotory implements IUserReop {
       
     }
   }
+
+  async getAllUsers(): Promise<User[] | null | undefined> {
+    
+    try {
+      
+      const users = await UserModel.find({isBlocked:false});
+    
+
+      return users;
+    } catch (error) {
+    
+      console.log(error);
+      
+    }
+
+  }
 }
 
 export default UserReposotory;
