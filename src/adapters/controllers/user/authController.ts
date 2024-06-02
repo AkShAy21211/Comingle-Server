@@ -95,6 +95,10 @@ class AuthController   {
 
   async loginWithGoogle(req: Request, res: Response): Promise<void> {
     try {
+
+
+      console.log('called here ');
+      
       const googleSignUpResponse = await this._authUseCase.googleLogin(
         req?.user
       );
