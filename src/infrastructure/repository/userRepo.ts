@@ -106,11 +106,11 @@ class UserReposotory implements IUserReop {
     }
   }
 
-  async getAllUsers(): Promise<User[] | null | undefined> {
+  async getAllUsers(id:string): Promise<User[] | null | undefined> {
     
     try {
       
-      const users = await UserModel.find({isBlocked:false});
+      const users = await UserModel.find({_id:{$ne:id},isBlocked:false});
     
 
       return users;

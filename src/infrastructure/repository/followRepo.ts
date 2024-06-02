@@ -20,16 +20,35 @@ class FollowReposotory implements IFollowRepo {
     }
   }
 
-  async getFollowerAndFollowing(id: string): Promise<any[] | null | undefined> {
+  async getFollowingUser(id: string): Promise<Follow[] | null | undefined> {
     try {
-      const followeres = await followModel.find({ requester: id });
-
-      console.log(followeres);
+      const followeres = await followModel.find({ requester: id ,$or:[{status:'Pending'},{status:"Approved"}]}).populate('requester').lean();
+      return followeres;
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async getFollowedUser(id: string): Promise<Follow[] | null | undefined> {
+     try {
+      const followeres = await followModel.find({ recipient: id,$or:[{status:'Pending'},{status:"Approved"}] }).populate('requester','name profile.image email _id').lean();
       
       return followeres;
       
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async findFollowBeforeCreatingNewOne(requester: string, recipient: string): Promise<Follow | null | undefined> {
+    try {
+      
+      const existingFollowRequest = await followModel.findOne({recipient:recipient,requester:requester}).lean();
+
+      return existingFollowRequest;
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 }

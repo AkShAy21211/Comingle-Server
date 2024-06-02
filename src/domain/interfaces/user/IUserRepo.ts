@@ -11,7 +11,7 @@ interface IUserReop{
     updateUser(id:string,data:any):Promise<User | null | undefined>;
     createUser(userData:any):Promise<User | null | undefined>;
     updateUserProfileImages(id:string,image:{image?:string}):Promise<User | null | undefined>;
-    getAllUsers():Promise<User[] | null | undefined>;
+    getAllUsers(id:string):Promise<User[] | null | undefined>;
     
 }
 

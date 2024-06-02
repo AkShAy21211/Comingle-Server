@@ -1,7 +1,9 @@
+import mongoose from "mongoose";
+
 interface Follow {
   _id: string;
-  requester: string;
-  recipient: string;
+  requester: mongoose.Schema.Types.ObjectId;
+  recipient: mongoose.Schema.Types.ObjectId;
   status:string;
   timestamp?: Date;
 }

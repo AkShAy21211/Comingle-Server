@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
+import Follow from "../../domain/entities/follow";
 
-const followSchea = new Schema({
+const followSchea = new Schema<Follow>({
 
     requester:{
         type:mongoose.Schema.Types.ObjectId,

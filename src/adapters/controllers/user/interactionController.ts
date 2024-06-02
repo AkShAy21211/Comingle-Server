@@ -6,12 +6,19 @@ class InteractionController {
 
   async followUser(req: Request, res: Response): Promise<void> {
     try {
-      console.log(req.body);
-      
+  
+
       const followRequest = await this._interactionUseCase.followUser(
         req.user?.id as string,
         req.body.recipientId
       );
+
+        await this._interactionUseCase.createNotificatiioin(
+          req.body.recipientId as string,
+          followRequest.type,
+          followRequest.content
+        );
+
       if (followRequest.status) {
         res.status(200).json(followRequest);
       }
@@ -31,6 +38,22 @@ class InteractionController {
       }
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async getAllNotifications(req:Request,res:Response):Promise<void>{
+
+    try {
+
+      const notificationsResponse = await this._interactionUseCase.getAllNotifications(req.user?.id as string);
+
+      if(notificationsResponse.status){
+        res.status(200).json(notificationsResponse);
+      }      
+      
+    } catch (error) {
+     
+      res.status(500).json({message:"Internal server error"});
     }
   }
 }

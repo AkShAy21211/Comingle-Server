@@ -14,8 +14,8 @@ import ProfileController from "../../adapters/controllers/user/profileController
 import ProfileUseCase from "../../userCase/user/profileUseCase";
 import InteractionController from "../../adapters/controllers/user/interactionController";
 import InteractionUseCase from "../../userCase/user/interactionUseCase";
-import Follow from '../../domain/entities/follow';
 import FollowReposotory from "../repository/followRepo";
+import NotificationRepo from "../repository/notificationRepo";
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -56,7 +56,8 @@ const profileController = new ProfileController(profileUseCase);
 //////////////////// USER INTERACTION CONTROLLER //////////////////////////////////////
 
 const followRepo = new FollowReposotory();
-const interactionUseCase = new InteractionUseCase(followRepo,userReposotory)
+const notificationRepo = new NotificationRepo();
+const interactionUseCase = new InteractionUseCase(followRepo,userReposotory,notificationRepo)
 const interactionController  = new InteractionController(interactionUseCase);
 
 const router = express.Router();
@@ -164,5 +165,10 @@ router.get('/list-all',authenticate,(req,res)=>{
   interactionController.getAllUsers(req,res);
 });
 
+/////////////////////////  GET ALL NOTIFICATIONS  ////////////////////////
+router.get('/notifications',authenticate,(req,res)=>{
+  
+  interactionController.getAllNotifications(req,res);
+})
 
 export default router;

@@ -26,8 +26,8 @@ passport.use(
         };
         let user = await userRopo.findUserById(userToFind);
 
-        console.log('1',user);
-        
+        console.log("1", user);
+
         if (!user) {
           user = await userRopo.findUserByemail(emails?.[0].value as string);
 
@@ -35,8 +35,7 @@ passport.use(
             user.googleId = profile.id;
             user.profile.image =
               user.profile.image || (photos?.[0].value as string);
-                      console.log('2',user);
-
+            console.log("2", user);
           } else {
             const userData = {
               name: displayName,
@@ -48,10 +47,15 @@ passport.use(
               },
             };
             user = await userRopo.createUser(userData);
-        console.log('3',user);
 
             return done(null, user as User);
           }
+        }else{
+
+          console.log('user exist alerady');
+          
+            return done(null, user as User);
+
         }
       } catch (error) {
         console.log(error);
