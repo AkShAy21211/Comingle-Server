@@ -7,13 +7,15 @@ class NotificationRepo implements INotificationRepo {
   async createNotification(
     id: string,
     type: string,
-    content: string
+    content: string,
+    sourceId:string
   ): Promise<void> {
     try {
       const newNotification = new notificationModel({
         userId: id,
         type: type,
         content: content,
+        sourceId:sourceId
       });
 
       await newNotification.save();
@@ -29,7 +31,7 @@ class NotificationRepo implements INotificationRepo {
       const notifications = await notificationModel.find({
         isRead: false,
         userId: id,
-      }).sort({createdAt:-1});
+      }).populate('sourceId').sort({createdAt:-1});
 
       return notifications;
     } catch (error) {

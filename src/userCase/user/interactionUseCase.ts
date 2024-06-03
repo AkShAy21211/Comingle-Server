@@ -59,13 +59,14 @@ class InteractionUseCase implements IInteractionUseCase {
       console.log(error);
     }
   }
-  async createNotificatiioin(
+  async createNotificatioin(
     id: string,
     type: string,
-    content: string
+    content: string,
+    sourceId:string
   ): Promise<void> {
     try {
-      await this._notificationRepo.createNotification(id, type, content);
+      await this._notificationRepo.createNotification(id, type, content,sourceId);
     } catch (error) {
       console.log(error);
     }
@@ -74,11 +75,18 @@ class InteractionUseCase implements IInteractionUseCase {
   async getAllNotifications(id: string): Promise<any> {
     try {
       const notifications = await this._notificationRepo.getNotifications(id);
-      const followerRequest = await this._reposotory.getFollowedUser(id);
+
+        if (notifications) {
+            for (let noti of notifications) {
+                if (noti.type === 'Follow') {
+                    await noti.populate('sourceId.requester','name _id profile.image');
+                }
+            }
+        }
+
       return {
         status: true,
         notifications: notifications,
-        followers: followerRequest,
       };
     } catch (error) {
       console.log(error);
@@ -90,7 +98,6 @@ class InteractionUseCase implements IInteractionUseCase {
     recipitent: string
   ): Promise<any> {
     try {
-      console.log('+++++++++++++++++++++++++',requesterId,recipitent);
       
       const folloeStatus = await this._reposotory.getStatus(
         requesterId,

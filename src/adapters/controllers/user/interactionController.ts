@@ -11,10 +11,11 @@ class InteractionController {
         req.body.recipientId
       );
 
-      await this._interactionUseCase.createNotificatiioin(
+      await this._interactionUseCase.createNotificatioin(
         req.body.recipientId as string,
         followRequest.type,
-        followRequest.content
+        followRequest.content,
+        followRequest.follow._id
       );
 
       if (followRequest.status) {
@@ -80,10 +81,11 @@ class InteractionController {
       const acceptFollowResponse =
         await this._interactionUseCase.acceptFollowRequest(followId);
 
-      await this._interactionUseCase.createNotificatiioin(
+      await this._interactionUseCase.createNotificatioin(
         acceptFollowResponse.recipient,
         acceptFollowResponse.type,
-        acceptFollowResponse.content
+        acceptFollowResponse.content,
+        acceptFollowResponse.follow._id
       );
 
       if (acceptFollowResponse.status) {
