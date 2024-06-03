@@ -6,18 +6,16 @@ class InteractionController {
 
   async followUser(req: Request, res: Response): Promise<void> {
     try {
-  
-
       const followRequest = await this._interactionUseCase.followUser(
         req.user?.id as string,
         req.body.recipientId
       );
 
-        await this._interactionUseCase.createNotificatiioin(
-          req.body.recipientId as string,
-          followRequest.type,
-          followRequest.content
-        );
+      await this._interactionUseCase.createNotificatiioin(
+        req.body.recipientId as string,
+        followRequest.type,
+        followRequest.content
+      );
 
       if (followRequest.status) {
         res.status(200).json(followRequest);
@@ -41,19 +39,61 @@ class InteractionController {
     }
   }
 
-  async getAllNotifications(req:Request,res:Response):Promise<void>{
-
+  async getAllNotifications(req: Request, res: Response): Promise<void> {
     try {
+      const notificationsResponse =
+        await this._interactionUseCase.getAllNotifications(
+          req.user?.id as string
+        );
 
-      const notificationsResponse = await this._interactionUseCase.getAllNotifications(req.user?.id as string);
-
-      if(notificationsResponse.status){
+      if (notificationsResponse.status) {
         res.status(200).json(notificationsResponse);
-      }      
-      
+      }
     } catch (error) {
-     
-      res.status(500).json({message:"Internal server error"});
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async getFollowRequestStatus(req: Request, res: Response): Promise<void> {
+    try {
+      const { requesterId, recipietnetId } = req.params;
+
+      const followResponse =
+        await this._interactionUseCase.getFollowRequestStatus(
+          requesterId,
+          recipietnetId
+        );
+
+      if (followResponse.status) {
+        res.status(200).json(followResponse);
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "internal server error" });
+    }
+  }
+
+  async acceptFollowRequest(req: Request, res: Response): Promise<void> {
+    try {
+      const { followId } = req.params;
+
+      const acceptFollowResponse =
+        await this._interactionUseCase.acceptFollowRequest(followId);
+
+      await this._interactionUseCase.createNotificatiioin(
+        acceptFollowResponse.recipient,
+        acceptFollowResponse.type,
+        acceptFollowResponse.content
+      );
+
+      if (acceptFollowResponse.status) {
+        res.status(200).json(acceptFollowResponse);
+      } else {
+        res.status(400).json(acceptFollowResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "internal server error" });
+      console.log(error);
     }
   }
 }

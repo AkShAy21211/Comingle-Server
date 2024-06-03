@@ -7,7 +7,8 @@ interface IFollowRepo{
     createFollowRequest(requester:string,recipient:string):Promise<Follow| null |undefined>;
     getFollowingUser(id:string):Promise<any[] | null | undefined>;
     getFollowedUser(id:string):Promise<any[]|null|undefined>;
-    findFollowBeforeCreatingNewOne(requester:string,recipient:string):Promise<Follow| null |undefined>;
+    getStatus(requester:string,recipitent:string):Promise<string | null |undefined>;
+    updateFollowStatus(followId:string,status:string):Promise<Follow | null|undefined>
     
 
 }

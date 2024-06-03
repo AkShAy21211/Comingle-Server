@@ -13,7 +13,7 @@ const followSchea = new Schema<Follow>({
     },
     status:{
         type:String,
-        enum:['Pending','Approved','Ignored'],
+        enum:['Pending','Accepted','Ignored'],
         default:'Pending'
     }
 },{

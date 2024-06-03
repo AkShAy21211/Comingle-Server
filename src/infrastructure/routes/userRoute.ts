@@ -169,6 +169,18 @@ router.get('/list-all',authenticate,(req,res)=>{
 router.get('/notifications',authenticate,(req,res)=>{
   
   interactionController.getAllNotifications(req,res);
+});
+
+
+router.get('/follow/status/:requesterId/:recipietnetId',authenticate,(req,res)=>{
+
+  interactionController.getFollowRequestStatus(req,res)
 })
 
+
+
+router.post('/follow/accept/:followId',authenticate,(req,res)=>{
+
+  interactionController.acceptFollowRequest(req,res)
+})
 export default router;

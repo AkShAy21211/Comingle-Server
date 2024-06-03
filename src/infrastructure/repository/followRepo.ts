@@ -22,33 +22,64 @@ class FollowReposotory implements IFollowRepo {
 
   async getFollowingUser(id: string): Promise<Follow[] | null | undefined> {
     try {
-      const followeres = await followModel.find({ requester: id ,$or:[{status:'Pending'},{status:"Approved"}]}).populate('requester').lean();
+      const followeres = await followModel
+        .find({
+          requester: id,
+
+        })
+        .lean();
       return followeres;
-      
     } catch (error) {
       console.log(error);
     }
   }
   async getFollowedUser(id: string): Promise<Follow[] | null | undefined> {
-     try {
-      const followeres = await followModel.find({ recipient: id,$or:[{status:'Pending'},{status:"Approved"}] }).populate('requester','name profile.image email _id').lean();
-      
+    try {
+      const followeres = await followModel
+        .find({
+          recipient: id,
+
+        })
+        .lean();
+
       return followeres;
-      
     } catch (error) {
       console.log(error);
     }
   }
 
-  async findFollowBeforeCreatingNewOne(requester: string, recipient: string): Promise<Follow | null | undefined> {
+  async getStatus(
+    requesterId: string,
+    recipitent: string
+  ): Promise<string | null | undefined> {
     try {
-      
-      const existingFollowRequest = await followModel.findOne({recipient:recipient,requester:requester}).lean();
+      console.log('----------------------------', requesterId, recipitent);
 
-      return existingFollowRequest;
+      const followStatus = await followModel
+        .findOne({ requester: requesterId, recipient: recipitent })
+        .lean();
+
+      return followStatus ? followStatus.status : null;
     } catch (error) {
       console.log(error);
-      
+    }
+  }
+
+  async updateFollowStatus(
+    followId: string,
+    status: string
+  ): Promise<Follow | null | undefined> {
+    try {
+      const updatedFollowStatus = await followModel
+        .findByIdAndUpdate(
+          followId,
+          { $set: { status: status } },{new:true}
+        )
+        .lean();
+
+      return updatedFollowStatus;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

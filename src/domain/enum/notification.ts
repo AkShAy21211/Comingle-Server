@@ -1,9 +1,13 @@
-export type NotificationType = 'follow' | 'like' | 'comment';
+export type NotificationType = 'followRequest'| 'followAccept' | 'like' | 'comment';
 
 export const NotificationDetails: Record<NotificationType, { displayName: string, content: string }> = {
-    follow: {
+    followRequest: {
         displayName: 'Follow',
         content: 'has started following you'
+    },
+    followAccept: {
+        displayName: 'Follow',
+        content: 'has accepted your request'
     },
     like: {
         displayName: 'Like',
