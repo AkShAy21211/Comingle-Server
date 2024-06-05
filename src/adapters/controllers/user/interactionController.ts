@@ -1,15 +1,22 @@
 import { Request, Response } from "express";
 import InteractionUseCase from "../../../userCase/user/interactionUseCase";
+import UserReposotory from "../../../infrastructure/repository/userRepo";
+import IUserReop from "../../../domain/interfaces/user/IUserRepo";
 
 class InteractionController {
-  constructor(private _interactionUseCase: InteractionUseCase) {}
+  constructor(
+    private _interactionUseCase: InteractionUseCase,
+  ) {}
 
   async followUser(req: Request, res: Response): Promise<void> {
     try {
+      const requester = req.user?.id;
+      const { recipientId } = req.body;
       const followRequest = await this._interactionUseCase.followUser(
-        req.user?.id as string,
-        req.body.recipientId
+        requester as string,
+        recipientId
       );
+
 
       await this._interactionUseCase.createNotificatioin(
         req.body.recipientId as string,
@@ -76,13 +83,19 @@ class InteractionController {
 
   async acceptFollowRequest(req: Request, res: Response): Promise<void> {
     try {
-      const { followId } = req.params;
+
+      const requesterId = req.user?.id;
+      const { followId, notificationId } = req.params;
 
       const acceptFollowResponse =
-        await this._interactionUseCase.acceptFollowRequest(followId);
+        await this._interactionUseCase.acceptFollowRequest(
+          followId,
+          notificationId
+        );
+
 
       await this._interactionUseCase.createNotificatioin(
-        acceptFollowResponse.recipient,
+        acceptFollowResponse.follow.requester,
         acceptFollowResponse.type,
         acceptFollowResponse.content,
         acceptFollowResponse.follow._id

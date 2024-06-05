@@ -37,7 +37,6 @@ class AuthController   {
     try {
       const userToken = req.cookies.token;
 
-      console.log('verfiy',userToken);
 
       const verifyOtpResponse = await this._authUseCase.verifyUserByEmailOtp(
         userToken,
@@ -60,7 +59,6 @@ class AuthController   {
     try {
       const token = req.cookies.token;
 
-      console.log('token',token);
 
       const resendResponse = await this._authUseCase.resendOtp(token);
 
@@ -81,11 +79,11 @@ class AuthController   {
         req.body.password
       );
 
+      
       if (loginResponse.status) {
         res.status(200).json(loginResponse);
-      } else {
-        res.status(400).json(loginResponse);
       }
+
     } catch (error: any) {
       res.status(500).json(error.message);
 
@@ -97,32 +95,44 @@ class AuthController   {
     try {
 
 
-      console.log('called here ');
       
       const googleSignUpResponse = await this._authUseCase.googleLogin(
         req?.user
       );
-      console.log(googleSignUpResponse);
+
+      
 
       if (!googleSignUpResponse) {
         res.status(401).json({ message: "Authentication failed" });
       }
 
-      res.cookie("token", googleSignUpResponse.token, {
-        expires: new Date(Date.now() + 25892000000),
-        secure: false,
-        httpOnly: true,
-        sameSite: "strict",
-      });
+      
 
       res
         .status(200)
         .redirect(
           `http://localhost:5173/login/success?token=${googleSignUpResponse.token}`
         );
-    } catch (error) {}
-  }
+    } catch (error) {
 
+      console.log(error);
+      
+    }
+  }
+  
+  async logout(req:Request,res:Response):Promise<void>{
+
+    try {
+    
+
+      res.status(200).json({status:true,message:'Logout successfull'})
+    } catch (error) {
+      
+      res.status(500).json({ message: "Internal server error" });
+      console.log(error);
+      
+    }
+  }
 
 }
 

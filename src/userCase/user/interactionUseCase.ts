@@ -21,7 +21,10 @@ class InteractionUseCase implements IInteractionUseCase {
         recipient
       );
 
+      const followingId = followRequest?.recipient||''
   
+      await this._userRepo.addFollowings(requester,followingId as string);
+      await this._userRepo.addFollowers(recipient,requester);
 
       if (followRequest) {
         return {
@@ -64,7 +67,10 @@ class InteractionUseCase implements IInteractionUseCase {
     type: string,
     content: string,
     sourceId:string
-  ): Promise<void> {
+  ): Promise<void> 
+  {
+
+    
     try {
       await this._notificationRepo.createNotification(id, type, content,sourceId);
     } catch (error) {
@@ -80,6 +86,8 @@ class InteractionUseCase implements IInteractionUseCase {
             for (let noti of notifications) {
                 if (noti.type === 'Follow') {
                     await noti.populate('sourceId.requester','name _id profile.image');
+                    await noti.populate('sourceId.recipient','name _id profile.image');
+
                 }
             }
         }
@@ -132,6 +140,7 @@ class InteractionUseCase implements IInteractionUseCase {
 
   async acceptFollowRequest(
     followId: string,
+    notificationId:string
 
   ): Promise<any> {
     try {
@@ -140,6 +149,17 @@ class InteractionUseCase implements IInteractionUseCase {
       'Accepted'
       );
 
+      // await this._notificationRepo.deleteNotification(notificationId);
+    const requester = followStatus?.requester||"";
+    const recipitent = followStatus?.recipient||"";
+  
+    console.log(requester);
+    
+    console.log(recipitent);
+    
+
+    await this._userRepo.addFollowings(requester as string,recipitent as string);
+    await this._userRepo.addFollowers(requester as string,recipitent as string)
       if (followStatus) {
         return {
           status: true,

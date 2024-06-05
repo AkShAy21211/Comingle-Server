@@ -7,7 +7,7 @@ interface IInteractionUseCase{
     createNotificatioin(id:string,type:string,content:string,sourceId:string):Promise<void>;
     getAllNotifications(id:string):Promise<any>;
     getFollowRequestStatus(requester:string,recipitent:string):Promise<any>;
-    acceptFollowRequest(followId:string,):Promise<any>;
+    acceptFollowRequest(followId:string,notificationId:string):Promise<any>;
 
 
 }

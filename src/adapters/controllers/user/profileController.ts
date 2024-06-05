@@ -10,9 +10,14 @@ class ProfileController   {
 
   async getUserProfile(req: Request, res: Response): Promise<void> {
     try {
+
+
+      
       const userResponse = await this._profileUseCase.getUserProfile(
         req.user?.id as string
       );
+
+      
 
       if (userResponse.status) {
         res.status(200).json(userResponse);
@@ -29,8 +34,7 @@ class ProfileController   {
     try {
 
 
-      console.log(req.file);
-      
+    
       
 
       const updateUserResponse =
@@ -98,7 +102,7 @@ class ProfileController   {
   async setNewPassword(req: Request, res: Response): Promise<void> {
     try {
       const token = req.cookies.token;
-      console.log(req.cookies);
+
       
       const updatedResponse = await this._profileUseCase.setNewPassWord(
         token,

@@ -38,6 +38,19 @@ class NotificationRepo implements INotificationRepo {
       console.log(error);
     }
   }
+
+  async deleteNotification(id:string):Promise<void>{
+
+    try {
+      
+      await notificationModel.findByIdAndDelete(id);
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
+ 
 }
 
 export default NotificationRepo;

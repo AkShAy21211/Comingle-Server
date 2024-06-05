@@ -143,15 +143,12 @@ class ProfileUseCase implements IProfileUserCase {
   async setNewPassWord(token:string,password: string): Promise<any> {
      
     try {
-      const decode =  this._jwt.verifyToken(token)
+      const decode =  this._jwt.verifyToken(token);
+
       if(decode){
         const hashedPassword = await this._bcrypt.Encryption(password);
-        const userData = {
-
-          password:hashedPassword
-        }
-         await this._reposotory.updateUser(decode.id,userData);
-
+       
+         await this._reposotory.changeUserPassword(decode.id,hashedPassword);
 
          return {
           status:true,

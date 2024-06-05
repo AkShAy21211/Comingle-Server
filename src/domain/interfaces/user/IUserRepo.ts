@@ -9,10 +9,13 @@ interface IUserReop{
     verifyUserStatus(email:string):Promise<void>;
     findUserById(userToFind: {googleId?:string,_id?:string}):Promise<User | null |undefined>;
     updateUser(id:string,data:any):Promise<User | null | undefined>;
+    changeUserPassword(id:string,password:string):Promise<void>;
     createUser(userData:any):Promise<User | null | undefined>;
     updateUserProfileImages(id:string,image:{image?:string}):Promise<User | null | undefined>;
     getAllUsers(id:string):Promise<User[] | null | undefined>;
-    
+    addFollowings(id:string,following:string):Promise<User| null|undefined>
+    addFollowers(id:string,following:string):Promise<User| null|undefined>
+
 }
 
 
