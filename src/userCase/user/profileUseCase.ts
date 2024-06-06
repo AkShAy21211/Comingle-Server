@@ -7,7 +7,7 @@ import GenerateOtp from "../../infrastructure/utils/generateOtp";
 import OtpReposotory from "../../infrastructure/repository/otpRepo";
 import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
-import { uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
+import {  uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
 
 class ProfileUseCase implements IProfileUserCase {
   constructor(
