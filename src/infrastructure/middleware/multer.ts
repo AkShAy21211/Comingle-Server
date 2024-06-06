@@ -1,7 +1,7 @@
-// middlewares/profileUploader.js
 import multer from 'multer';
 
+const memoryStorage = multer.diskStorage({});
 
-const memoryStorage = multer.memoryStorage();
+export const multerUploader = multer({ storage: memoryStorage })
 
-export const profileUploader = multer({ storage: memoryStorage }).single('image');
+

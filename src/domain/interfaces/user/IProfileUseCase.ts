@@ -6,7 +6,7 @@ interface IProfileUserCase {
   setNewPassWord(token: string, password: string): Promise<any>;
   updateUserProfileImages(
     id: string,
-    imagePth: string,
+    images: Express.Multer.File,
     type: string
   ): Promise<any>;
   updateUserDetails(id: string, userData: User): Promise<any>;

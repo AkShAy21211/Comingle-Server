@@ -8,7 +8,6 @@ import Bcrypt from "../utils/hashPassword";
 import OtpReposotory from "../repository/otpRepo";
 import NodeMailer from "../utils/sendMail";
 import { authenticate } from '../middleware/auth';
-import { uploadProfile } from "../utils/uploadToCloudnary";
 import passport from 'passport'
 import ProfileController from "../../adapters/controllers/user/profileController";
 import ProfileUseCase from "../../userCase/user/profileUseCase";
@@ -16,6 +15,11 @@ import InteractionController from "../../adapters/controllers/user/interactionCo
 import InteractionUseCase from "../../userCase/user/interactionUseCase";
 import FollowReposotory from "../repository/followRepo";
 import NotificationRepo from "../repository/notificationRepo";
+import PostReposotory from "../repository/postRepo";
+import PostUseCase from "../../userCase/user/postUseCase";
+import PostController from "../../adapters/controllers/user/postController";
+import { multerUploader } from "../middleware/multer";
+
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -59,6 +63,22 @@ const followRepo = new FollowReposotory();
 const notificationRepo = new NotificationRepo();
 const interactionUseCase = new InteractionUseCase(followRepo,userReposotory,notificationRepo)
 const interactionController  = new InteractionController(interactionUseCase);
+
+
+
+
+
+//////////////// POST CONTROLLER /////////////////////////////
+
+
+const postRepo = new PostReposotory();
+const postUseCase = new PostUseCase(postRepo);
+const postController = new PostController(postUseCase);
+
+
+
+
+
 
 const router = express.Router();
 
@@ -108,7 +128,7 @@ router.get("/profile", authenticate, (req, res) => {
 router.patch(
   "/profile/update/cover",
   authenticate,
-  uploadProfile,
+  multerUploader.single('image'),
   (req, res) => {
     profileController.updateUserPofileImages(req, res);
   }
@@ -117,7 +137,7 @@ router.patch(
 router.patch(
   "/profile/update/dp",
   authenticate,
-  uploadProfile,
+    multerUploader.single('image'),
   (req, res) => {
     profileController.updateUserPofileImages(req, res);
   }
@@ -183,4 +203,14 @@ router.post('/follow/accept/:followId',authenticate,(req,res)=>{
 
   interactionController.acceptFollowRequest(req,res)
 })
+
+
+
+router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
+
+  postController.createNewPost(req,res);
+  
+})
+
+
 export default router;

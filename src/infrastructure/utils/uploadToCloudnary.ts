@@ -1,36 +1,45 @@
-// controllers/profileController.js
-import { profileUploader } from '../middleware/multer';
-import cloudinary from '../config/cloudnary';
-export const uploadProfile = async (req:any, res:any) => {
-   profileUploader(req, res, async (err:any) => {
-    if (err) {
-      return res.status(400).send({ error: err.message });
-    }
+import cloudinary from "../config/cloudnary";
 
-    console.log(req.body);
-    
-    const type = req.body.type;
-    let folder = type === 'background' ? 'Comingle/backgrounds' : 'Comingle/profiles';
-    let publicId = `file_${Date.now()}_${req.file.originalname}`;
-    let allowedFormats = ['png', 'jpg', 'jpeg', 'gif'];
 
-    try {
-      const result = await cloudinary.uploader.upload_stream(
-        {
-          folder: folder,
-          public_id: publicId,
-          allowed_formats: allowedFormats,
-        },
-        (error, result) => {
-          if (error) {
-            return res.status(400).send({ error: error.message });
-          }
-          console.log(result);
-          
-        }
-      ).end(req.file.buffer);
-    } catch (error:any) {
-      res.status(500).send({ error: error.message });
-    }
-  });
+
+
+const uploadSingle = (path: string, folder: string) => {
+  return cloudinary.uploader
+    .upload(path, {
+      folder:`Comingle/${folder}`,
+      format: "png"||"jpg"||"gif", // This will automatically detect the format based on the file extension
+      resource_type: "image",
+    })
+    .then((data) => {
+      // Construct the URL manually using the public ID
+      const url = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/${data.public_id}.${data.format}`;
+
+      return { url, public_id: data.public_id };
+    })
+    .catch((error) => {
+      console.log(error);
+      throw null; 
+    });
 };
+
+
+const uploadMultiple = (path: string, folder: string) => {
+  return cloudinary.uploader
+    .upload(path, {
+      folder:`Comingle/${folder}`,
+      format: "png"||"jpg"||"gif", // This will automatically detect the format based on the file extension
+      resource_type: "image"||"video",
+    })
+    .then((data) => {
+      // Construct the URL manually using the public ID
+      const url = `https://res.cloudinary.com/${process.env.CLOUD_NAME}/image/upload/${data.public_id}.${data.format}`;
+
+      return { url, public_id: data.public_id };
+    })
+    .catch((error) => {
+      console.log(error);
+      throw null; 
+    });
+};
+
+export { uploadSingle,uploadMultiple };

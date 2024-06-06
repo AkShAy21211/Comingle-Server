@@ -7,6 +7,7 @@ import GenerateOtp from "../../infrastructure/utils/generateOtp";
 import OtpReposotory from "../../infrastructure/repository/otpRepo";
 import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
+import { uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
 
 class ProfileUseCase implements IProfileUserCase {
   constructor(
@@ -18,13 +19,11 @@ class ProfileUseCase implements IProfileUserCase {
     private _sendMail: NodeMailer
   ) {}
 
-  
   async getUserProfile(id: string): Promise<any> {
     try {
       const userToFind = {
-
-        _id:id
-      }
+        _id: id,
+      };
       const user = await this._reposotory.findUserById(userToFind);
 
       if (user) {
@@ -45,24 +44,21 @@ class ProfileUseCase implements IProfileUserCase {
 
   async updateUserProfileImages(
     id: string,
-    imagePath: string,
+    images: Express.Multer.File,
     type: string
   ): Promise<any> {
     try {
+      const imagePath = await uploadSingle(images.path, type);
+
       const image = {
         [`${type === "background" ? "profile.background" : "profile.image"}`]:
-          imagePath,
+          imagePath.url,
       };
 
-
-     
-      
-
-      const updateUser = await this._reposotory.updateUserProfileImages(id, image);
-
-
-      
-      
+      const updateUser = await this._reposotory.updateUserProfileImages(
+        id,
+        image
+      );
 
       if (updateUser) {
         return {
@@ -81,9 +77,7 @@ class ProfileUseCase implements IProfileUserCase {
 
   async updateUserDetails(id: string, userData: User): Promise<any> {
     try {
-      
       const updatedUser = await this._reposotory.updateUser(id, userData);
-      
 
       if (updatedUser) {
         return {
@@ -103,8 +97,6 @@ class ProfileUseCase implements IProfileUserCase {
     }
   }
 
- 
-
   async forgotPassword(email: string): Promise<any> {
     try {
       const user = await this._reposotory.findUserByemail(email);
@@ -112,9 +104,13 @@ class ProfileUseCase implements IProfileUserCase {
       if (user) {
         const otp = this._generateOtp.generateOTP();
         await this._OtpRepo.createOtpAndCollection(email, otp);
-        await this._sendMail.sendEmail(email, parseInt(otp),"One Time Password for Commingle Password Change");
-         const payload: { email: string; role: string ,id:string} = {
-          id:user._id,
+        await this._sendMail.sendEmail(
+          email,
+          parseInt(otp),
+          "One Time Password for Commingle Password Change"
+        );
+        const payload: { email: string; role: string; id: string } = {
+          id: user._id,
           email: user.email,
           role: "user",
         };
@@ -123,7 +119,7 @@ class ProfileUseCase implements IProfileUserCase {
         });
         return {
           status: true,
-          token:jwtToken,
+          token: jwtToken,
           message: `OTP sent to ${email}`,
         };
       } else {
@@ -133,42 +129,31 @@ class ProfileUseCase implements IProfileUserCase {
         };
       }
     } catch (error) {
-
-
       console.log(error);
-      
     }
   }
 
-  async setNewPassWord(token:string,password: string): Promise<any> {
-     
+  async setNewPassWord(token: string, password: string): Promise<any> {
     try {
-      const decode =  this._jwt.verifyToken(token)
-      if(decode){
+      const decode = this._jwt.verifyToken(token);
+      if (decode) {
         const hashedPassword = await this._bcrypt.Encryption(password);
         const userData = {
+          password: hashedPassword,
+        };
+        await this._reposotory.updateUser(decode.id, userData);
 
-          password:hashedPassword
-        }
-         await this._reposotory.updateUser(decode.id,userData);
-
-
-         return {
-          status:true,
-          message:'Password changed sucessfully'
-         }
-      }else{
-
-          return {
-          status:false,
-          message:'Something went wrong'
-         }
+        return {
+          status: true,
+          message: "Password changed sucessfully",
+        };
+      } else {
+        return {
+          status: false,
+          message: "Something went wrong",
+        };
       }
-     
-
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 }
 

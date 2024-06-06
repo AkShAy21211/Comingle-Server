@@ -1,12 +1,9 @@
-import {  Request, Response } from "express";
+import { Request, Response } from "express";
 import ProfileUseCase from "../../../userCase/user/profileUseCase";
+import { uploadSingle } from "../../../infrastructure/utils/uploadToCloudnary";
 
-
-
-class ProfileController   {
+class ProfileController {
   constructor(private _profileUseCase: ProfileUseCase) {}
-
- 
 
   async getUserProfile(req: Request, res: Response): Promise<void> {
     try {
@@ -25,36 +22,33 @@ class ProfileController   {
     }
   }
 
+
+
   async updateUserPofileImages(req: Request, res: Response): Promise<void> {
     try {
-
-
-      console.log(req.file);
-      
-      
+      const image: Express.Multer.File = req.file as Express.Multer.File;
 
       const updateUserResponse =
         await this._profileUseCase.updateUserProfileImages(
           req.user?.id as string,
-          req.file?.path as string,
+          image,
           req.body.type
         );
 
       if (updateUserResponse.status) {
         res.status(200).json(updateUserResponse);
-      } else {
-        res.status(400).json(updateUserResponse);
       }
+
     } catch (error) {
       res.status(500).json({ message: "internal server error" });
       console.log(error);
     }
   }
 
+
+
   async updateUserDetails(req: Request, res: Response): Promise<void> {
     try {
-
-
       const updateUserResponse = await this._profileUseCase.updateUserDetails(
         req.user?.id as string,
         req.body
@@ -67,15 +61,14 @@ class ProfileController   {
       }
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
-    }                    
-  }                             
-      
-  async forgotassword(req: Request, res: Response): Promise<void> {      
-    try {     
+    }
+  }
+
+  async forgotassword(req: Request, res: Response): Promise<void> {
+    try {
       const forgetResponse = await this._profileUseCase.forgotPassword(
         req.body.email
       );
-
 
       if (forgetResponse.status) {
         res.cookie("token", forgetResponse.token, {
@@ -99,7 +92,7 @@ class ProfileController   {
     try {
       const token = req.cookies.token;
       console.log(req.cookies);
-      
+
       const updatedResponse = await this._profileUseCase.setNewPassWord(
         token,
         req.body.password
@@ -116,9 +109,6 @@ class ProfileController   {
       console.log(error);
     }
   }
-
- 
-
 }
 
 export default ProfileController;

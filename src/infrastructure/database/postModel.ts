@@ -1,37 +1,32 @@
-import mongoose, {Schema} from "mongoose";
-import  Posts  from "../../domain/entities/post";
+import mongoose, { Schema } from "mongoose";
+import Posts from "../../domain/entities/post";
 
-
-const postSchema = new Schema<Posts>({
-
-    userId:{
-
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
+const postSchema = new Schema<Posts>(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
-    image:[],
-    description:{
-        type:String,
-        required:false,
-        trim:true,
+    image: [
+      {
+        type: String,
+      },
+    ],
+    description: {
+      type: String,
+      required: false,
+      trim: true,
     },
-    likes:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Like'
-    }],
-    comments:[{
-        type:mongoose.Schema.Types.ObjectId,
-    }],
-    isHidden:{
-        type:Boolean,
-        default:false,
-    }
+    isHidden: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-},{
-    timestamps:true
-});
-
-
-const postModel = mongoose.model<Posts>('Post',postSchema);
+const postModel = mongoose.model<Posts>("Post", postSchema);
 
 export default postModel;

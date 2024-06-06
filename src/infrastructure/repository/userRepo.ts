@@ -1,7 +1,6 @@
 import User from "../../domain/entities/user";
 import IUserReop from "../../domain/interfaces/user/IUserRepo";
 import UserModel from "../database/userModel";
-import { log } from 'console';
 
 class UserReposotory implements IUserReop {
   async saveUserToDb(userData: User): Promise<User | null | undefined> {
