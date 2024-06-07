@@ -12,7 +12,16 @@ const postSchema = new Schema<Posts>(
         type: String,
       },
     ],
-    
+    likes: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    comments: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
     description: {
       type: String,
       required: false,

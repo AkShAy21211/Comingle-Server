@@ -215,12 +215,18 @@ router.get('/posts/all',authenticate,(req,res)=>{
   
 })
 
-router.post('/posts/like/:postId/:userId',authenticate,(req,res)=>{
+router.put('/posts/like/:postId/:userId',authenticate,(req,res)=>{
 
   postController.likePost(req,res);
   
 })
 
+
+router.put('/posts/comment/:postId/:userId',authenticate,(req,res)=>{
+
+  postController.commentPost(req,res);
+  
+})
 
 
 

@@ -6,6 +6,7 @@ interface IPostUseCase{
     createNewPost(userID:string,images:Express.Multer.File[],text:string):Promise<any>;
     getAllPosts(page:number):Promise<any>;
     likePost(postId:string,userId:string):Promise<any>
+    commentPost(postId:string,userId:string,comment:string,):Promise<any>
 }
 
 export default IPostUseCase;

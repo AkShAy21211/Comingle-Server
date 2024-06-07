@@ -156,7 +156,11 @@ class ProfileUseCase implements IProfileUserCase {
           message: "Something went wrong",
         };
       }
-    } catch (error) {}
+    } catch (error) {
+
+      console.log(error);
+      
+    }
   }
 }
 

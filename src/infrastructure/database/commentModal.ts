@@ -1,29 +1,28 @@
 import mongoose, { mongo, Schema } from "mongoose";
 import Comment from "../../domain/entities/comment";
 
-
-
-const commentSchema = new Schema<Comment>({
-
-
-    userId:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'User'
-        }
-    ],
-    postId:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Post"
+const commentSchema = new Schema<Comment>(
+  {
+    postId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
     },
-    comment:{
-        type:String,
-        trim:true
-    }
+    comment: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        comment: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-},{timestamps:true});
+const commentModel = mongoose.model("Comment", commentSchema);
 
-
-const commentModel = mongoose.model('Comment',commentSchema);
-
-export default commentModel
+export default commentModel;

@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
 
-interface Comment{
-
-
-    _id:string;
-    userId:mongoose.Schema.Types.ObjectId[];
-    postId:mongoose.Schema.Types.ObjectId;
-    comment:string;
-    timestamp:Date
+interface Comment {
+  _id: string;
+  postId: mongoose.Schema.Types.ObjectId;
+  comment: [
+    {
+      userId: mongoose.Schema.Types.ObjectId;
+      comment: string;
+    }
+  ];
+  timestamp: Date;
 }
 
 export default Comment;

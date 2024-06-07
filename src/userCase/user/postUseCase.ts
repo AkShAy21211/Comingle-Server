@@ -2,7 +2,7 @@ import Posts from "../../domain/entities/post";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import IPostUseCase from "../../domain/interfaces/user/IPostUseCase";
 import { uploadMultiple } from "../../infrastructure/utils/uploadToCloudnary";
-import { log } from 'console';
+import { log } from "console";
 
 class PostUseCase implements IPostUseCase {
   constructor(private _postRepo: IPostRepo) {}
@@ -66,14 +66,12 @@ class PostUseCase implements IPostUseCase {
   async likePost(postId: string, userId: string): Promise<any> {
     try {
 
-     console.log(postId,userId);
-     
-      
       const likePost = await this._postRepo.likePost(postId, userId);
 
       if (likePost) {
         return {
           status: true,
+          likes:likePost,
           message: "like added",
         };
       }
@@ -82,9 +80,34 @@ class PostUseCase implements IPostUseCase {
         status: false,
       };
     } catch (error) {
-
       console.log(error);
-      
+    }
+  }
+
+  async commentPost(
+    postId: string,
+    userId: string,
+    comment: string
+  ): Promise<any> {
+    try {
+      const commentPost = await this._postRepo.commentPost(
+        postId,
+        userId,
+        comment
+      );
+
+      if (commentPost) {
+        return {
+          status: true,
+          comment: "Comment added",
+        };
+      }
+
+      return {
+        status: false,
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 }
