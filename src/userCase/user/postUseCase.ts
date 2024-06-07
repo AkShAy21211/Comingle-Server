@@ -13,14 +13,14 @@ class PostUseCase implements IPostUseCase {
   ): Promise<any> {
     try {
       const results = await Promise.all(
-          images.map((file) => {
-            return uploadMultiple(file.path, 'posts');
-          })
-        );
+        images.map((file) => {
+          return uploadMultiple(file.path, "posts");
+        })
+      );
 
-      const imageUrl:string[] = results.map(image=>image.url);  
+      const imageUrl: string[] = results.map((image) => image.url);
 
-      const newPost = await this._postRepo.createPost(userID, imageUrl, text);
+      const newPost = await this._postRepo.createPost(userID, imageUrl||[''], text);
 
       if (newPost) {
         return {
@@ -33,6 +33,26 @@ class PostUseCase implements IPostUseCase {
         status: false,
         message: "Something went wrong",
       };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getAllPosts(page:number): Promise<any> {
+    try {
+      const allPosts = await this._postRepo.getAllposts(page);
+
+      if (allPosts) {
+        return {
+          status: true,
+          posts: allPosts,
+        };
+      } else {
+        return {
+          status: false,
+          message: 'Error fetching posts',
+        };
+      }
     } catch (error) {
       console.log(error);
     }

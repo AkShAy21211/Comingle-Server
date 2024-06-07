@@ -211,6 +211,10 @@ router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
   postController.createNewPost(req,res);
   
 })
+router.get('/posts/all',authenticate,(req,res)=>{
 
+  postController.getAllPosts(req,res);
+  
+})
 
 export default router;
