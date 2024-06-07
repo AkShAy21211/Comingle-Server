@@ -116,9 +116,7 @@ class InteractionUseCase implements IInteractionUseCase {
 
       const followedByOther = await this._reposotory.getFollowedUser(requesterId);
 
-      console.log('folow bu other to me',followedByOther);
 
-      console.log('follow request by me',followedByMe);
 
       
       if (folloeStatus || followedByMe || followedByOther) {
