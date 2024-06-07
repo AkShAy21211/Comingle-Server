@@ -204,7 +204,6 @@ router.post('/follow/accept/:followId/:notificationId',authenticate,(req,res)=>{
 
 
 
-<<<<<<< HEAD
 router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
 
   postController.createNewPost(req,res);
@@ -222,7 +221,7 @@ router.post('/posts/like/:postId/:userId',authenticate,(req,res)=>{
   
 })
 
-=======
+
 
 
 router.post("/logout",(req,res)=>{
@@ -230,5 +229,4 @@ router.post("/logout",(req,res)=>{
 
   authController.logout(req,res)
 })
->>>>>>> Notification
 export default router;

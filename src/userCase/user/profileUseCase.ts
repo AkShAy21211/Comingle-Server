@@ -7,8 +7,8 @@ import GenerateOtp from "../../infrastructure/utils/generateOtp";
 import OtpReposotory from "../../infrastructure/repository/otpRepo";
 import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
-import {  uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
-import { log } from 'console';
+import { uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
+import { log } from "console";
 
 class ProfileUseCase implements IProfileUserCase {
   constructor(
@@ -74,9 +74,7 @@ class ProfileUseCase implements IProfileUserCase {
         };
       }
     } catch (error) {
-
       console.log(error);
-      
     }
   }
 
@@ -140,7 +138,6 @@ class ProfileUseCase implements IProfileUserCase {
 
   async setNewPassWord(token: string, password: string): Promise<any> {
     try {
-<<<<<<< HEAD
       const decode = this._jwt.verifyToken(token);
       if (decode) {
         const hashedPassword = await this._bcrypt.Encryption(password);
@@ -158,25 +155,6 @@ class ProfileUseCase implements IProfileUserCase {
           status: false,
           message: "Something went wrong",
         };
-=======
-      const decode =  this._jwt.verifyToken(token);
-
-      if(decode){
-        const hashedPassword = await this._bcrypt.Encryption(password);
-       
-         await this._reposotory.changeUserPassword(decode.id,hashedPassword);
-
-         return {
-          status:true,
-          message:'Password changed sucessfully'
-         }
-      }else{
-
-          return {
-          status:false,
-          message:'Something went wrong'
-         }
->>>>>>> Notification
       }
     } catch (error) {}
   }
