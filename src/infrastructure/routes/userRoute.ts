@@ -217,4 +217,10 @@ router.get('/posts/all',authenticate,(req,res)=>{
   
 })
 
+router.post('/posts/like/:postId/:userId',authenticate,(req,res)=>{
+
+  postController.likePost(req,res);
+  
+})
+
 export default router;

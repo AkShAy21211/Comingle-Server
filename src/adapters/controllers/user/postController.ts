@@ -6,9 +6,8 @@ class PostController {
 
   async createNewPost(req: Request, res: Response): Promise<void> {
     try {
+      console.log("called");
 
-      console.log('called');
-      
       const userId = req.user?.id as string;
       const text = req.body.text;
       const imagePath: Express.Multer.File[] =
@@ -30,26 +29,33 @@ class PostController {
 
   async getAllPosts(req: Request, res: Response): Promise<void> {
     try {
+      const page = req.query.page ? Number(req.query.page) : 0;
 
-      const page  =      req.query.page?Number(req.query.page):0;
+      console.log("--------------------hi");
 
-
-      console.log('--------------------hi');
-      
-      console.log('skip',page);
-      
+      console.log("skip", page);
 
       const postResponse = await this._postUserCase.getAllPosts(page);
 
       if (postResponse.status) {
         res.status(200).json(postResponse);
-      }
-      else{
+      } else {
         res.json(postResponse);
-
       }
     } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 
+  async likePost(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId, postId } = req.params;
+
+      const likeResponse = await this._postUserCase.likePost(postId, userId);
+      if (likeResponse) {
+        res.status(201).json(likeResponse);
+      }
+    } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
   }

@@ -2,6 +2,7 @@ import Posts from "../../domain/entities/post";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import IPostUseCase from "../../domain/interfaces/user/IPostUseCase";
 import { uploadMultiple } from "../../infrastructure/utils/uploadToCloudnary";
+import { log } from 'console';
 
 class PostUseCase implements IPostUseCase {
   constructor(private _postRepo: IPostRepo) {}
@@ -20,7 +21,11 @@ class PostUseCase implements IPostUseCase {
 
       const imageUrl: string[] = results.map((image) => image.url);
 
-      const newPost = await this._postRepo.createPost(userID, imageUrl||[''], text);
+      const newPost = await this._postRepo.createPost(
+        userID,
+        imageUrl || [""],
+        text
+      );
 
       if (newPost) {
         return {
@@ -38,7 +43,7 @@ class PostUseCase implements IPostUseCase {
     }
   }
 
-  async getAllPosts(page:number): Promise<any> {
+  async getAllPosts(page: number): Promise<any> {
     try {
       const allPosts = await this._postRepo.getAllposts(page);
 
@@ -50,11 +55,36 @@ class PostUseCase implements IPostUseCase {
       } else {
         return {
           status: false,
-          message: 'Error fetching posts',
+          message: "Error fetching posts",
         };
       }
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async likePost(postId: string, userId: string): Promise<any> {
+    try {
+
+     console.log(postId,userId);
+     
+      
+      const likePost = await this._postRepo.likePost(postId, userId);
+
+      if (likePost) {
+        return {
+          status: true,
+          message: "like added",
+        };
+      }
+
+      return {
+        status: false,
+      };
+    } catch (error) {
+
+      console.log(error);
+      
     }
   }
 }
