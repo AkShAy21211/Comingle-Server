@@ -12,6 +12,7 @@ const postSchema = new Schema<Posts>(
         type: String,
       },
     ],
+    
     description: {
       type: String,
       required: false,

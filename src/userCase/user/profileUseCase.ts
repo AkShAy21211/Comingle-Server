@@ -8,6 +8,7 @@ import OtpReposotory from "../../infrastructure/repository/otpRepo";
 import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
 import {  uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
+import { log } from 'console';
 
 class ProfileUseCase implements IProfileUserCase {
   constructor(
@@ -72,7 +73,11 @@ class ProfileUseCase implements IProfileUserCase {
           message: "Something went wrong",
         };
       }
-    } catch (error) {}
+    } catch (error) {
+
+      console.log(error);
+      
+    }
   }
 
   async updateUserDetails(id: string, userData: User): Promise<any> {

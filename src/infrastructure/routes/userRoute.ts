@@ -210,7 +210,17 @@ router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
   postController.createNewPost(req,res);
   
 })
+router.get('/posts/all',authenticate,(req,res)=>{
 
+  postController.getAllPosts(req,res);
+  
+})
+
+router.post('/posts/like/:postId/:userId',authenticate,(req,res)=>{
+
+  postController.likePost(req,res);
+  
+})
 
 =======
 
