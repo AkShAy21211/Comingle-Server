@@ -7,9 +7,14 @@ class ProfileController {
 
   async getUserProfile(req: Request, res: Response): Promise<void> {
     try {
+
+
+      
       const userResponse = await this._profileUseCase.getUserProfile(
         req.user?.id as string
       );
+
+      
 
       if (userResponse.status) {
         res.status(200).json(userResponse);
@@ -26,7 +31,9 @@ class ProfileController {
 
   async updateUserPofileImages(req: Request, res: Response): Promise<void> {
     try {
+
       const image: Express.Multer.File = req.file as Express.Multer.File;
+
 
       const updateUserResponse =
         await this._profileUseCase.updateUserProfileImages(
@@ -92,6 +99,10 @@ class ProfileController {
     try {
       const token = req.cookies.token;
       console.log(req.cookies);
+
+
+
+      
 
       const updatedResponse = await this._profileUseCase.setNewPassWord(
         token,

@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-declare module 'express-serve-static-core' {
-    interface Request {
-        user?: {
-            id: string;
-            role: string;
-        };
-    }
-}
+
 
 export function authenticate(req:Request, res:Response, next:NextFunction) {
     
@@ -22,7 +15,6 @@ export function authenticate(req:Request, res:Response, next:NextFunction) {
                 }
                 req.user = userData;
                 
-                console.log(req.user);
                 
                 next();
             });

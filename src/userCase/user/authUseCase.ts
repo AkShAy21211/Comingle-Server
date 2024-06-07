@@ -167,6 +167,8 @@ class AuthUseCase implements IAuthUseCase {
 
   async googleLogin(user: any): Promise<any> {
     try {
+
+      
       const token = this._jwt.createToken(user._id, "user");
 
       return {

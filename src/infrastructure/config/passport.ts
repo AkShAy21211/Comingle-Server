@@ -35,7 +35,8 @@ passport.use(
             user.googleId = profile.id;
             user.profile.image =
               user.profile.image || (photos?.[0].value as string);
-            console.log("2", user);
+                        return done(null, user as User);
+
           } else {
             const userData = {
               name: displayName,

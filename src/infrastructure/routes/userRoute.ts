@@ -121,9 +121,7 @@ router.get("/profile", authenticate, (req, res) => {
   profileController.getUserProfile(req, res);
 });
 
-router.get("/profile", authenticate, (req, res) => {
-  profileController.getUserProfile(req, res);
-});
+
 
 router.patch(
   "/profile/update/cover",
@@ -199,13 +197,14 @@ router.get('/follow/status/:requesterId/:recipietnetId',authenticate,(req,res)=>
 
 
 
-router.post('/follow/accept/:followId',authenticate,(req,res)=>{
+router.post('/follow/accept/:followId/:notificationId',authenticate,(req,res)=>{
 
   interactionController.acceptFollowRequest(req,res)
 })
 
 
 
+<<<<<<< HEAD
 router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
 
   postController.createNewPost(req,res);
@@ -213,4 +212,13 @@ router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
 })
 
 
+=======
+
+
+router.post("/logout",(req,res)=>{
+
+
+  authController.logout(req,res)
+})
+>>>>>>> Notification
 export default router;

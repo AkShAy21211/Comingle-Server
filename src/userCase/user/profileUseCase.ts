@@ -135,6 +135,7 @@ class ProfileUseCase implements IProfileUserCase {
 
   async setNewPassWord(token: string, password: string): Promise<any> {
     try {
+<<<<<<< HEAD
       const decode = this._jwt.verifyToken(token);
       if (decode) {
         const hashedPassword = await this._bcrypt.Encryption(password);
@@ -152,6 +153,25 @@ class ProfileUseCase implements IProfileUserCase {
           status: false,
           message: "Something went wrong",
         };
+=======
+      const decode =  this._jwt.verifyToken(token);
+
+      if(decode){
+        const hashedPassword = await this._bcrypt.Encryption(password);
+       
+         await this._reposotory.changeUserPassword(decode.id,hashedPassword);
+
+         return {
+          status:true,
+          message:'Password changed sucessfully'
+         }
+      }else{
+
+          return {
+          status:false,
+          message:'Something went wrong'
+         }
+>>>>>>> Notification
       }
     } catch (error) {}
   }

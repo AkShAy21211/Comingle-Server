@@ -18,6 +18,12 @@ const notificationSchema = new Schema<Notifications>({
         required: true,
         trim: true,
     },
+    sourceId:{
+        type: mongoose.Schema.Types.ObjectId,
+        refPath:'type',
+        required:true
+
+    },
     isRead: {
         type: Boolean,
         default: false
