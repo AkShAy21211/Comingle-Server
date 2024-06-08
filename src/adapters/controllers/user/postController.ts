@@ -50,7 +50,7 @@ class PostController {
   async likePost(req: Request, res: Response): Promise<void> {
     try {
       const { userId, postId } = req.params;
-console.log('fdfdsfds');
+
 
       const likeResponse = await this._postUserCase.likePost(postId, userId);
       if (likeResponse) {

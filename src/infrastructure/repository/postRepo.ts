@@ -63,25 +63,19 @@ class PostReposotory implements IPostRepo {
         // populate likes from commetns collection
 
         {
-          $unwind: "$likes",
-        },
-        {
           $lookup: {
             from: "likes",
             localField: "likes",
             foreignField: "_id",
-            pipeline: [
-              {
-                $project: {
-                  "userId": 1,
-                  "_id": 1,
-                },
-              },
-            ],
             as: "likes",
           },
         },
-
+ {
+          $unwind: {
+            path: "$likes",
+            preserveNullAndEmptyArrays: true, // Preserve posts without likes
+          },
+        },
         // populate postCreator from users collection
 
         {
@@ -175,9 +169,9 @@ class PostReposotory implements IPostRepo {
             },
             likes: {
               $cond: {
-                if: { $isArray: "$likes" },
+                if: "$likes" ,
                 then: "$likes",
-                else: [], // If likes is not an array (should not happen), return empty array
+                else: {}, // If likes is not an array (should not happen), return empty array
               },
             },
             postedUser: 1,
