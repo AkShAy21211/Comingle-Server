@@ -20,7 +20,6 @@ class UserReposotory implements IUserReop {
     try {
       let existingUser = await UserModel.findOne({ email: email }).lean();
       return existingUser ? existingUser : null;
-      console.log(existingUser);
     } catch (error: any) {
       console.log(error);
     }
@@ -81,6 +80,7 @@ class UserReposotory implements IUserReop {
             "profile.gender": data.gender || user?.profile.gender,
             "profile.country": data.country || user?.profile.country,
             "profile.bio": data.bio || user?.profile.bio,
+            password:data.password||user?.password
           },
         },
         { new: true }
@@ -157,6 +157,8 @@ class UserReposotory implements IUserReop {
     following: string
   ): Promise<User | null | undefined> {
     try {
+
+      
       const updatedFollowers = await UserModel.findByIdAndUpdate(
         id,
         {

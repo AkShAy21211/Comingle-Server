@@ -31,7 +31,7 @@ class PostReposotory implements IPostRepo {
 
   async getAllposts(page: number): Promise<Posts[] | null | undefined> {
     try {
-      const perPage = 2;
+      const perPage = 3;
       const pipeline: any[] = [
         // match post which are not hidden
         {
@@ -70,7 +70,7 @@ class PostReposotory implements IPostRepo {
             as: "likes",
           },
         },
- {
+        {
           $unwind: {
             path: "$likes",
             preserveNullAndEmptyArrays: true, // Preserve posts without likes
@@ -169,7 +169,7 @@ class PostReposotory implements IPostRepo {
             },
             likes: {
               $cond: {
-                if: "$likes" ,
+                if: "$likes",
                 then: "$likes",
                 else: {}, // If likes is not an array (should not happen), return empty array
               },
@@ -202,7 +202,8 @@ class PostReposotory implements IPostRepo {
       if (existingPostLikes) {
         const likePost = await likeModel.findOneAndUpdate(
           { postId: postId },
-          { $addToSet: { userId: userId } },{new:true}
+          { $addToSet: { userId: userId } },
+          { new: true }
         );
         return likePost?.toObject();
       }
@@ -220,6 +221,22 @@ class PostReposotory implements IPostRepo {
       console.log(error);
     }
   }
+
+  async unLikePost(
+    postId: string,
+    userId: string
+  ): Promise<Like | null | undefined> {
+    try {
+      const updatedPostLikes = await likeModel.findOneAndUpdate({ postId: postId },{$pull:{userId:userId}},{new:true}).lean()
+
+      return updatedPostLikes
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   async commentPost(
     postId: string,
     userId: string,
@@ -251,6 +268,15 @@ class PostReposotory implements IPostRepo {
       });
 
       return newComment.toObject();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async findPostLikes(id: string): Promise<Like | null | undefined> {
+    try {
+      const post = await likeModel.findOne({postId:id}).lean();
+      return post;
     } catch (error) {
       console.log(error);
     }

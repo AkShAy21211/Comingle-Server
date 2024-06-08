@@ -14,7 +14,8 @@ class InteractionUseCase implements IInteractionUseCase {
 
   async followUser(requester: string, recipient: string): Promise<any> {
     try {
-     
+       console.log('fdsfdsfdsfdsf',recipient,requester);
+
 
       const followRequest = await this._reposotory.createFollowRequest(
         requester,
@@ -80,13 +81,19 @@ class InteractionUseCase implements IInteractionUseCase {
 
   async getAllNotifications(id: string): Promise<any> {
     try {
+      
       const notifications = await this._notificationRepo.getNotifications(id);
 
+      
         if (notifications) {
             for (let noti of notifications) {
                 if (noti.type === 'Follow') {
                     await noti.populate('sourceId.requester','name _id profile.image');
                     await noti.populate('sourceId.recipient','name _id profile.image');
+
+                }else if(noti.type === 'Like'){
+
+                   await noti.populate('sourceId.userId','name _id profile.image');
 
                 }
             }

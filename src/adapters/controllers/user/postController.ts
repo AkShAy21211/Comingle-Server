@@ -49,10 +49,10 @@ class PostController {
 
   async likePost(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, postId } = req.params;
+      const { userId, postId,authorId } = req.params;
 
 
-      const likeResponse = await this._postUserCase.likePost(postId, userId);
+      const likeResponse = await this._postUserCase.likePost(postId, userId,authorId);
       if (likeResponse) {
         res.status(201).json(likeResponse);
       }
@@ -60,7 +60,20 @@ class PostController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async unLikePost(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId, postId } = req.params;
 
+      const likeResponse = await this._postUserCase.unLikePost(postId, userId);
+      console.log(likeResponse);
+      
+      if (likeResponse) {
+        res.status(200).json(likeResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
    async commentPost(req: Request, res: Response): Promise<void> {
     try {
       const { userId, postId } = req.params;

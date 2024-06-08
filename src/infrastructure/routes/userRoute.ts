@@ -72,7 +72,7 @@ const interactionController  = new InteractionController(interactionUseCase);
 
 
 const postRepo = new PostReposotory();
-const postUseCase = new PostUseCase(postRepo);
+const postUseCase = new PostUseCase(postRepo,notificationRepo);
 const postController = new PostController(postUseCase);
 
 
@@ -215,12 +215,17 @@ router.get('/posts/all',authenticate,(req,res)=>{
   
 })
 
-router.put('/posts/like/:postId/:userId',authenticate,(req,res)=>{
+router.put('/posts/like/:postId/:userId/:authorId',authenticate,(req,res)=>{
 
   postController.likePost(req,res);
   
 })
 
+router.put('/posts/unlike/:postId/:userId/',authenticate,(req,res)=>{
+
+  postController.unLikePost(req,res);
+  
+})
 
 router.put('/posts/comment/:postId/:userId',authenticate,(req,res)=>{
 

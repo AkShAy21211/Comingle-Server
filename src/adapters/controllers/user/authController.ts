@@ -79,6 +79,7 @@ class AuthController   {
         req.body.password
       );
 
+      console.log( req.body.email, req.body.password);
       
       if (loginResponse.status) {
         res.status(200).json(loginResponse);

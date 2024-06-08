@@ -11,15 +11,19 @@ class InteractionController {
   async followUser(req: Request, res: Response): Promise<void> {
     try {
       const requester = req.user?.id;
-      const { recipientId } = req.body;
+      const { recipient } = req.body;
+
+
+      console.log(recipient,requester);
+      
       const followRequest = await this._interactionUseCase.followUser(
         requester as string,
-        recipientId
+        recipient
       );
 
 
       await this._interactionUseCase.createNotificatioin(
-        req.body.recipientId as string,
+        req.body.recipient as string,
         followRequest.type,
         followRequest.content,
         followRequest.follow._id

@@ -121,6 +121,8 @@ class AuthUseCase implements IAuthUseCase {
     try {
       const findUser = await this._reposotory.findUserByemail(email);
 
+      console.log(findUser);
+      
       if (!findUser) {
         return {
           status: false,

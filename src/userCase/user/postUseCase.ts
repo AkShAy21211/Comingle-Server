@@ -1,11 +1,16 @@
 import Posts from "../../domain/entities/post";
+import INotificationRepo from "../../domain/interfaces/user/INotificationRepo";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import IPostUseCase from "../../domain/interfaces/user/IPostUseCase";
 import { uploadMultiple } from "../../infrastructure/utils/uploadToCloudnary";
-import { log } from "console";
-
+import NotificationDetails from "../../domain/enum/notification";
+import notificationModel from "../../infrastructure/database/notificationModel";
+import mongoose from "mongoose";
 class PostUseCase implements IPostUseCase {
-  constructor(private _postRepo: IPostRepo) {}
+  constructor(
+    private _postRepo: IPostRepo,
+    private _notficationRepo: INotificationRepo
+  ) {}
 
   async createNewPost(
     userID: string,
@@ -63,15 +68,29 @@ class PostUseCase implements IPostUseCase {
     }
   }
 
-  async likePost(postId: string, userId: string): Promise<any> {
+  async likePost(
+    postId: string,
+    userId: string,
+    authorId: string
+  ): Promise<any> {
     try {
+    
 
       const likePost = await this._postRepo.likePost(postId, userId);
 
       if (likePost) {
+        if (authorId !== userId) {
+          await this._notficationRepo.createNotification(
+            authorId,
+            NotificationDetails.like.displayName,
+            NotificationDetails.like.content,
+            likePost._id
+          );
+        }
+
         return {
           status: true,
-          likes:likePost,
+          likes: likePost,
           message: "like added",
         };
       }
@@ -83,7 +102,27 @@ class PostUseCase implements IPostUseCase {
       console.log(error);
     }
   }
+  async unLikePost(
+    postId: string,
+    userId: string,
+  ): Promise<any> {
+    try {
+    
+      const unLikePost = await this._postRepo.unLikePost(postId, userId);
+      
+      if (unLikePost) {
+        return {
+          status: true,
+          likes: unLikePost,
+          message: "like removed",
+        };
+      }
 
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async commentPost(
     postId: string,
     userId: string,

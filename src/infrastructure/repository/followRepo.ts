@@ -53,7 +53,6 @@ class FollowReposotory implements IFollowRepo {
     recipitent: string
   ): Promise<string | null | undefined> {
     try {
-      console.log('----------------------------', requesterId, recipitent);
 
       const followStatus = await followModel
         .findOne({ requester: requesterId, recipient: recipitent })

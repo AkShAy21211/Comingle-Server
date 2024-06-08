@@ -9,6 +9,8 @@ interface IPostRepo{
     getAllposts(page:number):Promise<Posts[]|null|undefined>
     likePost(postId:string,userId:string):Promise<Like|null|undefined>
     commentPost(postId:string,userId:string,comment:string):Promise<Comment|null|undefined>;
+    findPostLikes(id:string):Promise<Like|null|undefined>;
+    unLikePost(postId:string,userId:string):Promise<Like|null|undefined>;
 }
 
 export default IPostRepo

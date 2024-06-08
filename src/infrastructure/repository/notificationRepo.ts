@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Notifications from "../../domain/entities/notification";
 import INotificationRepo from "../../domain/interfaces/user/INotificationRepo";
 import notificationModel from "../database/notificationModel";
@@ -12,10 +13,10 @@ class NotificationRepo implements INotificationRepo {
   ): Promise<void> {
     try {
       const newNotification = new notificationModel({
-        userId: id,
+        userId: new mongoose.Types.ObjectId(id),
         type: type,
         content: content,
-        sourceId:sourceId
+        sourceId:new mongoose.Types.ObjectId(sourceId)
       });
 
       await newNotification.save();
