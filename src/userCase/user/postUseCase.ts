@@ -74,8 +74,6 @@ class PostUseCase implements IPostUseCase {
     authorId: string
   ): Promise<any> {
     try {
-    
-
       const likePost = await this._postRepo.likePost(postId, userId);
 
       if (likePost) {
@@ -102,14 +100,10 @@ class PostUseCase implements IPostUseCase {
       console.log(error);
     }
   }
-  async unLikePost(
-    postId: string,
-    userId: string,
-  ): Promise<any> {
+  async unLikePost(postId: string, userId: string): Promise<any> {
     try {
-    
       const unLikePost = await this._postRepo.unLikePost(postId, userId);
-      
+
       if (unLikePost) {
         return {
           status: true,
@@ -117,8 +111,6 @@ class PostUseCase implements IPostUseCase {
           message: "like removed",
         };
       }
-
-
     } catch (error) {
       console.log(error);
     }
@@ -136,9 +128,13 @@ class PostUseCase implements IPostUseCase {
       );
 
       if (commentPost) {
+
+        console.log('------------------------------',commentPost);
+
         return {
           status: true,
-          comment: "Comment added",
+          comment:commentPost,
+          message: "Comment added",
         };
       }
 

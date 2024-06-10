@@ -5,7 +5,7 @@ import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import likeModel from "../database/likeModel";
 import postModel from "../database/postModel";
 import PostModel from "../database/postModel";
-import Comment from "../../domain/entities/comment";
+import Comment, { UpdatedCommetn } from "../../domain/entities/comment";
 import commentModel from "../database/commentModal";
 
 class PostReposotory implements IPostRepo {
@@ -31,7 +31,7 @@ class PostReposotory implements IPostRepo {
 
   async getAllposts(page: number): Promise<Posts[] | null | undefined> {
     try {
-      const perPage = 3;
+      const perPage = 5;
       const pipeline: any[] = [
         // match post which are not hidden
         {
@@ -84,7 +84,7 @@ class PostReposotory implements IPostRepo {
             let: { userId: "$userId" },
             pipeline: [
               { $match: { $expr: { $eq: ["$_id", "$$userId"] } } },
-              { $project: { name: 1, "profile.image": 1 } },
+              { $project: { username: 1, "profile.image": 1 } },
             ],
             as: "postUserDetails",
           },
@@ -122,6 +122,13 @@ class PostReposotory implements IPostRepo {
           },
         },
 
+        {
+          $addFields: {
+            "comments.comment.userDetails": {
+              $arrayElemAt: ["$comments.comment.userDetails", 0],
+            },
+          },
+        },
         // group comments back into an array for each post
         {
           $group: {
@@ -132,19 +139,10 @@ class PostReposotory implements IPostRepo {
                 comment: {
                   comment: "$comments.comment.comment",
                   _id: "$comments.comment._id",
-                  userDetails: {
-                    name: {
-                      $arrayElemAt: ["$comments.comment.userDetails.name", 0],
-                    },
-                    image: {
-                      $arrayElemAt: [
-                        "$comments.comment.userDetails.profile.image",
-                        0,
-                      ],
-                    },
-                  }, // Get the first user details
-                },
-                createdAt: "$comments.createdAt",
+                  commenter: "$comments.comment.userDetails.username",
+                  commenterImage: "$comments.comment.userDetails.profile.image",
+                  createdAt: "$comments.comment.createdAt",
+                }, // Get the first user details
               },
             },
             likes: { $first: "$likes" },
@@ -162,9 +160,9 @@ class PostReposotory implements IPostRepo {
             _id: 1,
             comments: {
               $cond: {
-                if: { $isArray: "$comments" },
-                then: "$comments",
-                else: [], // If comments is not an array (should not happen), return empty array
+                if: "$comments.comment",
+                then: "$comments.comment",
+                else: {}, // If comments is not an array (should not happen), return empty array
               },
             },
             likes: {
@@ -174,6 +172,7 @@ class PostReposotory implements IPostRepo {
                 else: {}, // If likes is not an array (should not happen), return empty array
               },
             },
+
             postedUser: 1,
             image: 1,
             description: 1,
@@ -227,15 +226,19 @@ class PostReposotory implements IPostRepo {
     userId: string
   ): Promise<Like | null | undefined> {
     try {
-      const updatedPostLikes = await likeModel.findOneAndUpdate({ postId: postId },{$pull:{userId:userId}},{new:true}).lean()
+      const updatedPostLikes = await likeModel
+        .findOneAndUpdate(
+          { postId: postId },
+          { $pull: { userId: userId } },
+          { new: true }
+        )
+        .lean();
 
-      return updatedPostLikes
-
+      return updatedPostLikes;
     } catch (error) {
       console.log(error);
     }
   }
-
 
   async commentPost(
     postId: string,
@@ -248,13 +251,33 @@ class PostReposotory implements IPostRepo {
       });
 
       if (existingCommentsOnPost) {
-        const updatedComment = await commentModel.findOneAndUpdate(
-          { postId: postId },
-          {
-            $addToSet: { comment: { userId, comment } },
-          }
-        );
-        return existingCommentsOnPost.toJSON();
+        let newComment;
+
+        await commentModel
+          .findByIdAndUpdate(
+            existingCommentsOnPost._id,
+            {
+              $push: { comment: { userId, comment } },
+            },
+            { new: true }
+          )
+          .then(async (data) => {
+            await data
+              ?.populate("comment.userId", "name profile.image")
+              .then(async (data) => {
+                const updatedComent: any =
+                  data.comment[data.comment.length - 1];
+
+                newComment = {
+                  _id: updatedComent._id,
+                  comment: updatedComent.comment,
+                  commenterImage: updatedComent.userId.profile.image,
+                  createdAt: updatedComent.createdAt,
+                };
+              });
+          });
+
+        return newComment;
       }
 
       const newComment = new commentModel({
@@ -262,12 +285,26 @@ class PostReposotory implements IPostRepo {
         comment: { userId, comment },
       });
 
-      await newComment.save();
+      let createdComment;
+      await newComment.save().then(async (data) => {
+        await data
+          ?.populate("comment.userId", "name profile.image")
+          .then(async (data) => {
+            const updatedComent: any = data.comment[data.comment.length - 1];
+
+            createdComment = {
+              _id: updatedComent._id,
+              comment: updatedComent.comment,
+              commenterImage: updatedComent.userId.profile.image,
+              createdAt: updatedComent.createdAt,
+            };
+          });
+      });
       await postModel.findByIdAndUpdate(postId, {
         $set: { comments: newComment?._id },
       });
 
-      return newComment.toObject();
+      return createdComment;
     } catch (error) {
       console.log(error);
     }
@@ -275,7 +312,7 @@ class PostReposotory implements IPostRepo {
 
   async findPostLikes(id: string): Promise<Like | null | undefined> {
     try {
-      const post = await likeModel.findOne({postId:id}).lean();
+      const post = await likeModel.findOne({ postId: id }).lean();
       return post;
     } catch (error) {
       console.log(error);

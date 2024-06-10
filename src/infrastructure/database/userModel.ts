@@ -8,6 +8,12 @@ const userSchema = new Schema<User>(
       required: true,
       trim: true,
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
@@ -76,14 +82,13 @@ const userSchema = new Schema<User>(
     },
     googleId: {
       type: String,
-      required: false, 
+      required: false,
     },
   },
   {
     timestamps: true,
   }
 );
-
 
 userSchema.index({ email: 1 }, { unique: true });
 

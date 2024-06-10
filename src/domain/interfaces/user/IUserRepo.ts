@@ -13,6 +13,7 @@ interface IUserReop{
     createUser(userData:any):Promise<User | null | undefined>;
     updateUserProfileImages(id:string,image:{image?:string}):Promise<User | null | undefined>;
     getAllUsers(id:string):Promise<User[] | null | undefined>;
+    findUsername(username:string):Promise<User|null|undefined>;
     addFollowings(id:string,following:string):Promise<User| null|undefined>
     addFollowers(id:string,following:string):Promise<User| null|undefined>
 

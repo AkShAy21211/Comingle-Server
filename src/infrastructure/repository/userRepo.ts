@@ -25,6 +25,19 @@ class UserReposotory implements IUserReop {
     }
   }
 
+  async findUsername(username: string): Promise<User | null | undefined> {
+    
+    try {
+      
+      const user  = await UserModel.findOne({username:username}).lean();
+      return user
+    } catch (error) {
+      
+      console.log(error);
+      
+    }
+  }
+
   async verifyUserStatus(email: string): Promise<any> {
     try {
       await UserModel.findOneAndUpdate(

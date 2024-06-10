@@ -87,6 +87,11 @@ const router = express.Router();
 router.post("/signup", (req, res) => {
   authController.signUpAndDendOtp(req, res);
 });
+
+router.get("/signup", (req, res) => {
+  authController.findUsernameExist(req, res);
+});
+
 router.post("/signup/verify-otp", (req, res) => {
   authController.verifyUserByEmailOtp(req, res);
 });

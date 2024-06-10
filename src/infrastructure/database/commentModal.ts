@@ -17,6 +17,10 @@ const commentSchema = new Schema<Comment>(
           type: String,
           trim: true,
         },
+        createdAt:{
+          type:Date,
+          default:new Date
+        }
       },
     ],
   },

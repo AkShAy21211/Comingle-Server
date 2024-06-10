@@ -59,6 +59,29 @@ class AuthUseCase implements IAuthUseCase {
     }
   }
 
+  async findUserByUsername(username: string): Promise<any> {
+    try {
+      
+      const user = await this._reposotory.findUsername(username);
+
+      if(user){
+
+        return {
+          status:false,
+          message:'Username already taken'
+        }
+      }
+
+      return {
+        status:true,
+
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
+
   async verifyUserByEmailOtp(token: string, otp: string) {
     const decodeToken = this._jwt.verifyToken(token);
 
