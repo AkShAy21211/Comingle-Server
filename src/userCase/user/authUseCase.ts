@@ -171,7 +171,8 @@ class AuthUseCase implements IAuthUseCase {
       const filterUser = {
         _id: findUser._id,
         token: token,
-        authenticated:token?true:false
+        authenticated:token?true:false,
+        isPremium:findUser.profile.isPremium
       };
 
       return {

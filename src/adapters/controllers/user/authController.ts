@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import AuthUseCase from "../../../userCase/user/authUseCase";
-import { log } from "console";
 
 class AuthController {
   constructor(private _authUseCase: AuthUseCase) {}

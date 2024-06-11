@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@stripe/stripe-js": "^3.5.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.6",
@@ -27,7 +28,9 @@
     "nodemailer": "^6.9.13",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "razorpay": "^2.9.4",
     "sharp": "^0.33.4",
+    "stripe": "^15.10.0",
     "ts-node-dev": "^2.0.0"
   },
   "devDependencies": {

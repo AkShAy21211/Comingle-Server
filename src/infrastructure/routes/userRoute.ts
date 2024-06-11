@@ -19,7 +19,10 @@ import PostReposotory from "../repository/postRepo";
 import PostUseCase from "../../userCase/user/postUseCase";
 import PostController from "../../adapters/controllers/user/postController";
 import { multerUploader } from "../middleware/multer";
-
+import SubscriptionController from "../../adapters/controllers/user/subscriptionController";
+import SubscriptionUseCase from "../../userCase/user/subscriptionUseCase";
+import SubscriptionManager from "../utils/razorpay";
+import SubscriptionRepo from "../repository/subscriptionRepo";
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -76,6 +79,13 @@ const postUseCase = new PostUseCase(postRepo,notificationRepo);
 const postController = new PostController(postUseCase);
 
 
+
+
+////////////////// SUBSCRIPTION CONTROLLER /////////////////////////
+const subscriptionMananger  = new SubscriptionManager();
+const subscriptionRepo = new SubscriptionRepo();
+const subscriptionUseCase = new SubscriptionUseCase(subscriptionMananger,subscriptionRepo);
+const subscriptionController = new SubscriptionController(subscriptionUseCase);
 
 
 
@@ -195,12 +205,16 @@ router.get('/notifications',authenticate,(req,res)=>{
 });
 
 
+
+//////////////////// GET FOLLOW REQUEST STATUS /////////////////////////////////
+
 router.get('/follow/status/:requesterId/:recipietnetId',authenticate,(req,res)=>{
 
   interactionController.getFollowRequestStatus(req,res)
 })
 
 
+//////////////////// Accept FOLLOW REQUEST STATUS /////////////////////////////////
 
 router.post('/follow/accept/:followId/:notificationId',authenticate,(req,res)=>{
 
@@ -208,17 +222,24 @@ router.post('/follow/accept/:followId/:notificationId',authenticate,(req,res)=>{
 })
 
 
+//////////////////// CREATE NEW POSTS /////////////////////////////////
 
 router.post('/new-post',authenticate,multerUploader.array('images'),(req,res)=>{
 
   postController.createNewPost(req,res);
   
 })
+
+
+//////////////////// GET ALL POSTS////////////////////////////////
 router.get('/posts/all',authenticate,(req,res)=>{
 
   postController.getAllPosts(req,res);
   
 })
+
+//////////////////// LIKE POST  /////////////////////////////////
+
 
 router.put('/posts/like/:postId/:userId/:authorId',authenticate,(req,res)=>{
 
@@ -226,11 +247,17 @@ router.put('/posts/like/:postId/:userId/:authorId',authenticate,(req,res)=>{
   
 })
 
+//////////////////// UNLIKE POST /////////////////////////////////
+
 router.put('/posts/unlike/:postId/:userId/',authenticate,(req,res)=>{
 
   postController.unLikePost(req,res);
   
 })
+
+
+//////////////////// COMMENT POST  /////////////////////////////////
+
 
 router.put('/posts/comment/:postId/:userId',authenticate,(req,res)=>{
 
@@ -239,6 +266,21 @@ router.put('/posts/comment/:postId/:userId',authenticate,(req,res)=>{
 })
 
 
+router.post('/rozarpay/create-premium-order',authenticate,(req,res)=>{
+
+  subscriptionController.subscribeToPremium(req,res)
+});
+
+
+router.post('/rozarpay/premium-order/verify',authenticate,(req,res)=>{
+
+  subscriptionController.verifySubscriptionOrder(req,res)
+});
+
+router.get('/rozarpay/get-key_id',authenticate,(req,res)=>{
+
+  subscriptionController.getRazorpayKey(req,res)
+});
 
 router.post("/logout",(req,res)=>{
 
