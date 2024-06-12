@@ -16,6 +16,8 @@ interface IUserReop{
     findUsername(username:string):Promise<User|null|undefined>;
     addFollowings(id:string,following:string):Promise<User| null|undefined>
     addFollowers(id:string,following:string):Promise<User| null|undefined>
+    fetchAllUsers():Promise<User[]|null|undefined>
+    blockOrUnblockUser(id:string):Promise<User|null|undefined>;
 
 }
 
