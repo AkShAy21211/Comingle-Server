@@ -33,4 +33,13 @@ interface Subscription{
   product:string;
 
 }
-export {Order,OrderResponse,Subscription}
+
+
+interface PlanDetails{
+
+  _id:string;
+  title:string;
+  benefits:string[];
+  amount:number;
+}
+export {Order,OrderResponse,Subscription,PlanDetails}
