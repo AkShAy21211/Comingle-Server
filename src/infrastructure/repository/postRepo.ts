@@ -7,6 +7,7 @@ import postModel from "../database/postModel";
 import PostModel from "../database/postModel";
 import Comment, { UpdatedCommetn } from "../../domain/entities/comment";
 import commentModel from "../database/commentModal";
+import { log } from "console";
 
 class PostReposotory implements IPostRepo {
   async createPost(
@@ -29,15 +30,22 @@ class PostReposotory implements IPostRepo {
     }
   }
 
-  async getAllposts(page: number): Promise<Posts[] | null | undefined> {
+  async getAllposts(
+    page: number,
+    isAdminRequest: boolean
+  ): Promise<Posts[] | null | undefined> {
     try {
       const perPage = 5;
-      const pipeline: any[] = [
-        // match post which are not hidden
-        {
-          $match: { isHidden: false },
-        },
+      const pipeline: any[] = [];
 
+      /////////////// IS THE REQUEST IS MADE NOT MADE BY ADMIN RETUEN POSTS THAT IS NOT HIDDEN
+      if (!isAdminRequest) {
+        pipeline.push({
+          $match: { isHidden: false },
+        });
+      }
+
+      pipeline.push(
         {
           $sort: { createdAt: -1 },
         },
@@ -180,8 +188,8 @@ class PostReposotory implements IPostRepo {
             createdAt: 1,
             updatedAt: 1,
           },
-        },
-      ];
+        }
+      );
 
       const posts = await postModel.aggregate(pipeline).exec();
 
@@ -314,6 +322,21 @@ class PostReposotory implements IPostRepo {
     try {
       const post = await likeModel.findOne({ postId: id }).lean();
       return post;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async hideUnhidePost(postId: string): Promise<Posts|null|undefined> {
+    try {
+      const post = await postModel.findById(postId);
+
+      const postUpdated = await postModel.findByIdAndUpdate(post?._id, {
+        $set: { isHidden: !post?.isHidden },
+      },{new:true}).lean();
+
+      return postUpdated;
+
     } catch (error) {
       console.log(error);
     }

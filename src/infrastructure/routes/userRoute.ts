@@ -19,10 +19,13 @@ import PostReposotory from "../repository/postRepo";
 import PostUseCase from "../../userCase/user/postUseCase";
 import PostController from "../../adapters/controllers/user/postController";
 import { multerUploader } from "../middleware/multer";
+
 import SubscriptionController from "../../adapters/controllers/user/subscriptionController";
 import SubscriptionUseCase from "../../userCase/user/subscriptionUseCase";
 import SubscriptionManager from "../utils/razorpay";
 import SubscriptionRepo from "../repository/subscriptionRepo";
+import ReportReposotory from "../repository/reportRepo";
+
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
 const jwt = new TokenManager();
@@ -73,9 +76,9 @@ const interactionController  = new InteractionController(interactionUseCase);
 
 //////////////// POST CONTROLLER /////////////////////////////
 
-
+const repostRepo = new ReportReposotory()
 const postRepo = new PostReposotory();
-const postUseCase = new PostUseCase(postRepo,notificationRepo);
+const postUseCase = new PostUseCase(postRepo,notificationRepo,repostRepo);
 const postController = new PostController(postUseCase);
 
 
@@ -281,6 +284,13 @@ router.get('/rozarpay/get-key_id',authenticate,(req,res)=>{
 
   subscriptionController.getRazorpayKey(req,res)
 });
+
+router.post('/posts/report',authenticate,(req,res)=>{
+
+  postController.reportPost(req,res);
+
+})
+
 
 router.post("/logout",(req,res)=>{
 
