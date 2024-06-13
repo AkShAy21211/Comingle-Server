@@ -6,10 +6,12 @@ import { uploadMultiple } from "../../infrastructure/utils/uploadToCloudnary";
 import NotificationDetails from "../../domain/enum/notification";
 import notificationModel from "../../infrastructure/database/notificationModel";
 import mongoose from "mongoose";
+import IReportRepo from "../../domain/interfaces/user/IReportReopo";
 class PostUseCase implements IPostUseCase {
   constructor(
     private _postRepo: IPostRepo,
-    private _notficationRepo: INotificationRepo
+    private _notficationRepo: INotificationRepo,
+    private _reportRepo: IReportRepo
   ) {}
 
   async createNewPost(
@@ -48,9 +50,9 @@ class PostUseCase implements IPostUseCase {
     }
   }
 
-  async getAllPosts(page: number): Promise<any> {
+  async getAllPosts(page: number,isAdminRequest:boolean): Promise<any> {
     try {
-      const allPosts = await this._postRepo.getAllposts(page);
+      const allPosts = await this._postRepo.getAllposts(page,isAdminRequest);
 
       if (allPosts) {
         return {
@@ -128,12 +130,11 @@ class PostUseCase implements IPostUseCase {
       );
 
       if (commentPost) {
-
-        console.log('------------------------------',commentPost);
+        console.log("------------------------------", commentPost);
 
         return {
           status: true,
-          comment:commentPost,
+          comment: commentPost,
           message: "Comment added",
         };
       }
@@ -143,6 +144,28 @@ class PostUseCase implements IPostUseCase {
       };
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async reportPost(postId: string, reason: string): Promise<any> {
+    try {
+      const repost = await this._reportRepo.createReport(postId, reason);
+
+      if (repost) {
+        return {
+          status: true,
+          message: "Report sent",
+        };
+      } else {
+        return {
+          status: false,
+          message: "Failed to report",
+        };
+      }
+    } catch (error) {
+
+      console.log(error);
+      
     }
   }
 }

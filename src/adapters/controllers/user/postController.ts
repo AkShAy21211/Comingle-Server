@@ -30,12 +30,10 @@ class PostController {
   async getAllPosts(req: Request, res: Response): Promise<void> {
     try {
       const page = req.query.page ? Number(req.query.page) : 0;
+      const isAdminRequest = req.baseUrl === '/admin'?true:false;
 
-      console.log("--------------------hi");
 
-      console.log("skip", page);
-
-      const postResponse = await this._postUserCase.getAllPosts(page);
+      const postResponse = await this._postUserCase.getAllPosts(page,isAdminRequest);
 
       if (postResponse.status) {
         res.status(200).json(postResponse);
@@ -49,10 +47,13 @@ class PostController {
 
   async likePost(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, postId,authorId } = req.params;
+      const { userId, postId, authorId } = req.params;
 
-
-      const likeResponse = await this._postUserCase.likePost(postId, userId,authorId);
+      const likeResponse = await this._postUserCase.likePost(
+        postId,
+        userId,
+        authorId
+      );
       if (likeResponse) {
         res.status(201).json(likeResponse);
       }
@@ -66,7 +67,7 @@ class PostController {
 
       const likeResponse = await this._postUserCase.unLikePost(postId, userId);
       console.log(likeResponse);
-      
+
       if (likeResponse) {
         res.status(200).json(likeResponse);
       }
@@ -74,13 +75,32 @@ class PostController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
-   async commentPost(req: Request, res: Response): Promise<void> {
+  async commentPost(req: Request, res: Response): Promise<void> {
     try {
       const { userId, postId } = req.params;
-      const {comment} = req.body;
-      const commentResponse = await this._postUserCase.commentPost(postId, userId,comment);
+      const { comment } = req.body;
+      const commentResponse = await this._postUserCase.commentPost(
+        postId,
+        userId,
+        comment
+      );
       if (commentResponse) {
         res.status(201).json(commentResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async reportPost(req: Request, res: Response): Promise<void> {
+    try {
+      const { postId, reason } = req.body;
+      const report = await this._postUserCase.reportPost(postId, reason);
+
+      if (report.status) {
+        res.status(201).json(report);
+      } else {
+        res.status(400).json(report);
       }
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
