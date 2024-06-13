@@ -87,7 +87,7 @@ const postController = new PostController(postUseCase);
 ////////////////// SUBSCRIPTION CONTROLLER /////////////////////////
 const subscriptionMananger  = new SubscriptionManager();
 const subscriptionRepo = new SubscriptionRepo();
-const subscriptionUseCase = new SubscriptionUseCase(subscriptionMananger,subscriptionRepo);
+const subscriptionUseCase = new SubscriptionUseCase(subscriptionMananger,subscriptionRepo,userReposotory);
 const subscriptionController = new SubscriptionController(subscriptionUseCase);
 
 

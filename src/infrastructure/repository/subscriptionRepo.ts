@@ -7,14 +7,16 @@ class SubscriptionRepo implements ISubscriptionRepo {
     userId: string,
     amount: string,
     orderId: string,
-    product:string
-  ): Promise<Subscription|null|undefined> {
+    paymentId: string,
+    product: string
+  ): Promise<Subscription | null | undefined> {
     try {
       const order = new subscriptionModel({
         userId,
         amount,
         orderId,
-        product
+        paymentId,
+        product,
       });
 
       await order.save();
@@ -27,10 +29,9 @@ class SubscriptionRepo implements ISubscriptionRepo {
 
   async updateOrderStatus(_id: string): Promise<void> {
     try {
-      await subscriptionModel.findByIdAndUpdate(
-        _id,
-        { $set: { status: true } }
-      );
+      await subscriptionModel.findByIdAndUpdate(_id, {
+        $set: { status: true },
+      });
     } catch (error) {
       console.log(error);
     }

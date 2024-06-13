@@ -15,8 +15,8 @@ class SubscriptionManager implements ISubscriptionManager {
   async createSubscriptionOrder(options: Order): Promise<any> {
     try {
       const order = await razorpayInstance.orders.create(options);
-
       return order;
+      
     } catch (error) {
       console.log(error);
     }
@@ -27,12 +27,15 @@ class SubscriptionManager implements ISubscriptionManager {
     razorpay_order_id: string,
     razorpay_signature: string
   ): Promise<any> {
+    console.log( '------------------------------------',razorpay_payment_id,
+    razorpay_order_id,
+    razorpay_signature);
+    
     try {
-      const signature = razorpay_order_id+"|"+razorpay_payment_id;
 
       const isExpectedSignature = crypto
         .createHmac("sha256", process.env.RAZOR_KEY_SECRET as string)
-        .update(signature.toString())
+        .update(razorpay_order_id+"|"+razorpay_payment_id)
         .digest("hex");
 
       const isAuthentic = isExpectedSignature === razorpay_signature;

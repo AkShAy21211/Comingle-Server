@@ -1,22 +1,22 @@
 import ISubscriptionManager from "../../domain/interfaces/razorpay/ISubscriptionManager";
 import ISubscriptionRepo from "../../domain/interfaces/razorpay/ISubscriptionRepo";
 import ISubscriptionUseCase from "../../domain/interfaces/razorpay/ISubscriptionUseCase";
+import IUserReop from "../../domain/interfaces/user/IUserRepo";
 
 class SubscriptionUseCase implements ISubscriptionUseCase {
   constructor(
     private _razorpay: ISubscriptionManager,
-    private _subscriptionRepo: ISubscriptionRepo
+    private _subscriptionRepo: ISubscriptionRepo,
+    private _userReop: IUserReop
   ) {}
 
-  async handleSubscription(userId: string, amount: string): Promise<any> {
+  async handleSubscription(userId: string, amount: number): Promise<any> {
     try {
       const orderId = this._razorpay.generateRecieptId();
 
       const options = {
-        amount: amount,
+        amount: amount*100,
         currency: "INR",
-        receipt: orderId,
-        payment_capture: 1,
       };
 
       const order = await this._razorpay.createSubscriptionOrder(options);
@@ -29,6 +29,7 @@ class SubscriptionUseCase implements ISubscriptionUseCase {
       } else {
         return {
           status: false,
+          message: "Something went wrong please retry",
         };
       }
     } catch (error) {
@@ -46,10 +47,19 @@ class SubscriptionUseCase implements ISubscriptionUseCase {
     product: string
   ): Promise<any> {
     try {
+   
+      console.log( userId,
+        amount,
+        razorpay_order_id,
+        razorpay_payment_id,
+        product);
+      
+
       const order = await this._subscriptionRepo.createNewOrder(
         userId,
         amount,
-        orderId,
+        razorpay_order_id,
+        razorpay_payment_id,
         product
       );
 
@@ -59,10 +69,9 @@ class SubscriptionUseCase implements ISubscriptionUseCase {
         razorpay_signature
       );
 
-      console.log('--------------------',isAuthentic);
-      
       if (isAuthentic) {
         await this._subscriptionRepo.updateOrderStatus(order?._id as string);
+        await this._userReop.updateUser(userId, { premium: true });
 
         return {
           status: true,

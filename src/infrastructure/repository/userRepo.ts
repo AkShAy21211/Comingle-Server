@@ -93,7 +93,8 @@ class UserReposotory implements IUserReop {
             "profile.gender": data.gender || user?.profile.gender,
             "profile.country": data.country || user?.profile.country,
             "profile.bio": data.bio || user?.profile.bio,
-            password:data.password||user?.password
+            password:data.password||user?.password,
+            'profile.isPremium':data.premium||user?.profile.isPremium
           },
         },
         { new: true }

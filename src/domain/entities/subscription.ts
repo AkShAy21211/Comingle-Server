@@ -2,9 +2,8 @@ import mongoose, { mongo } from "mongoose";
 
 interface Order{
 
-    amount:string;
+    amount:number;
     currency:string;
-    receipt:string;
 }
 
 interface OrderResponse{
@@ -29,6 +28,7 @@ interface Subscription{
   userId:mongoose.Schema.Types.ObjectId;
   amount:number;
   orderId:string;
+  paymentId:string;
   status:boolean;
   product:string;
 
