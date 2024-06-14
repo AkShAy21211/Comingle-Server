@@ -2,8 +2,6 @@ import User from "../../domain/entities/user";
 import IUserReop from "../../domain/interfaces/user/IUserRepo";
 import UserModel from "../database/userModel";
 
-
-
 class UserReposotory implements IUserReop {
   async saveUserToDb(userData: User): Promise<User | null | undefined> {
     try {
@@ -26,15 +24,11 @@ class UserReposotory implements IUserReop {
   }
 
   async findUsername(username: string): Promise<User | null | undefined> {
-    
     try {
-      
-      const user  = await UserModel.findOne({username:username}).lean();
-      return user
+      const user = await UserModel.findOne({ username: username }).lean();
+      return user;
     } catch (error) {
-      
       console.log(error);
-      
     }
   }
 
@@ -93,8 +87,8 @@ class UserReposotory implements IUserReop {
             "profile.gender": data.gender || user?.profile.gender,
             "profile.country": data.country || user?.profile.country,
             "profile.bio": data.bio || user?.profile.bio,
-            password:data.password||user?.password,
-            'profile.isPremium':data.premium||user?.profile.isPremium
+            password: data.password || user?.password,
+            "profile.isPremium": data.premium || user?.profile.isPremium,
           },
         },
         { new: true }
@@ -171,8 +165,6 @@ class UserReposotory implements IUserReop {
     following: string
   ): Promise<User | null | undefined> {
     try {
-
-      
       const updatedFollowers = await UserModel.findByIdAndUpdate(
         id,
         {
@@ -190,31 +182,38 @@ class UserReposotory implements IUserReop {
   }
 
   async fetchAllUsers(): Promise<User[] | null | undefined> {
-    
     try {
-      
       const users = await UserModel.find({}).lean();
 
       return users;
     } catch (error) {
-      
       console.log(error);
-      
     }
   }
 
   async blockOrUnblockUser(id: string): Promise<User | null | undefined> {
-    
     try {
-      
-      const  findUser = await UserModel.findById(id);
-      const user = await UserModel.findByIdAndUpdate(id,{$set:{isBlocked:!findUser?.isBlocked}});
+      const findUser = await UserModel.findById(id);
+      const user = await UserModel.findByIdAndUpdate(id, {
+        $set: { isBlocked: !findUser?.isBlocked },
+      });
 
       return user;
     } catch (error) {
-      
       console.log(error);
-      
+    }
+  }
+
+  async getUserByUsername(username: string): Promise<User | null | undefined> {
+    try {
+      const user = await UserModel.findOne(
+        { username: username },
+        { password: 0 }
+      ).lean();
+
+      return user;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

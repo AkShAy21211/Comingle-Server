@@ -7,6 +7,7 @@ import createAdmin from "../utils/createAdmin";
 import userRoute from "../routes/userRoute";
 import adminRote from "../routes/adminRoute";
 import '../config/passport'
+import configureSocket from "./socket";
 export const expressServer = () => {
   try {
 
@@ -38,6 +39,8 @@ export const expressServer = () => {
     app.use("/admin", adminRote);
 
     const server = http.createServer(app);
+
+    configureSocket(server)
 
     return server;
   } catch (error: any) {

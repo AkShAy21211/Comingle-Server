@@ -94,10 +94,8 @@ class AuthController {
       );
 
       console.log(req.body.email, req.body.password);
-        console.log('99999999999999999999999999999',loginResponse);
 
       if (loginResponse.status) {
-        console.log('99999999999999999999999999999',loginResponse);
         
         res.status(200).json(loginResponse);
       }else{

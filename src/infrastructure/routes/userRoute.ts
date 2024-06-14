@@ -25,6 +25,10 @@ import SubscriptionUseCase from "../../userCase/user/subscriptionUseCase";
 import SubscriptionManager from "../utils/razorpay";
 import SubscriptionRepo from "../repository/subscriptionRepo";
 import ReportReposotory from "../repository/reportRepo";
+import ChatController from "../../adapters/controllers/user/chatController";
+import ChatUseCase from "../../userCase/user/chatUseCase";
+import ChatReposotory from "../repository/chatRepo";
+import MessageReposotory from "../repository/messageRepo";
 
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
@@ -91,6 +95,14 @@ const subscriptionUseCase = new SubscriptionUseCase(subscriptionMananger,subscri
 const subscriptionController = new SubscriptionController(subscriptionUseCase);
 
 
+
+
+////////////////// CHAT CONTROLLER /////////////////////////////////////
+
+const messageRepo = new MessageReposotory();
+const chatRepo = new ChatReposotory()
+const chatUseCase = new ChatUseCase(chatRepo,messageRepo);
+const chatController  = new ChatController(chatUseCase)
 
 
 const router = express.Router();
@@ -291,7 +303,37 @@ router.post('/posts/report',authenticate,(req,res)=>{
 
 })
 
+router.post('/chat/access',authenticate,(req,res)=>{
 
+  chatController.accessChat(req,res);
+
+});
+
+router.get('/chat/fetch-all',authenticate,(req,res)=>{
+
+  chatController.fetchAllChat(req,res);
+
+});
+
+router.post('/chat/new-message',authenticate,(req,res)=>{
+
+  chatController.sendMessage(req,res);
+
+})
+
+router.get('/chat/:chatId',authenticate,(req,res)=>{
+
+  chatController.fetchAllMessages(req,res);
+
+});
+
+
+
+
+router.get('/profile/:username',authenticate,(req,res)=>{
+
+  profileController.getOtherUserProfile(req,res)
+})
 router.post("/logout",(req,res)=>{
 
 

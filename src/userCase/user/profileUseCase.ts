@@ -162,6 +162,29 @@ class ProfileUseCase implements IProfileUserCase {
       
     }
   }
+
+  async getOtherUserProfile(username: string): Promise<any> {
+    try {
+      
+
+      const user =  await this._reposotory.getUserByUsername(username);
+
+
+      if(user){
+        return {
+          status:true,
+          user:user
+        }
+      }
+      return {
+        status:false,
+        message:"User not found or error"
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 }
 
 export default ProfileUseCase;

@@ -10,6 +10,7 @@ interface IProfileUserCase {
     type: string
   ): Promise<any>;
   updateUserDetails(id: string, userData: User): Promise<any>;
+  getOtherUserProfile(username:string):Promise<any>;
 }
 
 

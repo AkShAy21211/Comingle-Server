@@ -7,14 +7,9 @@ class ProfileController {
 
   async getUserProfile(req: Request, res: Response): Promise<void> {
     try {
-
-
-      
       const userResponse = await this._profileUseCase.getUserProfile(
         req.user?.id as string
       );
-
-      
 
       if (userResponse.status) {
         res.status(200).json(userResponse);
@@ -27,13 +22,9 @@ class ProfileController {
     }
   }
 
-
-
   async updateUserPofileImages(req: Request, res: Response): Promise<void> {
     try {
-
       const image: Express.Multer.File = req.file as Express.Multer.File;
-
 
       const updateUserResponse =
         await this._profileUseCase.updateUserProfileImages(
@@ -45,14 +36,11 @@ class ProfileController {
       if (updateUserResponse.status) {
         res.status(200).json(updateUserResponse);
       }
-
     } catch (error) {
       res.status(500).json({ message: "internal server error" });
       console.log(error);
     }
   }
-
-
 
   async updateUserDetails(req: Request, res: Response): Promise<void> {
     try {
@@ -100,10 +88,6 @@ class ProfileController {
       const token = req.cookies.token;
       console.log(req.cookies);
 
-
-
-      
-
       const updatedResponse = await this._profileUseCase.setNewPassWord(
         token,
         req.body.password
@@ -114,6 +98,23 @@ class ProfileController {
         res.status(200).json(updatedResponse);
       } else {
         res.status(400).json(updatedResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "internal server error" });
+      console.log(error);
+    }
+  }
+
+  async getOtherUserProfile(req: Request, res: Response): Promise<void> {
+    try {
+      const { username } = req.params;
+      const userResponse = await this._profileUseCase.getOtherUserProfile(
+        username
+      );
+      if (userResponse) {
+        res.status(200).json(userResponse);
+      } else {
+        res.status(400).json(userResponse);
       }
     } catch (error) {
       res.status(500).json({ message: "internal server error" });
