@@ -7,7 +7,8 @@ class MessageReposotory implements IMessageReposotroy {
   async createnewMessage(data: {
     sender: string;
     chat: string;
-    content: string;
+    files:{url:string,type:string}[]
+    message: string;
   }): Promise<Message | null> {
     try {
       const newMessage = new MessageModel({

@@ -12,13 +12,13 @@ import { log } from "console";
 class PostReposotory implements IPostRepo {
   async createPost(
     userId: string,
-    images: string[],
+    content:{url:string,type:string}[],
     text: string
   ): Promise<Posts | null | undefined> {
     try {
       const newPost = new PostModel({
         userId: userId,
-        image: images,
+        image: content,
         description: text,
       });
 
@@ -260,7 +260,6 @@ class PostReposotory implements IPostRepo {
 
       if (existingCommentsOnPost) {
         let newComment;
-
         await commentModel
           .findByIdAndUpdate(
             existingCommentsOnPost._id,
@@ -271,13 +270,14 @@ class PostReposotory implements IPostRepo {
           )
           .then(async (data) => {
             await data
-              ?.populate("comment.userId", "name profile.image")
+              ?.populate("comment.userId", "username profile.image")
               .then(async (data) => {
                 const updatedComent: any =
                   data.comment[data.comment.length - 1];
 
                 newComment = {
                   _id: updatedComent._id,
+                  commenter:updatedComent.userId.username,
                   comment: updatedComent.comment,
                   commenterImage: updatedComent.userId.profile.image,
                   createdAt: updatedComent.createdAt,

@@ -10,12 +10,15 @@ class PostController {
 
       const userId = req.user?.id as string;
       const text = req.body.text;
-      const imagePath: Express.Multer.File[] =
+      const files: Express.Multer.File[] =
         req.files as Express.Multer.File[];
+
+
+        
 
       const newPostResponse = await this._postUserCase.createNewPost(
         userId,
-        imagePath,
+        files,
         text
       );
 

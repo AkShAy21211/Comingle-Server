@@ -1,29 +1,36 @@
 import mongoose, { model, Schema } from "mongoose";
 import Message from "../../domain/entities/message";
 
-
-const messageSchema  = new Schema<Message>({
-
-
-    sender:{
-
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
+const messageSchema = new Schema<Message>(
+  {
+    sender: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
 
-    content:{
-        type:String,
-        trim:true
+    files: [
+      {
+        url: {
+          type: String,
+        },
+        type: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
+    message: {
+      type: String,
+      trim: true,
     },
-    chat:{
+    chat: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
+    },
+  },
+  { timestamps: true }
+);
 
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Chat'
-    }
-
-},{timestamps:true});
-
-
-const messageModel = model('Message',messageSchema);
+const messageModel = model("Message", messageSchema);
 
 export default messageModel;

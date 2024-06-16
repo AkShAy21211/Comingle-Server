@@ -7,7 +7,7 @@ import GenerateOtp from "../../infrastructure/utils/generateOtp";
 import OtpReposotory from "../../infrastructure/repository/otpRepo";
 import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
-import { uploadSingle } from "../../infrastructure/utils/uploadToCloudnary";
+import { uploadProfile } from "../../infrastructure/utils/uploadToCloudnary";
 import { log } from "console";
 
 class ProfileUseCase implements IProfileUserCase {
@@ -49,11 +49,11 @@ class ProfileUseCase implements IProfileUserCase {
     type: string
   ): Promise<any> {
     try {
-      const imagePath = await uploadSingle(images.path, type);
+      const imagePath = await uploadProfile(images, type);
 
       const image = {
         [`${type === "background" ? "profile.background" : "profile.image"}`]:
-          imagePath.url,
+          imagePath.public_id,
       };
 
       const updateUser = await this._reposotory.updateUserProfileImages(

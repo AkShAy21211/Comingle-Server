@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import ProfileUseCase from "../../../userCase/user/profileUseCase";
-import { uploadSingle } from "../../../infrastructure/utils/uploadToCloudnary";
 
 class ProfileController {
   constructor(private _profileUseCase: ProfileUseCase) {}

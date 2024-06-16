@@ -2,7 +2,7 @@ import Posts from "../../domain/entities/post";
 import INotificationRepo from "../../domain/interfaces/user/INotificationRepo";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import IPostUseCase from "../../domain/interfaces/user/IPostUseCase";
-import { uploadMultiple } from "../../infrastructure/utils/uploadToCloudnary";
+import { uploadPosts } from "../../infrastructure/utils/uploadToCloudnary";
 import NotificationDetails from "../../domain/enum/notification";
 import notificationModel from "../../infrastructure/database/notificationModel";
 import mongoose from "mongoose";
@@ -20,17 +20,31 @@ class PostUseCase implements IPostUseCase {
     text: string
   ): Promise<any> {
     try {
-      const results = await Promise.all(
+      const results:{url:string,resource:string}[] = await Promise.all(
         images.map((file) => {
-          return uploadMultiple(file.path, "posts");
+          return uploadPosts(file, "posts");
         })
       );
 
-      const imageUrl: string[] = results.map((image) => image.url);
+       let arr:{url:string,type:string}[] = []
 
+      if(results.length===0){
+        arr.push({url:results[0].url,type:results[0].resource})
+      }else{
+        results.forEach((result) => {
+          arr.push({ url: result.url, type: result.resource });
+        });
+      }
+
+      
+    
+      console.log(arr);
+      
+      
+    
       const newPost = await this._postRepo.createPost(
         userID,
-        imageUrl || [""],
+        arr,
         text
       );
 

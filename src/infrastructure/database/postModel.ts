@@ -9,7 +9,12 @@ const postSchema = new Schema<Posts>(
     },
     image: [
       {
-        type: String,
+        url:{
+          type:String,
+        },
+        type:{
+          type:String,
+        }
       },
     ],
     likes: {

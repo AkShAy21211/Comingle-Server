@@ -2,6 +2,10 @@ import e from "express";
 import IChatReposotory from "../../domain/interfaces/user/IChatRepo";
 import IChatUseCase from "../../domain/interfaces/user/IChatUseCase";
 import IMessageReposotroy from "../../domain/interfaces/user/IMessageRepo";
+import {
+  uploadChats,
+  uploadPosts,
+} from "../../infrastructure/utils/uploadToCloudnary";
 
 class ChatUseCase implements IChatUseCase {
   constructor(
@@ -31,7 +35,6 @@ class ChatUseCase implements IChatUseCase {
           return {
             status: true,
             chat: newChat,
-     
           };
         }
 
@@ -67,13 +70,27 @@ class ChatUseCase implements IChatUseCase {
   async sendMessage(
     senderId: string,
     chatId: string,
-    message: string
+    message: string,
+    files: Express.Multer.File[]
   ): Promise<any> {
     try {
+      const uploadedFiles: { url: string; type: string }[] = [];
+
+      if (files && files.length > 0) {
+        const results: { url: string; resource: string }[] = await Promise.all(
+          files.map((file) => uploadChats(file, "chats"))
+        );
+
+        results.forEach((result) => {
+          uploadedFiles.push({ url: result.url, type: result.resource });
+        });
+      }
+
       const data = {
         sender: senderId,
         chat: chatId,
-        content: message,
+        message: message || "",
+        files: uploadedFiles,
       };
 
       const newMessage = await this._messageRepo.createnewMessage(data);
@@ -89,11 +106,13 @@ class ChatUseCase implements IChatUseCase {
 
       return {
         status: false,
+        message: "Unable to sent message ",
       };
     } catch (error) {
       console.log(error);
     }
   }
+
   async fetchAllMessages(chatId: string): Promise<any> {
     try {
       const messages = await this._messageRepo.fetchAllMessages(chatId);

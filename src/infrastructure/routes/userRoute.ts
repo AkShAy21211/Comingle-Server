@@ -315,7 +315,7 @@ router.get('/chat/fetch-all',authenticate,(req,res)=>{
 
 });
 
-router.post('/chat/new-message',authenticate,(req,res)=>{
+router.post('/chat/new-message',authenticate,multerUploader.array("files"),(req,res)=>{
 
   chatController.sendMessage(req,res);
 

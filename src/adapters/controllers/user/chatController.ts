@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import ChatUseCase from "../../../userCase/user/chatUseCase";
-import { log } from "console";
-
+import { Express } from "express";
 class ChatController {
   constructor(private _chatUseCase: ChatUseCase) {}
 
@@ -45,10 +44,15 @@ class ChatController {
     try {
       const { chatId, message } = req.body;
 
+      const files: Express.Multer.File[] =
+        req.files as Express.Multer.File[];
+
+        
       const newMessage = await this._chatUseCase.sendMessage(
         req.user?.id as string,
         chatId,
-        message
+        message,
+        files
       );
 
       if (newMessage.status) {

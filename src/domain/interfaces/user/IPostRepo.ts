@@ -5,7 +5,7 @@ import Posts from "../../entities/post";
 interface IPostRepo{
 
 
-    createPost(userId:string,images:string[],text:string):Promise<Posts|null|undefined>;
+    createPost(userId:string,content:{url:string,type:string}[],text:string):Promise<Posts|null|undefined>;
     getAllposts(page:number,isAdminRequest:boolean):Promise<Posts[]|null|undefined>
     likePost(postId:string,userId:string):Promise<Like|null|undefined>
     commentPost(postId:string,userId:string,comment:string):Promise<Comment|null|undefined>;

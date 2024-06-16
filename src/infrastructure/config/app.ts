@@ -14,7 +14,7 @@ export const expressServer = () => {
     const app = express();
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json({
-      limit:'50mb'
+      limit:'100mb'
     }));
     app.use(cookieParser());
     app.use(passport.initialize());
