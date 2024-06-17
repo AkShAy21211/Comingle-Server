@@ -12,7 +12,7 @@ import { log } from "console";
 class PostReposotory implements IPostRepo {
   async createPost(
     userId: string,
-    content:{url:string,type:string}[],
+    content: { url: string; type: string }[],
     text: string
   ): Promise<Posts | null | undefined> {
     try {
@@ -277,7 +277,7 @@ class PostReposotory implements IPostRepo {
 
                 newComment = {
                   _id: updatedComent._id,
-                  commenter:updatedComent.userId.username,
+                  commenter: updatedComent.userId.username,
                   comment: updatedComent.comment,
                   commenterImage: updatedComent.userId.profile.image,
                   createdAt: updatedComent.createdAt,
@@ -327,16 +327,41 @@ class PostReposotory implements IPostRepo {
     }
   }
 
-  async hideUnhidePost(postId: string): Promise<Posts|null|undefined> {
+  async hideUnhidePost(postId: string): Promise<Posts | null | undefined> {
     try {
       const post = await postModel.findById(postId);
 
-      const postUpdated = await postModel.findByIdAndUpdate(post?._id, {
-        $set: { isHidden: !post?.isHidden },
-      },{new:true}).lean();
+      const postUpdated = await postModel
+        .findByIdAndUpdate(
+          post?._id,
+          {
+            $set: { isHidden: !post?.isHidden },
+          },
+          { new: true }
+        )
+        .lean();
 
       return postUpdated;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
+  async getLikes(postId: string): Promise<Like | null | undefined> {
+    try {
+      const likes = await likeModel.findOne({ postId: postId }).lean();
+
+      return likes;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getComments(postId: string): Promise<Comment | null | undefined> {
+    try {
+      const comments = await commentModel.findOne({ postId: postId }).lean();
+
+      return comments;
     } catch (error) {
       console.log(error);
     }

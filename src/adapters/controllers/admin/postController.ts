@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import PostUseCase from "../../../userCase/admin/postUseCase";
+import { log } from "console";
 
 class PostController {
   constructor(private _postUseCase: PostUseCase) {}
@@ -34,6 +35,39 @@ class PostController {
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
       console.log(error);
+    }
+  }
+
+  async dismissRepotPost(req: Request, res: Response): Promise<void> {
+    try {
+      const { postId } = req.params;
+
+      const response = await this._postUseCase.dismissPostReport(postId);
+
+      console.log(response);
+
+      if (response.status) {
+        res.status(200).json(response);
+      } else {
+        res.status(400).json(response);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getPostReaction(req: Request, res: Response): Promise<void> {
+    try {
+      const { postId } = req.params;
+   
+      const response = await this._postUseCase.getPostReactioin(postId);
+      if (response.status) {
+        res.status(200).json(response);
+      } 
+    } catch (error) {
+      res.status(500).json({message:"Internal server error"})
+      console.log(error);
+      
     }
   }
 }

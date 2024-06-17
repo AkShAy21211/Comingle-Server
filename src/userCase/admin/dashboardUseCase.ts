@@ -1,0 +1,5 @@
+class DashboardUseCase implements IDashboardUseCase{
+
+
+    
+}

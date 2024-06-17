@@ -109,4 +109,16 @@ router.patch('/post/hide-unhide/:postId',(req,res)=>{
 
 });
 
+router.delete('/post/dismiss/reports/:postId',(req,res)=>{
+
+    postController.dismissRepotPost(req,res)
+
+});
+router.get('/post/reactions/:postId',(req,res)=>{
+
+    
+    postController.getPostReaction(req,res)
+
+});
+
 export default router
