@@ -16,6 +16,8 @@ import PostController from "../../adapters/controllers/admin/postController";
 import PostUseCase from "../../userCase/admin/postUseCase";
 import PostReposotory from "../repository/postRepo";
 import ReportReposotory from '../repository/reportRepo';
+import DashboardController from "../../adapters/controllers/admin/dashboardController";
+import DashboardUseCase from "../../userCase/admin/dashboardUseCase";
 
 
 const adminReop = new AdminReposotory();
@@ -55,6 +57,14 @@ const postUseCase= new PostUseCase(postRepo,reportRepo);
 const postController = new PostController(postUseCase)
 const router = express.Router();
 
+
+
+
+//////////////////// DASHBOARD CONTROLLER /////////////////////////////
+
+
+const dashboardUseCase = new DashboardUseCase(postRepo,userRepo)
+const dashboardController = new DashboardController(dashboardUseCase)
 
 router.post('/signin',(req,res)=>{
 
@@ -118,6 +128,12 @@ router.get('/post/reactions/:postId',(req,res)=>{
 
     
     postController.getPostReaction(req,res)
+
+});
+router.get('/dashboard/analytics',(req,res)=>{
+
+    
+    dashboardController.getAnalytics(req,res)
 
 });
 

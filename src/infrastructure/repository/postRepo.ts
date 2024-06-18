@@ -366,6 +366,16 @@ class PostReposotory implements IPostRepo {
       console.log(error);
     }
   }
+
+  async getTotalPostsAnalytics(): Promise<number | null | undefined> {
+    try {
+      const allPostsCount = await postModel.find({}).countDocuments();
+
+      return allPostsCount;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 export default PostReposotory;

@@ -16,14 +16,8 @@ const configureSocket = (server: any) => {
 
   io.on("connection", (socket: Socket) => {
     
-    socket.on("login",(userId)=>{
+  
 
-      onlineusers.add({userId:userId,socketId:socket.id})
-
-            
-    })
-
-    io.emit("online_users",onlineusers)
 
     socket.on("Chat", (selectedChat) => {
       const room = selectedChat;
@@ -41,7 +35,8 @@ const configureSocket = (server: any) => {
         
         if(user._id === newMessage.sender._id) return;
 
-        socket.in(chat._id).emit("message recived",newMessage)
+        io.to(chat._id).emit("message received",newMessage);
+        io.emit("message received",newMessage)
       });
 
     });

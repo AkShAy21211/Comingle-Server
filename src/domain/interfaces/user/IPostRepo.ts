@@ -14,6 +14,7 @@ interface IPostRepo{
     hideUnhidePost(postId:string):Promise<Posts|null|undefined>;
     getLikes(postId:string):Promise<Like|null|undefined>;
     getComments(postId:string):Promise<Comment|null|undefined>;
+    getTotalPostsAnalytics():Promise<any>;
     
 }
 

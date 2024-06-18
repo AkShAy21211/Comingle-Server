@@ -216,6 +216,85 @@ class UserReposotory implements IUserReop {
       console.log(error);
     }
   }
+
+  async getTotalUsersAnalytics(): Promise<any> {
+    try {
+     const result = await UserModel.aggregate([
+  {
+    $facet: {
+      totalUsers: [
+        { $match: {} },
+        { $count: "totalUsers" },
+      ],
+      blockedUsers: [
+        { $match: { isBlocked: true } },
+        { $count: "blockedUsers" },
+      ],
+      premiumUsers: [
+        { $match: { "profile.isPremium": true } },
+        { $count: "premiumUsers" },
+      ],
+      ageGroups: [
+        {
+          $bucket: {
+            groupBy: "$profile.age",
+            boundaries: [15, 25, 35], // Adjust boundaries as needed
+            default: "35+",
+            output: {
+              count: { $sum: 1 },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+           "<15": { $sum: { $cond: [{ $lt: ["$_id", 15] }, "$count", 0] } },
+            "15-25": { $sum: { $cond: [{ $and: [{ $gte: ["$_id", 15] }, { $lte: ["$_id", 25] }] }, "$count", 0] } },
+            "26-35": { $sum: { $cond: [{ $and: [{ $gte: ["$_id", 26] }, { $lte: ["$_id", 35] }] }, "$count", 0] } },
+            "35+": { $sum: { $cond: [{ $gt: ["$_id", 35] }, "$count", 0] } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            "<15": 1,
+            "15-25": 1,
+            "26-35": 1,
+            "35+": 1,
+          },
+        },
+      ],
+    },
+  },
+  {
+    $project: {
+      totalUsers: { $arrayElemAt: ["$totalUsers.totalUsers", 0] || 0 },
+      blockedUsers: { $arrayElemAt: ["$blockedUsers.blockedUsers", 0] || 0 },
+      premiumUsers: { $arrayElemAt: ["$premiumUsers.premiumUsers", 0] || 0 },
+      ageGroups: { $arrayElemAt: ["$ageGroups", 0] || {} },
+    },
+  },
+  {
+    $addFields: {
+      totalUsers: { $ifNull: ["$totalUsers", 0] },
+      blockedUsers: { $ifNull: ["$blockedUsers", 0] },
+      premiumUsers: { $ifNull: ["$premiumUsers", 0] },
+    },
+  },
+]);
+
+
+    
+      return result[0];
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
+
+const repo = new UserReposotory();
+
+repo.getTotalUsersAnalytics();
 
 export default UserReposotory;

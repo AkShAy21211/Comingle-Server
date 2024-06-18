@@ -19,6 +19,7 @@ interface IUserReop{
     fetchAllUsers():Promise<User[]|null|undefined>
     blockOrUnblockUser(id:string):Promise<User|null|undefined>;
     getUserByUsername(username:string):Promise<User|null|undefined>;
+    getTotalUsersAnalytics():Promise<any>;
 
 }
 

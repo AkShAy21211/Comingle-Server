@@ -49,11 +49,11 @@ class ProfileUseCase implements IProfileUserCase {
     type: string
   ): Promise<any> {
     try {
-      const imagePath = await uploadProfile(images, type);
+      const imagePath = await uploadProfile(images.path, type);
 
       const image = {
         [`${type === "background" ? "profile.background" : "profile.image"}`]:
-          imagePath.public_id,
+          imagePath.url,
       };
 
       const updateUser = await this._reposotory.updateUserProfileImages(
