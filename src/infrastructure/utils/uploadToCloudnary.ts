@@ -25,6 +25,7 @@ const uploadProfile = (path: string, folder: string) => {
 
 const uploadChats = async (file: Express.Multer.File, folderName: string) => {
   try {
+    
     // Upload file to Cloudinary
     const uploadResult: UploadApiResponse = await new Promise(
       (resolve, reject) => {
@@ -50,9 +51,10 @@ const uploadChats = async (file: Express.Multer.File, folderName: string) => {
 
    
 
+    
     return {
       url: uploadResult.secure_url,
-      resource: uploadResult.resource_type,
+      resource: uploadResult.is_audio?"audio":uploadResult.format==="pdf"?'pdf':uploadResult.resource_type,
     };
   } catch (error: any) {
     throw new Error(`Error uploading and saving file: ${error.message}`);
@@ -85,7 +87,6 @@ const uploadPosts = async (file: Express.Multer.File, folderName: string) => {
     );
 
    
-
     return {
       url: uploadResult.secure_url,
       resource: uploadResult.resource_type,

@@ -1,4 +1,4 @@
-import { User } from '../../../../../frontend/src/Interface/interface';
+import User from "../../entities/user"
 interface IUsersUseCase{
 
 

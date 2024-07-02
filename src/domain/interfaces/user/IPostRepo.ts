@@ -15,6 +15,13 @@ interface IPostRepo{
     getLikes(postId:string):Promise<Like|null|undefined>;
     getComments(postId:string):Promise<Comment|null|undefined>;
     getTotalPostsAnalytics():Promise<any>;
+    findPostsByUser(userId:string):Promise<any|null|undefined>;
+    deletePost(postId:string):Promise<any>;
+    deleteComment(postId:string,commentId:string):Promise<any>;
+    editComment(commentId:string,postId:string,newComment:string):Promise<any>;
+    editPost(postId:string,text:string):Promise<Posts|null|undefined>;
+    getSinglePost(postId:string):Promise<any>|null|undefined;
+
     
 }
 

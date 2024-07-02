@@ -13,6 +13,8 @@ class ChatUseCase implements IChatUseCase {
     private _messageRepo: IMessageReposotroy
   ) {}
 
+
+  
   async accessChat(participantId: string, currentUserId: string): Promise<any> {
     try {
       const existingChat = await this._chatRepo.findChat(
@@ -80,6 +82,15 @@ class ChatUseCase implements IChatUseCase {
         const results: { url: string; resource: string }[] = await Promise.all(
           files.map((file) => uploadChats(file, "chats"))
         );
+
+        
+        if (!results) {
+
+          return {
+            status: false,
+            message: "Error sending file please try again",
+          };
+        }
 
         results.forEach((result) => {
           uploadedFiles.push({ url: result.url, type: result.resource });

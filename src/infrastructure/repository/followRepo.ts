@@ -25,7 +25,6 @@ class FollowReposotory implements IFollowRepo {
       const followeres = await followModel
         .find({
           requester: id,
-
         })
         .lean();
       return followeres;
@@ -38,7 +37,6 @@ class FollowReposotory implements IFollowRepo {
       const followeres = await followModel
         .find({
           recipient: id,
-
         })
         .lean();
 
@@ -53,7 +51,6 @@ class FollowReposotory implements IFollowRepo {
     recipitent: string
   ): Promise<string | null | undefined> {
     try {
-
       const followStatus = await followModel
         .findOne({ requester: requesterId, recipient: recipitent })
         .lean();
@@ -72,13 +69,37 @@ class FollowReposotory implements IFollowRepo {
       const updatedFollowStatus = await followModel
         .findByIdAndUpdate(
           followId,
-          { $set: { status: status } },{new:true}
+          { $set: { status: status } },
+          { new: true }
         )
         .lean();
 
       return updatedFollowStatus;
     } catch (error) {
       console.log(error);
+    }
+  }
+  async getFollowRequestByuser(
+    requester: string
+  ): Promise<Follow[] | null | undefined> {
+    try {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const follows = await followModel
+        .find({
+          requester: requester,
+          createdAt: { $gte: startOfDay, $lte: endOfDay },
+        })
+        .lean();
+
+      return follows;
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 }

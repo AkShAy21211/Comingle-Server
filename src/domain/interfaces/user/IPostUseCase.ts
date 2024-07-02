@@ -9,6 +9,12 @@ interface IPostUseCase{
     commentPost(postId:string,userId:string,comment:string,):Promise<any>;
     unLikePost(postId:string,userId:string):Promise<any>;
     reportPost(postId:string,reason:string):Promise<any>;
+    deltePost(postId:string):Promise<any>;
+    deleteComment(commentId:string,postId:string):Promise<any>;
+    editComment(commentId:string,postId:string,newComment:string):Promise<any>;
+    editPost(postId: string,text:string): Promise<any>;
+    getSinglePost(postId:string):Promise<any>;
+
 
 }
 

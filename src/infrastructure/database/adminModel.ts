@@ -4,6 +4,7 @@ import Admin from "../../domain/entities/admin";
 
 const adminSchema = new mongoose.Schema<Admin>({
 
+    
     name:{
         type:String,
         required:true,

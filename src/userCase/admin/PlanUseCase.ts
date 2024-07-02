@@ -5,11 +5,11 @@ import IPremiumUserCase from "../../domain/interfaces/admin/IPlanUseCase";
 import ISubscriptionRepo from "../../domain/interfaces/razorpay/ISubscriptionRepo";
 
 class PlanUserCase implements IPlanUseCase {
-  constructor(private _subscriptionRepo: IPremiumPlanRepo) {}
+  constructor(private _subscriptionPlanRepo: IPremiumPlanRepo, private _subscriptionOrderRepo:ISubscriptionRepo) {}
 
   async getPlanBenifits(): Promise<any> {
     try {
-      const getPLan = await this._subscriptionRepo.getAllPlanDetail();
+      const getPLan = await this._subscriptionPlanRepo.getAllPlanDetail();
 
       if (getPLan) {
         return {
@@ -24,7 +24,7 @@ class PlanUserCase implements IPlanUseCase {
 
   async createPlan(data: PlanDetails): Promise<any> {
     try {
-      const newPlan = await this._subscriptionRepo.createNewPan(data);
+      const newPlan = await this._subscriptionPlanRepo.createNewPan(data);
 
       if (newPlan) {
         return {
@@ -44,7 +44,7 @@ class PlanUserCase implements IPlanUseCase {
 
   async updatePLan(data: PlanDetails): Promise<any> {
     try {
-      const updatedPlan = await this._subscriptionRepo.updatePlan(data);
+      const updatedPlan = await this._subscriptionPlanRepo.updatePlan(data);
 
       if (updatedPlan) {
         return {
@@ -60,6 +60,32 @@ class PlanUserCase implements IPlanUseCase {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getSubscribedUsers():Promise<any>{
+
+    try {
+      
+      const subscriptions =await this._subscriptionOrderRepo.getAllOrders();
+
+      if(subscriptions){
+
+        return {
+
+          status:true,
+          subscriptions:subscriptions
+        }
+      }
+
+      return {
+        status:false,
+        message:'No orders yet'
+      }
+    } catch (error) {
+      console.log(error);
+      
+    }
+
   }
 }
 

@@ -14,9 +14,9 @@ class AuthController  {
 
       if (signUpResponse?.status) {
         res
-          .cookie("adminToken", signUpResponse.token, {
+          .cookie("adminToken", signUpResponse.admin?.token, {
             expires: new Date(Date.now() + 25892000000),
-            secure: true,
+            secure: false,
             httpOnly: true,
           })
           .status(200)

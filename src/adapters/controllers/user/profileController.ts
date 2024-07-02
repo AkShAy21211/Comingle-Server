@@ -120,6 +120,23 @@ class ProfileController {
       console.log(error);
     }
   }
+
+  async searchUser(req: Request, res: Response): Promise<void> {
+    try {
+      const { name } = req.query;
+
+      const usersResponse = await this._profileUseCase.searchUser(name as string,req.user?.id as string);
+
+      if (usersResponse.status) {
+        res.status(200).json(usersResponse);
+      } else {
+        res.status(400).json(usersResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "internal server error" });
+      console.log(error);
+    }
+  }
 }
 
 export default ProfileController;

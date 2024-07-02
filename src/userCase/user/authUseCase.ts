@@ -24,8 +24,7 @@ class AuthUseCase implements IAuthUseCase {
         return { status: false, message: "All feilds required" };
       }
 
-      console.log(userData);
-      
+
       const userFound = await this._reposotory.findUserByemail(userData.email);
 
       if (userFound) {

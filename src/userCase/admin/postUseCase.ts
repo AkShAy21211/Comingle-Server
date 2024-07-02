@@ -57,7 +57,7 @@ class PostUseCase implements IPostUseCase {
       if (result) {
         return {
           status: true,
-          message: "Report deleted",
+          message: "Report dissmissed",
         };
       }
 

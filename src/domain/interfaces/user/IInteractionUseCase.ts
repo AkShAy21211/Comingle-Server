@@ -8,6 +8,9 @@ interface IInteractionUseCase{
     getAllNotifications(id:string):Promise<any>;
     getFollowRequestStatus(requester:string,recipitent:string):Promise<any>;
     acceptFollowRequest(followId:string,notificationId:string):Promise<any>;
+    findFriends(userId:string):Promise<any>;
+    findFriendsSuggestions(currentUser:string):Promise<any>;
+    removeFollowing(id:string,followingId:string):Promise<any>
 
 
 }

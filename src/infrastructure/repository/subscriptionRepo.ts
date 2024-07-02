@@ -36,6 +36,20 @@ class SubscriptionRepo implements ISubscriptionRepo {
       console.log(error);
     }
   }
+
+  async getAllOrders(): Promise<Subscription[] | null | undefined> {
+    
+    try {
+      
+      const subscriptions = await subscriptionModel.find({}).populate("userId","-password").sort({createdAt:-1}).lean();
+
+      return subscriptions;
+    } catch (error) {
+      
+      console.log(error);
+      
+    }
+  }
 }
 
 export default SubscriptionRepo;

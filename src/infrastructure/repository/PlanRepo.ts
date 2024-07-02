@@ -5,15 +5,18 @@ import planModel from "../database/planModel";
 import IPlanRepo from "../../domain/interfaces/admin/IPlanRepo";
 
 class PlanRepo implements IPlanRepo {
+
+  
   async getAllPlanDetail(): Promise<PlanDetails[] | null | undefined> {
     try {
-      const plans = await planModel.find().lean();
+      const plans = await planModel.find({}).lean();
       return plans;
     } catch (error) {
       console.log(error);
     }
   }
 
+  
   async createNewPan(
     data: PlanDetails
   ): Promise<PlanDetails | null | undefined> {
@@ -57,6 +60,8 @@ class PlanRepo implements IPlanRepo {
       console.log(error);
     }
   }
+
+  
 }
 
 export default PlanRepo;

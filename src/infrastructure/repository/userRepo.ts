@@ -31,7 +31,30 @@ class UserReposotory implements IUserReop {
       console.log(error);
     }
   }
+  async serachUserBynameOrEmail(
+    name: string,
+    currentUser: string
+  ): Promise<User[] | null | undefined> {
+    try {
+      const searchQuery = {
+        $and: [
+          {
+            $or: [
+              { name: { $regex: name, $options: "i" } },
+              { username: { $regex: name, $options: "i" } },
+              { email: { $regex: name, $options: "i" } },
+            ],
+          },
+          { _id: { $ne: currentUser } },
+        ],
+      };
+      const users = await UserModel.find(searchQuery).lean();
 
+      return users;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   async verifyUserStatus(email: string): Promise<any> {
     try {
       await UserModel.findOneAndUpdate(
@@ -181,10 +204,30 @@ class UserReposotory implements IUserReop {
     }
   }
 
+  async removeFollowing(
+    id: string,
+    following: string
+  ): Promise<User | null | undefined> {
+    try {
+      const updatedFollowers = await UserModel.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            "profile.following": following,
+          },
+        },
+        { new: true, useFindAndModify: false }
+      ).lean();
+
+      return updatedFollowers;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async fetchAllUsers(): Promise<User[] | null | undefined> {
     try {
       const users = await UserModel.find({}).lean();
-
       return users;
     } catch (error) {
       console.log(error);
@@ -219,76 +262,119 @@ class UserReposotory implements IUserReop {
 
   async getTotalUsersAnalytics(): Promise<any> {
     try {
-     const result = await UserModel.aggregate([
-  {
-    $facet: {
-      totalUsers: [
-        { $match: {} },
-        { $count: "totalUsers" },
-      ],
-      blockedUsers: [
-        { $match: { isBlocked: true } },
-        { $count: "blockedUsers" },
-      ],
-      premiumUsers: [
-        { $match: { "profile.isPremium": true } },
-        { $count: "premiumUsers" },
-      ],
-      ageGroups: [
+      const result = await UserModel.aggregate([
         {
-          $bucket: {
-            groupBy: "$profile.age",
-            boundaries: [15, 25, 35], // Adjust boundaries as needed
-            default: "35+",
-            output: {
-              count: { $sum: 1 },
-            },
-          },
-        },
-        {
-          $group: {
-            _id: null,
-           "<15": { $sum: { $cond: [{ $lt: ["$_id", 15] }, "$count", 0] } },
-            "15-25": { $sum: { $cond: [{ $and: [{ $gte: ["$_id", 15] }, { $lte: ["$_id", 25] }] }, "$count", 0] } },
-            "26-35": { $sum: { $cond: [{ $and: [{ $gte: ["$_id", 26] }, { $lte: ["$_id", 35] }] }, "$count", 0] } },
-            "35+": { $sum: { $cond: [{ $gt: ["$_id", 35] }, "$count", 0] } },
+          $facet: {
+            totalUsers: [{ $match: {} }, { $count: "totalUsers" }],
+            blockedUsers: [
+              { $match: { isBlocked: true } },
+              { $count: "blockedUsers" },
+            ],
+            premiumUsers: [
+              { $match: { "profile.isPremium": true } },
+              { $count: "premiumUsers" },
+            ],
+            ageGroups: [
+              {
+                $bucket: {
+                  groupBy: "$profile.age",
+                  boundaries: [15, 25, 35], // Adjust boundaries as needed
+                  default: "35+",
+                  output: {
+                    count: { $sum: 1 },
+                  },
+                },
+              },
+              {
+                $group: {
+                  _id: null,
+                  "<15": {
+                    $sum: { $cond: [{ $lt: ["$_id", 15] }, "$count", 0] },
+                  },
+                  "15-25": {
+                    $sum: {
+                      $cond: [
+                        {
+                          $and: [
+                            { $gte: ["$_id", 15] },
+                            { $lte: ["$_id", 25] },
+                          ],
+                        },
+                        "$count",
+                        0,
+                      ],
+                    },
+                  },
+                  "26-35": {
+                    $sum: {
+                      $cond: [
+                        {
+                          $and: [
+                            { $gte: ["$_id", 26] },
+                            { $lte: ["$_id", 35] },
+                          ],
+                        },
+                        "$count",
+                        0,
+                      ],
+                    },
+                  },
+                  "35+": {
+                    $sum: { $cond: [{ $gt: ["$_id", 35] }, "$count", 0] },
+                  },
+                },
+              },
+              {
+                $project: {
+                  _id: 0,
+                  "<15": 1,
+                  "15-25": 1,
+                  "26-35": 1,
+                  "35+": 1,
+                },
+              },
+            ],
           },
         },
         {
           $project: {
-            _id: 0,
-            "<15": 1,
-            "15-25": 1,
-            "26-35": 1,
-            "35+": 1,
+            totalUsers: { $arrayElemAt: ["$totalUsers.totalUsers", 0] || 0 },
+            blockedUsers: {
+              $arrayElemAt: ["$blockedUsers.blockedUsers", 0] || 0,
+            },
+            premiumUsers: {
+              $arrayElemAt: ["$premiumUsers.premiumUsers", 0] || 0,
+            },
+            ageGroups: { $arrayElemAt: ["$ageGroups", 0] || {} },
           },
         },
-      ],
-    },
-  },
-  {
-    $project: {
-      totalUsers: { $arrayElemAt: ["$totalUsers.totalUsers", 0] || 0 },
-      blockedUsers: { $arrayElemAt: ["$blockedUsers.blockedUsers", 0] || 0 },
-      premiumUsers: { $arrayElemAt: ["$premiumUsers.premiumUsers", 0] || 0 },
-      ageGroups: { $arrayElemAt: ["$ageGroups", 0] || {} },
-    },
-  },
-  {
-    $addFields: {
-      totalUsers: { $ifNull: ["$totalUsers", 0] },
-      blockedUsers: { $ifNull: ["$blockedUsers", 0] },
-      premiumUsers: { $ifNull: ["$premiumUsers", 0] },
-    },
-  },
-]);
+        {
+          $addFields: {
+            totalUsers: { $ifNull: ["$totalUsers", 0] },
+            blockedUsers: { $ifNull: ["$blockedUsers", 0] },
+            premiumUsers: { $ifNull: ["$premiumUsers", 0] },
+          },
+        },
+      ]);
 
-
-    
       return result[0];
     } catch (error) {
       console.log(error);
       return null;
+    }
+  }
+
+  async findFriends(userId: string): Promise<User | null | undefined> {
+    try {
+      console.log("-------------", userId);
+
+      const friends = await UserModel.findById(userId)
+        .populate("profile.followers")
+        .populate("profile.following");
+
+      return friends;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

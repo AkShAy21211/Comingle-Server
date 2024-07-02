@@ -15,11 +15,14 @@ interface IUserReop{
     getAllUsers(id:string):Promise<User[] | null | undefined>;
     findUsername(username:string):Promise<User|null|undefined>;
     addFollowings(id:string,following:string):Promise<User| null|undefined>
+    removeFollowing(id:string,following:string):Promise<User| null|undefined>;
     addFollowers(id:string,following:string):Promise<User| null|undefined>
     fetchAllUsers():Promise<User[]|null|undefined>
     blockOrUnblockUser(id:string):Promise<User|null|undefined>;
     getUserByUsername(username:string):Promise<User|null|undefined>;
     getTotalUsersAnalytics():Promise<any>;
+    findFriends(userId:string):Promise<User|null|undefined>;
+    serachUserBynameOrEmail(name:string, currentUser:string):Promise<User[]|null|undefined>;
 
 }
 

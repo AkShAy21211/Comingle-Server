@@ -39,7 +39,7 @@ class MessageReposotory implements IMessageReposotroy {
     try {
       const messages = await MessageModel.find({ chat: chatId })
         .populate("sender", "-password")
-        .populate("chat").sort({createdAt:-1}).lean()
+        .populate("chat").sort({createdAt:1}).lean()
 
         return messages;
 

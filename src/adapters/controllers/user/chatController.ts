@@ -29,6 +29,8 @@ class ChatController {
         req.user?.id as string
       );
 
+      console.log(req.user?.id);
+      
       if (allChatResponse.status) {
         res.status(200).json(allChatResponse);
       } else {
@@ -48,12 +50,14 @@ class ChatController {
         req.files as Express.Multer.File[];
 
         
+        
       const newMessage = await this._chatUseCase.sendMessage(
         req.user?.id as string,
         chatId,
         message,
         files
       );
+        console.log('fdsdsssssssssssssssssssssssssssssssss',newMessage);
 
       if (newMessage.status) {
         res.status(201).json(newMessage);

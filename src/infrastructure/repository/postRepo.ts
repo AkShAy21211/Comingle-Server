@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose, { mongo, Types } from "mongoose";
 import Like from "../../domain/entities/like";
 import Posts from "../../domain/entities/post";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
@@ -7,7 +7,6 @@ import postModel from "../database/postModel";
 import PostModel from "../database/postModel";
 import Comment, { UpdatedCommetn } from "../../domain/entities/comment";
 import commentModel from "../database/commentModal";
-import { log } from "console";
 
 class PostReposotory implements IPostRepo {
   async createPost(
@@ -110,13 +109,13 @@ class PostReposotory implements IPostRepo {
         {
           $unwind: {
             path: "$comments",
-            preserveNullAndEmptyArrays: true, // Preserve posts without comments
+            preserveNullAndEmptyArrays: true,
           },
         },
         {
           $unwind: {
             path: "$comments.comment",
-            preserveNullAndEmptyArrays: true, // Preserve posts without comments
+            preserveNullAndEmptyArrays: true, 
           },
         },
 
@@ -148,9 +147,11 @@ class PostReposotory implements IPostRepo {
                   comment: "$comments.comment.comment",
                   _id: "$comments.comment._id",
                   commenter: "$comments.comment.userDetails.username",
+                  commentedUserId: "$comments.comment.userDetails._id",
+                  isPremium: "$comments.comment.userDetails.profile.isPremium",
                   commenterImage: "$comments.comment.userDetails.profile.image",
                   createdAt: "$comments.comment.createdAt",
-                }, // Get the first user details
+                }, 
               },
             },
             likes: { $first: "$likes" },
@@ -372,6 +373,350 @@ class PostReposotory implements IPostRepo {
       const allPostsCount = await postModel.find({}).countDocuments();
 
       return allPostsCount;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async findPostsByUser(userId: string): Promise<any | null | undefined> {
+    try {
+      const pipeline: any[] = [
+        {
+          $match: { userId: userId },
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+        {
+          $lookup: {
+            from: "comments",
+            localField: "comments",
+            foreignField: "_id",
+            as: "comments",
+          },
+        },
+        {
+          $lookup: {
+            from: "likes",
+            localField: "likes",
+            foreignField: "_id",
+            as: "likes",
+          },
+        },
+        {
+          $unwind: {
+            path: "$likes",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
+        {
+          $lookup: {
+            from: "users",
+            let: { userId: "$userId" },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$userId"] } } },
+              { $project: { username: 1, "profile.image": 1 } },
+            ],
+            as: "postUserDetails",
+          },
+        },
+        {
+          $addFields: {
+            postUserName: { $arrayElemAt: ["$postUserDetails", 0] },
+          },
+        },
+        {
+          $unwind: {
+            path: "$comments",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $unwind: {
+            path: "$comments.comment",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.comment.userId",
+            foreignField: "_id",
+            as: "comments.comment.userDetails",
+          },
+        },
+        {
+          $addFields: {
+            "comments.comment.userDetails": {
+              $arrayElemAt: ["$comments.comment.userDetails", 0],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            comments: {
+              $push: {
+                _id: "$comments._id",
+                comment: {
+                  comment: "$comments.comment.comment",
+                  _id: "$comments.comment._id",
+                  commenter: "$comments.comment.userDetails.username",
+                  commentedUserId: "$comments.comment.userDetails._id",
+                  isPremium: "$comments.comment.userDetails.profile.isPremium",
+                  commenterImage: "$comments.comment.userDetails.profile.image",
+                  createdAt: "$comments.comment.createdAt",
+                },
+              },
+            },
+            likes: { $first: "$likes" },
+            postedUser: { $first: "$postUserName" },
+            image: { $first: "$image" },
+            description: { $first: "$description" },
+            isHidden: { $first: "$isHidden" },
+            createdAt: { $first: "$createdAt" },
+            updatedAt: { $first: "$updatedAt" },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            comments: {
+              $cond: {
+                if: { $isArray: "$comments.comment" },
+                then: "$comments.comment",
+                else: [],
+              },
+            },
+            likes: {
+              $cond: {
+                if: "$likes",
+                then: "$likes",
+                else: {}, // If likes is not an array (should not happen), return empty array
+              },
+            },
+            postedUser: 1,
+            image: 1,
+            description: 1,
+            isHidden: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        },
+      ];
+
+      const posts = await postModel.aggregate(pipeline);
+      return posts;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  async deletePost(postId: string): Promise<any> {
+    try {
+      const deltePost = await postModel.findByIdAndDelete(postId);
+
+      return deltePost;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteComment(postId: string, commentId: string): Promise<any> {
+    try {
+      console.log("------------", commentId, postId);
+
+      const deletedComment = await commentModel.findOneAndUpdate(
+        { postId: postId },
+        { $pull: { comment: { _id: commentId } } },
+        { new: true }
+      );
+
+      return deletedComment;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async editComment(
+    commentId: string,
+    postId: string,
+    newComment: string
+  ): Promise<any> {
+    try {
+      let editedComment;
+      await commentModel
+        .findOneAndUpdate(
+          { postId: postId, "comment._id": commentId },
+          { $set: { "comment.$.comment": newComment } },
+          { new: true }
+        )
+        .then(async (data) => {
+          await data
+            ?.populate("comment.userId", "username profile.image")
+            .then(async (data) => {
+              const updatedComent: any = data.comment[data.comment.length - 1];
+
+              editedComment = {
+                _id: updatedComent._id,
+                commenter: updatedComent.userId.username,
+                comment: updatedComent.comment,
+                commenterImage: updatedComent.userId.profile.image,
+                createdAt: updatedComent.createdAt,
+              };
+            });
+        });
+
+      return editedComment;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async editPost(
+    postId: string,
+    text: string
+  ): Promise<any> {
+    try {
+      const editedPost = await postModel.findByIdAndUpdate(postId, {
+        $set: { description: text },
+      });
+
+      return editedPost;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async getSinglePost(postId: string): Promise<any | null | undefined> {
+    try {
+      const pipeline: any = [
+        {
+          $match: { _id: new Types.ObjectId(postId) },
+        },
+    
+        {
+          $lookup: {
+            from: "comments",
+            localField: "comments",
+            foreignField: "_id",
+            as: "comments",
+          },
+        },
+        {
+          $lookup: {
+            from: "likes",
+            localField: "likes",
+            foreignField: "_id",
+            as: "likes",
+          },
+        },
+        {
+          $unwind: {
+            path: "$likes",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
+        {
+          $lookup: {
+            from: "users",
+            let: { userId: "$userId" },
+            pipeline: [
+              { $match: { $expr: { $eq: ["$_id", "$$userId"] } } },
+              { $project: { username: 1, "profile.image": 1 } },
+            ],
+            as: "postUserDetails",
+          },
+        },
+        {
+          $addFields: {
+            postUserName: { $arrayElemAt: ["$postUserDetails", 0] },
+          },
+        },
+        {
+          $unwind: {
+            path: "$comments",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $unwind: {
+            path: "$comments.comment",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "comments.comment.userId",
+            foreignField: "_id",
+            as: "comments.comment.userDetails",
+          },
+        },
+        {
+          $addFields: {
+            "comments.comment.userDetails": {
+              $arrayElemAt: ["$comments.comment.userDetails", 0],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            comments: {
+              $push: {
+                _id: "$comments._id",
+                comment: {
+                  comment: "$comments.comment.comment",
+                  _id: "$comments.comment._id",
+                  commenter: "$comments.comment.userDetails.username",
+                  commentedUserId: "$comments.comment.userDetails._id",
+                  isPremium: "$comments.comment.userDetails.profile.isPremium",
+                  commenterImage: "$comments.comment.userDetails.profile.image",
+                  createdAt: "$comments.comment.createdAt",
+                },
+              },
+            },
+            likes: { $first: "$likes" },
+            postedUser: { $first: "$postUserName" },
+            image: { $first: "$image" },
+            description: { $first: "$description" },
+            isHidden: { $first: "$isHidden" },
+            createdAt: { $first: "$createdAt" },
+            updatedAt: { $first: "$updatedAt" },
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            comments: {
+              $cond: {
+                if: { $isArray: "$comments.comment" },
+                then: "$comments.comment",
+                else: [],
+              },
+            },
+            likes: {
+              $cond: {
+                if: "$likes",
+                then: "$likes",
+                else: {}, // If likes is not an array (should not happen), return empty array
+              },
+            },
+            postedUser: 1,
+            image: 1,
+            description: 1,
+            isHidden: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
+        },
+      ];
+
+      const posts = await postModel.aggregate(pipeline);
+      return posts;
+
     } catch (error) {
       console.log(error);
     }

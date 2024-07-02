@@ -1,3 +1,4 @@
+import IPlanRepo from "../../domain/interfaces/admin/IPlanRepo";
 import ISubscriptionManager from "../../domain/interfaces/razorpay/ISubscriptionManager";
 import ISubscriptionRepo from "../../domain/interfaces/razorpay/ISubscriptionRepo";
 import ISubscriptionUseCase from "../../domain/interfaces/razorpay/ISubscriptionUseCase";
@@ -7,15 +8,35 @@ class SubscriptionUseCase implements ISubscriptionUseCase {
   constructor(
     private _razorpay: ISubscriptionManager,
     private _subscriptionRepo: ISubscriptionRepo,
+    private _planRepo: IPlanRepo,
     private _userReop: IUserReop
   ) {}
+
+  async getPlans(): Promise<any> {
+    try {
+      const plans = await this._planRepo.getAllPlanDetail();
+
+      if (plans) {
+        return {
+          status: true,
+          plans: plans,
+        };
+      }
+
+      return {
+        status: false,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async handleSubscription(userId: string, amount: number): Promise<any> {
     try {
       const orderId = this._razorpay.generateRecieptId();
 
       const options = {
-        amount: amount*100,
+        amount: amount * 100,
         currency: "INR",
       };
 
@@ -47,13 +68,13 @@ class SubscriptionUseCase implements ISubscriptionUseCase {
     product: string
   ): Promise<any> {
     try {
-   
-      console.log( userId,
+      console.log(
+        userId,
         amount,
         razorpay_order_id,
         razorpay_payment_id,
-        product);
-      
+        product
+      );
 
       const order = await this._subscriptionRepo.createNewOrder(
         userId,

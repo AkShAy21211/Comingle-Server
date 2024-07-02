@@ -9,6 +9,7 @@ import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
 import { uploadProfile } from "../../infrastructure/utils/uploadToCloudnary";
 import { log } from "console";
+import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 
 class ProfileUseCase implements IProfileUserCase {
   constructor(
@@ -17,7 +18,8 @@ class ProfileUseCase implements IProfileUserCase {
     private _bcrypt: Bcrypt,
     private _generateOtp: GenerateOtp,
     private _OtpRepo: OtpReposotory,
-    private _sendMail: NodeMailer
+    private _sendMail: NodeMailer,
+    private _postRepo: IPostRepo
   ) {}
 
   async getUserProfile(id: string): Promise<any> {
@@ -26,11 +28,13 @@ class ProfileUseCase implements IProfileUserCase {
         _id: id,
       };
       const user = await this._reposotory.findUserById(userToFind);
+      const posts = await this._postRepo.findPostsByUser(user?._id as string);
 
       if (user) {
         return {
           status: true,
           user: user,
+          posts: posts,
         };
       } else {
         return {
@@ -157,32 +161,51 @@ class ProfileUseCase implements IProfileUserCase {
         };
       }
     } catch (error) {
-
       console.log(error);
-      
     }
   }
 
   async getOtherUserProfile(username: string): Promise<any> {
     try {
-      
+      const user = await this._reposotory.getUserByUsername(username);
+      const posts = await this._postRepo.findPostsByUser(user?._id as string);
 
-      const user =  await this._reposotory.getUserByUsername(username);
-
-
-      if(user){
+      if (user) {
         return {
-          status:true,
-          user:user
-        }
+          status: true,
+          user: user,
+          posts: posts,
+        };
       }
       return {
-        status:false,
-        message:"User not found or error"
-      }
+        status: false,
+        message: "User not found or error",
+      };
     } catch (error) {
       console.log(error);
-      
+    }
+  }
+
+  async searchUser(name: string, currentUser: string): Promise<any> {
+    try {
+      const users = await this._reposotory.serachUserBynameOrEmail(
+        name,
+        currentUser
+      );
+
+      if (users) {
+        return {
+          status: true,
+          users: users,
+        };
+      }
+
+      return {
+        status: false,
+        message: "NO users found",
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 }

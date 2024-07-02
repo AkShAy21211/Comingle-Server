@@ -7,11 +7,13 @@ import NotificationDetails from "../../domain/enum/notification";
 import notificationModel from "../../infrastructure/database/notificationModel";
 import mongoose from "mongoose";
 import IReportRepo from "../../domain/interfaces/user/IReportReopo";
+import IEngagementRepo from "../../domain/interfaces/admin/IEngagementRepo";
 class PostUseCase implements IPostUseCase {
   constructor(
     private _postRepo: IPostRepo,
     private _notficationRepo: INotificationRepo,
-    private _reportRepo: IReportRepo
+    private _reportRepo: IReportRepo,
+    private _engagementRepo: IEngagementRepo
   ) {}
 
   async createNewPost(
@@ -20,33 +22,44 @@ class PostUseCase implements IPostUseCase {
     text: string
   ): Promise<any> {
     try {
-      const results:{url:string,resource:string}[] = await Promise.all(
-        images.map((file) => {
-          return uploadPosts(file, "posts");
-        })
-      );
+      let results: { url: string; resource: string }[];
+      let uploadedFiles: { url: string; type: string }[] = [];
 
-       let arr:{url:string,type:string}[] = []
+      if (images.length) {
+        results = await Promise.all(
+          images.map((file) => {
+            return uploadPosts(file, "posts");
+          })
+        );
 
-      if(results.length===0){
-        arr.push({url:results[0].url,type:results[0].resource})
-      }else{
-        results.forEach((result) => {
-          arr.push({ url: result.url, type: result.resource });
-        });
+        if (results.length === 0) {
+          uploadedFiles.push({
+            url: results[0].url,
+            type: results[0].resource,
+          });
+        } else {
+          results.forEach((result) => {
+            uploadedFiles.push({ url: result.url, type: result.resource });
+          });
+        }
       }
 
-      
-    
-      console.log(arr);
-      
-      
-    
       const newPost = await this._postRepo.createPost(
         userID,
-        arr,
+        uploadedFiles,
         text
       );
+
+      const existiingEngagement =
+        await this._engagementRepo.findEngagementOfTheDay();
+      if (existiingEngagement) {
+        await this._engagementRepo.updateEngagement("postCount");
+      } else {
+        await this._engagementRepo.createEngagements({
+          type: "postCount",
+          count: 1,
+        });
+      }
 
       if (newPost) {
         return {
@@ -64,9 +77,9 @@ class PostUseCase implements IPostUseCase {
     }
   }
 
-  async getAllPosts(page: number,isAdminRequest:boolean): Promise<any> {
+  async getAllPosts(page: number, isAdminRequest: boolean): Promise<any> {
     try {
-      const allPosts = await this._postRepo.getAllposts(page,isAdminRequest);
+      const allPosts = await this._postRepo.getAllposts(page, isAdminRequest);
 
       if (allPosts) {
         return {
@@ -93,15 +106,24 @@ class PostUseCase implements IPostUseCase {
       const likePost = await this._postRepo.likePost(postId, userId);
 
       if (likePost) {
-        if (authorId !== userId) {
-          await this._notficationRepo.createNotification(
-            authorId,
-            NotificationDetails.like.displayName,
-            NotificationDetails.like.content,
-            likePost._id
-          );
+        // if (authorId !== userId) {
+        //   await this._notficationRepo.createNotification(
+        //     authorId,
+        //     NotificationDetails.like.displayName,
+        //     NotificationDetails.like.content,
+        //     likePost._id
+        //   );
+        // }
+        const existiingEngagement =
+          await this._engagementRepo.findEngagementOfTheDay();
+        if (existiingEngagement) {
+          await this._engagementRepo.updateEngagement("likeConut");
+        } else {
+          await this._engagementRepo.createEngagements({
+            type: "likeConut",
+            count: 1,
+          });
         }
-
         return {
           status: true,
           likes: likePost,
@@ -144,8 +166,16 @@ class PostUseCase implements IPostUseCase {
       );
 
       if (commentPost) {
-        console.log("------------------------------", commentPost);
-
+        const existiingEngagement =
+          await this._engagementRepo.findEngagementOfTheDay();
+        if (existiingEngagement) {
+          await this._engagementRepo.updateEngagement("commentCount");
+        } else {
+          await this._engagementRepo.createEngagements({
+            type: "commentCount",
+            count: 1,
+          });
+        }
         return {
           status: true,
           comment: commentPost,
@@ -177,9 +207,115 @@ class PostUseCase implements IPostUseCase {
         };
       }
     } catch (error) {
-
       console.log(error);
-      
+    }
+  }
+
+  async deltePost(postId: string): Promise<any> {
+    try {
+      const deletePost = await this._postRepo.deletePost(postId);
+
+      if (deletePost) {
+        return {
+          status: true,
+          message: "Post deleted",
+        };
+      }
+
+      return {
+        status: true,
+        message: "Something went wrong please retry",
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async editPost(postId: string, text: string): Promise<any> {
+    try {
+      const editPost = await this._postRepo.editPost(postId, text);
+
+      if (editPost) {
+        return {
+          status: true,
+          message: "Post edited",
+        };
+      }
+
+      return {
+        status: true,
+        message: "Something went wrong please retry",
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteComment(commentId: string, postId: string): Promise<any> {
+    try {
+      const deteComment = await this._postRepo.deleteComment(postId, commentId);
+
+      if (deteComment) {
+        return {
+          status: true,
+          message: "Comment deleted",
+        };
+      }
+
+      return {
+        status: false,
+        message: "Something went wrong please try again",
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async editComment(
+    commentId: string,
+    postId: string,
+    newComment: string
+  ): Promise<any> {
+    try {
+      const comment = await this._postRepo.editComment(
+        commentId,
+        postId,
+        newComment
+      );
+
+      if (comment) {
+        return {
+          status: true,
+          comment,
+          message: "Comment edited",
+        };
+      }
+
+      return {
+        status: false,
+        message: "Something went wrong please try again",
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getSinglePost(postId: string): Promise<any> {
+    try {
+      const post = await this._postRepo.getSinglePost(postId);
+
+      if (post) {
+        return {
+          status: true,
+          post,
+        };
+      }
+
+      return {
+        status: false,
+        message: "Post not found",
+      };
+    } catch (error) {
+      console.log(error);
     }
   }
 }
