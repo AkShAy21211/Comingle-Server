@@ -16,6 +16,21 @@ class UserController {
     }
   }
 
+   async adminGetUsers(req: Request, res: Response): Promise<void> {
+    try {
+      const {page,limit} = req.query as any;
+      
+      const userResponse = await this._userUseCase.fetchAlluserAdmin(page,limit);
+
+      if (userResponse) {
+        res.status(200).json(userResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ messsage: "Internal server error" });
+      console.log(error);
+    }
+  }
+
   async blockAndUnblaockUser(req:Request,res:Response):Promise<void>{
 
     try {

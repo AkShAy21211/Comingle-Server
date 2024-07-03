@@ -233,6 +233,19 @@ class UserReposotory implements IUserReop {
       console.log(error);
     }
   }
+  async getAllusers(page: number, limit: number): Promise<any> {
+    try {
+      const users = await UserModel.find({})
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+
+      const total = await UserModel.countDocuments({});
+      return { total, users };
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async blockOrUnblockUser(id: string): Promise<User | null | undefined> {
     try {

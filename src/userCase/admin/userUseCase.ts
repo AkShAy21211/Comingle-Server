@@ -15,6 +15,15 @@ class UserUseCase implements IUsersUseCase {
     }
   }
 
+  async fetchAlluserAdmin(page: number, limit: number): Promise<any> {
+    try {
+      const { users, total } = await this._userRepo.getAllusers(page, limit);
+      return { users, total };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async blockAndUnblockUser(id: string): Promise<any> {
     try {
       const user = await this._userRepo.blockOrUnblockUser(id);

@@ -84,7 +84,6 @@ class ChatReposotory implements IChatReposotory {
   async updateChat(id: string, message: Message): Promise<void> {
     try {
 
-      console.log('----------------------',id,message);
       
       await chatModel.findByIdAndUpdate(id, {
         latestMessage: message ,

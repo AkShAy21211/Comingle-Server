@@ -29,7 +29,6 @@ class ChatController {
         req.user?.id as string
       );
 
-      console.log(req.user?.id);
       
       if (allChatResponse.status) {
         res.status(200).json(allChatResponse);
@@ -57,7 +56,6 @@ class ChatController {
         message,
         files
       );
-        console.log('fdsdsssssssssssssssssssssssssssssssss',newMessage);
 
       if (newMessage.status) {
         res.status(201).json(newMessage);

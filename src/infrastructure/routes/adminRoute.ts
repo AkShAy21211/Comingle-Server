@@ -58,7 +58,7 @@ router.post("/signin", (req, res) => {
 });
 
 router.get("/users", authenticate, (req, res) => {
-  userController.getUsers(req, res);
+  userController.adminGetUsers(req, res);
 });
 
 router.get("/subscription/get-plans", authenticate, (req, res) => {

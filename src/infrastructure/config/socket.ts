@@ -28,10 +28,6 @@ const configureSocket = (server: any) => {
 
     console.log("onine users", onlineusers.keys());
 
-    socket.on("chat initilize", (room) => {
-      socket.join(room);
-    });
-
     socket.on("initialize:video-chat", ({ roomId, userId }) => {
       console.log("user inted ved", roomId, userId);
 
@@ -58,16 +54,23 @@ const configureSocket = (server: any) => {
       io.to(to).emit("peer:nego:final", { from: to, ans });
     });
 
-    socket.on("message", (newMessage) => {
-      const chat = newMessage.chat;
+    socket.on("chat initilize", (room) => {
+      console.log("new   user", room);
+
+      socket.join(room);
+    });
+
+    socket.on("message", ({ message, room }) => {
+      const chat = message.chat;
+      console.log("new message from user", message);
 
       if (!chat.participants) return console.log("Chat participants not found");
 
       chat.participants.forEach((user: any) => {
-        if (user._id === newMessage.sender._id)
-          socket.emit("new message sent", newMessage);
+        if (user._id === message.sender._id)
+          socket.emit("new message sent", { message, room });
 
-        socket.in(user._id).emit("message received", newMessage);
+        socket.in(room).emit("message received", { message, room });
       });
     });
 
@@ -100,13 +103,13 @@ const configureSocket = (server: any) => {
         }
       });
 
-      /////////////////Admin socket events/////////////////
+      // /////////////////Admin socket events/////////////////
 
-      socket.on("admin_block_user", (userId) => {
-        io.to(userId).emit("user_blocked", {
-          reason: "You have been blocked by the admin.",
-        });
-      });
+      // socket.on("admin_block_user", (userId) => {
+      //   io.to(userId).emit("user_blocked", {
+      //     reason: "You have been blocked by the admin.",
+      //   });
+      // });
 
       if (!disconnectedUserId) {
         console.log(`Could not find userId for socket: ${socket.id}`);

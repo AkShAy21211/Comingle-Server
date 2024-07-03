@@ -6,7 +6,7 @@ interface IPostRepo{
 
 
     createPost(userId:string,content:{url:string,type:string}[],text:string):Promise<Posts|null|undefined>;
-    getAllposts(page:number,isAdminRequest:boolean):Promise<Posts[]|null|undefined>
+    getAllposts(page:number,isAdminRequest:boolean):Promise<Posts[]|any|null|undefined>
     likePost(postId:string,userId:string):Promise<Like|null|undefined>
     commentPost(postId:string,userId:string,comment:string):Promise<Comment|null|undefined>;
     findPostLikes(id:string):Promise<Like|null|undefined>;

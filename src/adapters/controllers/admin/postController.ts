@@ -8,6 +8,8 @@ class PostController {
   async getAlllPosts(req: Request, res: Response): Promise<void> {
     try {
       const { page } = req.params;
+      console.log('page',page);
+      
       const isAdminRequest = req.baseUrl === "/admin" ? true : false;
 
       const posts = await this._postUseCase.getAllPostsDetails(

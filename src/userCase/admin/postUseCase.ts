@@ -17,8 +17,8 @@ class PostUseCase implements IPostUseCase {
       if (posts) {
         return {
           status: true,
-          posts: posts,
-          retports: reports,
+          posts,
+          reports,
         };
       } else {
         return {
@@ -75,12 +75,11 @@ class PostUseCase implements IPostUseCase {
       const postLikes = await this._postRepo.getLikes(postId);
       const postComments = await this._postRepo.getComments(postId);
 
-        return {
-          status: true,
-          likes: postLikes || null,
-          comments: postComments || null,
-        };
-     
+      return {
+        status: true,
+        likes: postLikes || null,
+        comments: postComments || null,
+      };
     } catch (error) {
       console.log(error);
     }

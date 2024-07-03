@@ -23,7 +23,7 @@ interface IUserReop{
     getTotalUsersAnalytics():Promise<any>;
     findFriends(userId:string):Promise<User|null|undefined>;
     serachUserBynameOrEmail(name:string, currentUser:string):Promise<User[]|null|undefined>;
-
+    getAllusers(page: number, limit: number): Promise<any>
 }
 
 
