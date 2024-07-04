@@ -1,9 +1,7 @@
 import { Socket, Server } from "socket.io";
-import { log } from "console";
 
 const onlineusers = new Map<string, Socket>();
-const rooms = new Map();
-const socketToIdMap = new Map();
+const rooms: Record<string, Set<string>> = {};
 
 const configureSocket = (server: any) => {
   const io = new Server(server, {
@@ -15,8 +13,6 @@ const configureSocket = (server: any) => {
 
   io.on("connection", (socket: Socket) => {
     socket.on("login", ({ userId }) => {
-      console.log("user connected", userId);
-
       onlineusers.set(userId, socket);
       socket.join(userId);
       socket.broadcast.emit("onlineUsers", Array.from(onlineusers.keys()));
@@ -26,39 +22,53 @@ const configureSocket = (server: any) => {
       socket.emit("onlineUsers", Array.from(onlineusers.keys()));
     });
 
-    console.log("onine users", onlineusers.keys());
+    /////////////////// vedio chat ///////////////////
 
-    socket.on("initialize:video-chat", ({ roomId, userId }) => {
-      console.log("user inted ved", roomId, userId);
-
-      rooms.set(userId, socket.id);
-      socketToIdMap.set(socket.id, userId);
-      io.to(roomId).emit("user:joined", { userId, id: socket.id });
-      socket.join(roomId);
-      io.to(socket.id).emit("join:room", { roomId, userId });
-    });
-
-    socket.on("user:call", ({ to, offer }) => {
-      io.to(to).emit("incomming:call", { from: socket.id, offer });
-    });
-
-    socket.on("call:accepted", ({ to, ans }) => {
-      io.to(to).emit("call:accepted", { from: socket.id, ans });
-    });
-
-    socket.on("peer:nego:needed", ({ to, offer }) => {
-      io.to(to).emit("peer:nego:needed", { from: socket.id, offer });
-    });
-
-    socket.on("peer:nego:done", ({ to, ans }) => {
-      io.to(to).emit("peer:nego:final", { from: to, ans });
-    });
-
-    socket.on("chat initilize", (room) => {
-      console.log("new   user", room);
-
+    socket.on("chat:start", ({ room, peerId }) => {
       socket.join(room);
+
+      if (!rooms[room]) {
+        rooms[room] = new Set();
+        console.log(`Created new room: ${room}`);
+      }
+      rooms[room].add(peerId);
+
+      io.to(room).emit("get:users", {
+        room,
+        members: Array.from(rooms[room]),
+      });
+      console.log("user jpined", rooms[room]);
     });
+
+    socket.on("exit:chat", ({ peerId, room }) => {
+      if (rooms[room]) {
+        const deletedUser = rooms[room].delete(peerId);
+
+        if (deletedUser) {
+          console.log("user exit done", deletedUser);
+          io.emit("user:left", {
+            room,
+            members: Array.from(rooms[room]),
+          });
+        }
+      }
+    });
+
+    socket.on("calluser", ({ room, peerId, name }) => {
+      socket.to(room).emit("incommingCall", { from: peerId, name, room });
+    });
+
+    socket.on("call:rejcted", ({ room }) => {
+      socket.to(room).emit("call:rejcted", { message: "call rejected" });
+    });
+
+    socket.on("audio:status", ({ room }) => {
+      socket.to(room).emit("audio:status");
+    });
+    socket.on("vedio:status", ({ room }) => {
+      socket.to(room).emit("vedio:status");
+    });
+    ////////////// HANDLE NORMAL CHAT EVENTS//////////////////////////
 
     socket.on("message", ({ message, room }) => {
       const chat = message.chat;
@@ -84,8 +94,6 @@ const configureSocket = (server: any) => {
     /////////////////Admin socket events/////////////////
 
     socket.on("admin_block_user", (userId) => {
-      console.log("Admin blocking user", userId);
-
       io.to(userId).emit("user_blocked", {
         userId: userId,
         reason: "You have been blocked by the admin.",
@@ -102,18 +110,6 @@ const configureSocket = (server: any) => {
           return;
         }
       });
-
-      // /////////////////Admin socket events/////////////////
-
-      // socket.on("admin_block_user", (userId) => {
-      //   io.to(userId).emit("user_blocked", {
-      //     reason: "You have been blocked by the admin.",
-      //   });
-      // });
-
-      if (!disconnectedUserId) {
-        console.log(`Could not find userId for socket: ${socket.id}`);
-      }
     });
   });
 };

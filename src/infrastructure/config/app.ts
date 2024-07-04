@@ -8,14 +8,11 @@ import userRoute from "../routes/userRoute";
 import adminRote from "../routes/adminRoute";
 import "../config/passport";
 import configureSocket from "./socket";
-import { ExpressPeerServer } from "peer";
 export const expressServer = () => {
   try {
     const app = express();
     const server = http.createServer(app);
-    const peerServer = ExpressPeerServer(server, {
-      path: "/server", 
-    });
+   
     app.use(express.urlencoded({ extended: true }));
     app.use(
       express.json({
@@ -40,7 +37,6 @@ export const expressServer = () => {
 
     app.use("/user", userRoute);
     app.use("/admin", adminRote);
-    app.use("/peerjs", peerServer);
 
     configureSocket(server);
 
