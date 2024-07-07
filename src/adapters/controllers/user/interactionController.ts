@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
 import InteractionUseCase from "../../../userCase/user/interactionUseCase";
-import UserReposotory from "../../../infrastructure/repository/userRepo";
-import IUserReop from "../../../domain/interfaces/user/IUserRepo";
-import { User } from "../../../../../frontend/src/Interface/interface";
 
 class InteractionController {
   constructor(private _interactionUseCase: InteractionUseCase) {}

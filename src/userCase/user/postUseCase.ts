@@ -5,7 +5,6 @@ import IPostUseCase from "../../domain/interfaces/user/IPostUseCase";
 import { uploadPosts } from "../../infrastructure/utils/uploadToCloudnary";
 import NotificationDetails from "../../domain/enum/notification";
 import notificationModel from "../../infrastructure/database/notificationModel";
-import mongoose from "mongoose";
 import IReportRepo from "../../domain/interfaces/user/IReportReopo";
 import IEngagementRepo from "../../domain/interfaces/admin/IEngagementRepo";
 class PostUseCase implements IPostUseCase {
@@ -106,14 +105,14 @@ class PostUseCase implements IPostUseCase {
       const likePost = await this._postRepo.likePost(postId, userId);
 
       if (likePost) {
-        // if (authorId !== userId) {
-        //   await this._notficationRepo.createNotification(
-        //     authorId,
-        //     NotificationDetails.like.displayName,
-        //     NotificationDetails.like.content,
-        //     likePost._id
-        //   );
-        // }
+        if (authorId !== userId) {
+          await this._notficationRepo.createNotification(
+            authorId,
+            NotificationDetails.like.displayName,
+            NotificationDetails.like.content,
+            likePost._id
+          );
+        }
         const existiingEngagement =
           await this._engagementRepo.findEngagementOfTheDay();
         if (existiingEngagement) {
@@ -168,6 +167,12 @@ class PostUseCase implements IPostUseCase {
       if (commentPost) {
         const existiingEngagement =
           await this._engagementRepo.findEngagementOfTheDay();
+            await this._notficationRepo.createNotification(
+            userId,
+            NotificationDetails.like.displayName,
+            NotificationDetails.like.content,
+            commentPost._id
+          );
         if (existiingEngagement) {
           await this._engagementRepo.updateEngagement("commentCount");
         } else {

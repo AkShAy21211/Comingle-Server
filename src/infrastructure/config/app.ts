@@ -3,6 +3,7 @@ import cors from "cors";
 import http from "http";
 import passport from "passport";
 import cookieParser from "cookie-parser";
+import createDemoUser from "../utils/demoUser";
 import createAdmin from "../utils/createAdmin";
 import userRoute from "../routes/userRoute";
 import adminRote from "../routes/adminRoute";
@@ -23,12 +24,13 @@ export const expressServer = () => {
     app.use(passport.initialize());
 
     createAdmin();
+    createDemoUser();
 
     //====cors =====//
 
     app.use(
       cors({
-        origin: [process.env.FRONTEND_URL as string, "http://192.168.1.4:5173"],
+        origin: [process.env.FRONTEND_URL as string, "http://192.168.1.3:5173"],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true,
         optionsSuccessStatus: 200,

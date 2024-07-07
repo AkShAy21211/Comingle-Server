@@ -4,7 +4,6 @@ import IInteractionUseCase from "../../domain/interfaces/user/IInteractionUseCas
 import INotificationRepo from "../../domain/interfaces/user/INotificationRepo";
 import IUserReop from "../../domain/interfaces/user/IUserRepo";
 import NotificationDetails from "../../domain/enum/notification";
-import User from "../../domain/entities/user";
 import IEngagementRepo from "../../domain/interfaces/admin/IEngagementRepo";
 
 class InteractionUseCase implements IInteractionUseCase {
@@ -126,6 +125,7 @@ class InteractionUseCase implements IInteractionUseCase {
     try {
       const notifications = await this._notificationRepo.getNotifications(id);
 
+      
       if (notifications) {
         for (let noti of notifications) {
           if (noti.type === "Follow") {
@@ -189,7 +189,7 @@ class InteractionUseCase implements IInteractionUseCase {
         "Accepted"
       );
 
-      // await this._notificationRepo.deleteNotification(notificationId);
+      await this._notificationRepo.deleteNotification(notificationId);
       const requester = followStatus?.requester || "";
       const recipitent = followStatus?.recipient || "";
 
