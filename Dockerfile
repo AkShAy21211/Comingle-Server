@@ -1,5 +1,5 @@
-# Use the official Node.js image as the base image
-FROM node:20.9.0-slim
+# Use the official Node.js Alpine image as the base image
+FROM node:20.9.0-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 
 # Install the dependencies
-RUN npm install 
+RUN npm install
 
 # Copy the rest of the application code
 COPY . .
