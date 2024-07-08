@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install the dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install 
 
 # Copy the rest of the application code
 COPY . .
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Expose the port the app runs on
-EXPOSE 4173
+EXPOSE 5000
 
 # Start the application
 CMD ["node", "dist/index.js"]
