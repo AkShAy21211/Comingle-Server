@@ -13,7 +13,7 @@ export const expressServer = () => {
   try {
     const app = express();
     const server = http.createServer(app);
-   
+
     app.use(express.urlencoded({ extended: true }));
     app.use(
       express.json({
@@ -36,7 +36,10 @@ export const expressServer = () => {
         optionsSuccessStatus: 200,
       })
     );
-
+    
+    app.get("/", (req, res) => {
+      res.send("api running successfully");
+    });
     app.use("/user", userRoute);
     app.use("/admin", adminRote);
 

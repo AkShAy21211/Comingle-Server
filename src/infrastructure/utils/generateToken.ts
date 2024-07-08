@@ -2,7 +2,7 @@ import  dotenv  from 'dotenv';
 import jwt, { JwtPayload } from "jsonwebtoken";
 import path from 'path';
 
-dotenv.config({path:path.resolve(__dirname,"../../.env")});
+dotenv.config({path:path.resolve(__dirname,"../../../.env")});
 
 
 

@@ -3,7 +3,7 @@ import IMail from "../../domain/interfaces/email/IMail";
 import dotenv from "dotenv"
 import path from 'path';
 
-dotenv.config({path:path.resolve(__dirname,'../../.env')})
+dotenv.config({path:path.resolve(__dirname,"../../../.env")});
 
 class NodeMailer implements IMail {
   private _transporter: nodemailer.Transporter;

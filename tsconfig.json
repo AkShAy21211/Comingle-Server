@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2018",
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "./dist",
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "esModuleInterop": true,
     "resolveJsonModule": true,
@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "noEmitOnError": true
   },
-  "include": ["src"],
+  "include": [ "src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

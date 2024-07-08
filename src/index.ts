@@ -1,10 +1,10 @@
-import { connectDB } from "./infrastructure/config/db";
+import connectDB from "./infrastructure/config/db";
 import { expressServer } from "./infrastructure/config/app";
 import dotenv from "dotenv";
 import path from "path";
 
 
-dotenv.config({path:path.resolve(__dirname,".env")});
+dotenv.config({path:path.resolve(__dirname,"../.env")});
 
 
 const startServer = async ()=>{
