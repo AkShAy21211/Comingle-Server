@@ -1,4 +1,3 @@
-# Use the official Node.js Alpine image as the base image
 FROM node:alpine
 
 # Set the working directory
