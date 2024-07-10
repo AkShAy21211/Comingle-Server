@@ -40,4 +40,4 @@ jobs:
         run: docker rm comingle-server-container || true
 
       - name: Run new Docker container
-        run: docker run -d -p 5000:5000 --name comingle-server-container achu2002/comingle-server:latest
+        run: docker run -d --env-file /home/ubuntu/comingle/secrets/.env -p 5000:5000 --name comingle-server-container achu2002/comingle-server:latest
