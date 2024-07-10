@@ -7,7 +7,7 @@ const configureSocket = (server: any) => {
   const io = new Server(server, {
     connectionStateRecovery: {},
     cors: {
-      origin: [process.env.FRONTEND_URL as string, "https://comingle.onrender.com"],
+      origin: [process.env.FRONTEND_URL as string, "https://comingle.vercel.app"],
     },
   });
 
