@@ -30,7 +30,7 @@ export const expressServer = () => {
 
     app.use(
       cors({
-        origin: [process.env.FRONTEND_URL as string, "http://192.168.1.3:5173"],
+        origin: [process.env.FRONTEND_URL as string, "https://comingle-client.onrender.com"],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true,
         optionsSuccessStatus: 200,
