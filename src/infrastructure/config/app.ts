@@ -33,6 +33,7 @@ export const expressServer = () => {
         origin: [
           "http://localhost:3000",
           "https://comingle.vercel.app",
+          "https://comingle.netlify.app"
         ],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true,
