@@ -104,15 +104,19 @@ class PostUseCase implements IPostUseCase {
     try {
       const likePost = await this._postRepo.likePost(postId, userId);
 
+      console.log(postId,authorId,userId);
+      
       if (likePost) {
-        if (authorId !== userId) {
-          await this._notficationRepo.createNotification(
-            authorId,
-            NotificationDetails.like.displayName,
-            NotificationDetails.like.content,
-            likePost._id
-          );
-        }
+        // if (authorId !== userId) {
+        //   console.log('falseddddddddddd');
+          
+        //   await this._notficationRepo.createNotification(
+        //     authorId,
+        //     NotificationDetails.like.displayName,
+        //     NotificationDetails.like.content,
+        //     likePost._id
+        //   );
+        // }
         const existiingEngagement =
           await this._engagementRepo.findEngagementOfTheDay();
         if (existiingEngagement) {
@@ -155,7 +159,8 @@ class PostUseCase implements IPostUseCase {
   async commentPost(
     postId: string,
     userId: string,
-    comment: string
+    comment: string,
+    authorId:string
   ): Promise<any> {
     try {
       const commentPost = await this._postRepo.commentPost(
@@ -167,12 +172,15 @@ class PostUseCase implements IPostUseCase {
       if (commentPost) {
         const existiingEngagement =
           await this._engagementRepo.findEngagementOfTheDay();
-            await this._notficationRepo.createNotification(
-            userId,
-            NotificationDetails.like.displayName,
-            NotificationDetails.like.content,
+           
+          if(authorId!==userId){
+             await this._notficationRepo.createNotification(
+            authorId,
+            NotificationDetails.comment.displayName,
+            NotificationDetails.comment.content,
             commentPost._id
           );
+          }
         if (existiingEngagement) {
           await this._engagementRepo.updateEngagement("commentCount");
         } else {

@@ -30,13 +30,16 @@ export const expressServer = () => {
 
     app.use(
       cors({
-        origin: [process.env.FRONTEND_URL as string, "https://comingle.vercel.app"],
+        origin: [
+          "http://localhost:3000",
+          "https://comingle.vercel.app",
+        ],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true,
         optionsSuccessStatus: 200,
       })
     );
-    
+
     app.get("/", (req, res) => {
       res.send("api running successfully");
     });

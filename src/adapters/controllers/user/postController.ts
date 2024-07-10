@@ -79,10 +79,11 @@ class PostController {
   async commentPost(req: Request, res: Response): Promise<void> {
     try {
       const { userId, postId } = req.params;
-      const { comment } = req.body;
+      const { comment,authorId } = req.body;
       const commentResponse = await this._postUserCase.commentPost(
         postId,
         userId,
+        authorId,
         comment
       );
       if (commentResponse) {

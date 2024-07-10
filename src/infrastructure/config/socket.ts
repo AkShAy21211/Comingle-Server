@@ -13,9 +13,12 @@ const configureSocket = (server: any) => {
 
   io.on("connection", (socket: Socket) => {
     socket.on("login", ({ userId }) => {
+      console.log('login callied');
+      
       onlineusers.set(userId, socket);
       socket.join(userId);
       socket.broadcast.emit("onlineUsers", Array.from(onlineusers.keys()));
+
     });
 
     socket.on("request:onlineUsers", () => {
