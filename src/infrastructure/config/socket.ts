@@ -5,21 +5,20 @@ const rooms: Record<string, Set<string>> = {};
 
 const configureSocket = (server: any) => {
   const io = new Server(server, {
-    connectionStateRecovery: {},
     cors: {
-      origin: [process.env.FRONTEND_URL as string,"https://comingle.vercel.app",],
-      credentials:true,
+      origin: ["http://localhost:3000", "https://comingle.vercel.app"],
     },
   });
 
   io.on("connection", (socket: Socket) => {
+    console.log("use conneceted");
+
     socket.on("login", ({ userId }) => {
-      console.log('login callied');
-      
+      console.log("login callied");
+
       onlineusers.set(userId, socket);
       socket.join(userId);
       socket.broadcast.emit("onlineUsers", Array.from(onlineusers.keys()));
-
     });
 
     socket.on("request:onlineUsers", () => {
@@ -137,6 +136,8 @@ const configureSocket = (server: any) => {
 
     socket.on("disconnect", () => {
       let disconnectedUserId: string | undefined;
+      console.log("user disconnected");
+
       onlineusers.forEach((sock, userId) => {
         if (sock.id === socket.id) {
           disconnectedUserId = userId;
