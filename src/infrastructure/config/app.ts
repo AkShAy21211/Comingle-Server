@@ -31,7 +31,8 @@ export const expressServer = () => {
     app.use(
       cors({
         origin: [
-          "http://localhost:3000",
+          "http://localhost:5173",
+          "http://192.168.1.3:5173",
           "https://comingle.vercel.app",
         ],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
