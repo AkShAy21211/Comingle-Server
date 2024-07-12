@@ -154,6 +154,16 @@ router.get("/profile", authenticate, (req, res) => {
   profileController.getUserProfile(req, res);
 });
 
+router.post("/change-password/send-otp", authenticate, (req, res) => {
+  profileController.changePasswordOtpVerification(req, res);
+});
+
+router.post("/change-password/verify-otp", authenticate, (req, res) => {
+  profileController.verifyUserByEmailOtp(req, res);
+});
+
+
+
 router.patch(
   "/profile/update/cover",
   authenticate,

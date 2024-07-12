@@ -93,7 +93,6 @@ class AuthController {
         req.body.password
       );
 
-      console.log(req.body.email, req.body.password);
 
       if (loginResponse.status) {
         
@@ -123,7 +122,7 @@ class AuthController {
       res
         .status(200)
         .redirect(
-          `http://localhost:5173/login/success?token=${googleSignUpResponse.token}`
+          `https://subdomain.volttron.shop/login/success?token=${googleSignUpResponse.token}`
         );
     } catch (error) {
       console.log(error);

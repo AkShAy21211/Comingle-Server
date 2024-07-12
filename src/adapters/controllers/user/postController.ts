@@ -6,7 +6,6 @@ class PostController {
 
   async createNewPost(req: Request, res: Response): Promise<void> {
     try {
-      console.log("called");
 
       const userId = req.user?.id as string;
       const text = req.body.text;
@@ -56,6 +55,8 @@ class PostController {
         authorId
       );
       if (likeResponse) {
+
+        await 
         res.status(201).json(likeResponse);
       }
     } catch (error) {
@@ -67,7 +68,6 @@ class PostController {
       const { userId, postId } = req.params;
 
       const likeResponse = await this._postUserCase.unLikePost(postId, userId);
-      console.log(likeResponse);
 
       if (likeResponse) {
         res.status(200).json(likeResponse);
@@ -83,8 +83,8 @@ class PostController {
       const commentResponse = await this._postUserCase.commentPost(
         postId,
         userId,
-        authorId,
-        comment
+        comment,
+        authorId
       );
       if (commentResponse) {
         res.status(201).json(commentResponse);

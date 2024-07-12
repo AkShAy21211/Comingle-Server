@@ -84,8 +84,7 @@ class ProfileController {
 
   async setNewPassword(req: Request, res: Response): Promise<void> {
     try {
-      const token = req.cookies.token;
-      console.log(req.cookies);
+      const token = req.cookies.token || req.body.token;
 
       const updatedResponse = await this._profileUseCase.setNewPassWord(
         token,
@@ -107,9 +106,8 @@ class ProfileController {
   async getOtherUserProfile(req: Request, res: Response): Promise<void> {
     try {
       const { username } = req.params;
-      const userResponse = await this._profileUseCase.getOtherUserProfile(
-        username
-      );
+      const userResponse =
+        await this._profileUseCase.getOtherUserProfile(username);
       if (userResponse) {
         res.status(200).json(userResponse);
       } else {
@@ -125,7 +123,10 @@ class ProfileController {
     try {
       const { name } = req.query;
 
-      const usersResponse = await this._profileUseCase.searchUser(name as string,req.user?.id as string);
+      const usersResponse = await this._profileUseCase.searchUser(
+        name as string,
+        req.user?.id as string
+      );
 
       if (usersResponse.status) {
         res.status(200).json(usersResponse);
@@ -135,6 +136,47 @@ class ProfileController {
     } catch (error) {
       res.status(500).json({ message: "internal server error" });
       console.log(error);
+    }
+  }
+
+  async changePasswordOtpVerification(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      const sendOtpResponse =
+        await this._profileUseCase.sendVerificationOtp(email);
+
+      if (sendOtpResponse.status) {
+        res.status(200).json(sendOtpResponse);
+      } else {
+        res.status(400).json(sendOtpResponse);
+      }
+    } catch (error) {
+      res.status(500).json({ message: "internal server error" });
+      console.log(error);
+    }
+  }
+  async verifyUserByEmailOtp(req: Request, res: Response): Promise<void> {
+    try {
+      const { email, otp } = req.body;
+
+      const verifyOtpResponse = await this._profileUseCase.verifyUserByEmailOtp(
+        email,
+        otp
+      );
+
+      if (verifyOtpResponse.status) {
+        res.status(200).json(verifyOtpResponse);
+      } else {
+        res.status(400).json(verifyOtpResponse);
+      }
+    } catch (error) {
+      console.log(error);
+
+      res.status(500).json({ mesage: "Internal server error" });
     }
   }
 }

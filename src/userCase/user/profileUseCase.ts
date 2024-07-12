@@ -142,6 +142,7 @@ class ProfileUseCase implements IProfileUserCase {
 
   async setNewPassWord(token: string, password: string): Promise<any> {
     try {
+  
       const decode = this._jwt.verifyToken(token);
       if (decode) {
         const hashedPassword = await this._bcrypt.Encryption(password);
@@ -205,6 +206,54 @@ class ProfileUseCase implements IProfileUserCase {
         message: "NO users found",
       };
     } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async sendVerificationOtp(email: string): Promise<any> {
+    try {
+      const otp = this._generateOtp.generateOTP();
+
+      await this._OtpRepo.createOtpAndCollection(email, otp);
+
+      const response = await this._sendMail.sendEmail(
+        email,
+        parseInt(otp),
+        "Your OTP for changing password"
+      );
+
+      return {
+        status: true,
+        message: `OTP send to ${email}`,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async verifyUserByEmailOtp(email: string, otp: string): Promise<any> {
+    try {
+      const findOtp = await this._OtpRepo.getOtp(email);
+
+      if (!findOtp?.otp) {
+        return {
+          status: false,
+          message: "OTP has expired",
+        };
+      }
+
+      if (findOtp.otp !== otp) {
+        return {
+          status: false,
+          message: "Invalid OTP",
+        };
+      } else {
+        return {
+          status: true,
+          message: "OTP verification successfull",
+        };
+      }
+    } catch (error: any) {
       console.log(error);
     }
   }

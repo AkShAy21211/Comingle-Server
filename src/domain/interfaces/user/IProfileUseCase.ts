@@ -11,7 +11,10 @@ interface IProfileUserCase {
   ): Promise<any>;
   updateUserDetails(id: string, userData: User): Promise<any>;
   getOtherUserProfile(username:string):Promise<any>;
-  searchUser(name:string,currentUser:string):Promise<any>
+  searchUser(name:string,currentUser:string):Promise<any>;
+  sendVerificationOtp(email:string):Promise<any>
+  verifyUserByEmailOtp( email:string,otp: string):Promise<any>;
+
 }
 
 

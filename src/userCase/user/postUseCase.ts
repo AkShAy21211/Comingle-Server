@@ -107,16 +107,14 @@ class PostUseCase implements IPostUseCase {
       console.log(postId,authorId,userId);
       
       if (likePost) {
-        // if (authorId !== userId) {
-        //   console.log('falseddddddddddd');
-          
-        //   await this._notficationRepo.createNotification(
-        //     authorId,
-        //     NotificationDetails.like.displayName,
-        //     NotificationDetails.like.content,
-        //     likePost._id
-        //   );
-        // }
+        if (authorId !== userId) {          
+          await this._notficationRepo.createNotification(
+            authorId,
+            NotificationDetails.like.displayName,
+            NotificationDetails.like.content,
+            likePost._id
+          );
+        }
         const existiingEngagement =
           await this._engagementRepo.findEngagementOfTheDay();
         if (existiingEngagement) {

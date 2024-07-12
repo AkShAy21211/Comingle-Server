@@ -89,7 +89,6 @@ const configureSocket = (server: any) => {
         room,
         members: Array.from(rooms[room]),
       });
-      console.log("user jpined", rooms[room]);
     });
 
     socket.on("message", ({ message, room, to }) => {
@@ -132,6 +131,8 @@ const configureSocket = (server: any) => {
     /////////////////Admin socket events/////////////////
 
     socket.on("admin_block_user", (userId) => {
+      console.log('blaockeing',userId);
+      
       io.to(userId).emit("user_blocked", {
         userId: userId,
         reason: "You have been blocked by the admin.",
