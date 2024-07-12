@@ -122,7 +122,7 @@ class AuthController {
       res
         .status(200)
         .redirect(
-          `https://subdomain.volttron.shop/login/success?token=${googleSignUpResponse.token}`
+          `https://comingle.vercel.app/login/success?token=${googleSignUpResponse.token}`
         );
     } catch (error) {
       console.log(error);

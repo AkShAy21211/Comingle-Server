@@ -39,21 +39,19 @@ const configureSocket = (server: any) => {
 
     socket.on("user:joined", ({ userId }) => {
       socket.join(userId);
-      console.log("user joined ", userId);
     });
 
     socket.on("calluser", ({ room, peerId, name, to }) => {
-      console.log("send call to user", to);
 
       socket.to(to).emit("call", {
-        message: `${name} is calling you`,
+        message: `${name} is calling`,
         to,
         room,
       });
       socket.to(room).emit("incommingCall", {
         from: peerId,
         room,
-        message: `${name} is calling you`,
+        message: `${name} is calling `,
       });
     });
 
@@ -69,16 +67,17 @@ const configureSocket = (server: any) => {
       socket.to(room).emit("call:ended", { message: "call ended" });
     });
     socket.on("audio:status", ({ room }) => {
+      
       socket.to(room).emit("audio:status");
     });
-    socket.on("vedio:status", ({ room }) => {
-      socket.to(room).emit("vedio:status");
+    socket.on("video:status", ({ room }) => {
+
+      socket.to(room).emit("video:status");
     });
 
     ////////////// HANDLE NORMAL CHAT EVENTS//////////////////////////
     socket.on("chat:start", ({ room, peerId }) => {
       socket.join(room);
-
       if (!rooms[room]) {
         rooms[room] = new Set();
         console.log(`Created new room: ${room}`);

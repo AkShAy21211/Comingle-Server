@@ -144,6 +144,8 @@ class ProfileUseCase implements IProfileUserCase {
     try {
   
       const decode = this._jwt.verifyToken(token);
+      console.log('ddddddddddddddd',decode);
+      
       if (decode) {
         const hashedPassword = await this._bcrypt.Encryption(password);
         const userData = {
