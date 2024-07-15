@@ -11,7 +11,7 @@ async function createDemoUser() {
   const hashPassword = await bcrypt.Encryption("Guest*#123");
   const guest = await UserModel.create({
     name: "Guest",
-    username: "guest",
+    username: "@guest",
     email: "guest@gmail.com",
     password: hashPassword,
   });

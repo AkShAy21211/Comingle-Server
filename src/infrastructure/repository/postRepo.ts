@@ -12,13 +12,16 @@ class PostReposotory implements IPostRepo {
   async createPost(
     userId: string,
     content: { url: string; type: string }[],
-    text: string
+    text: string,
+    schedule: Date | undefined
   ): Promise<Posts | null | undefined> {
     try {
       const newPost = new PostModel({
         userId: userId,
         image: content,
         description: text,
+        status: schedule ? "Draft" : "Published",
+        date: schedule && schedule,
       });
 
       await newPost.save();
@@ -39,9 +42,13 @@ class PostReposotory implements IPostRepo {
 
       /////////////// IS THE REQUEST IS MADE NOT MADE BY ADMIN RETUEN POSTS THAT IS NOT HIDDEN
       if (!isAdminRequest) {
-        pipeline.push({
-          $match: { isHidden: false },
-        });
+        pipeline.push(
+          {
+            $match: { isHidden: false },
+          },
+
+          { $match: { status: "Published" } }
+        );
       }
 
       pipeline.push(
@@ -115,7 +122,7 @@ class PostReposotory implements IPostRepo {
         {
           $unwind: {
             path: "$comments.comment",
-            preserveNullAndEmptyArrays: true, 
+            preserveNullAndEmptyArrays: true,
           },
         },
 
@@ -151,7 +158,7 @@ class PostReposotory implements IPostRepo {
                   isPremium: "$comments.comment.userDetails.profile.isPremium",
                   commenterImage: "$comments.comment.userDetails.profile.image",
                   createdAt: "$comments.comment.createdAt",
-                }, 
+                },
               },
             },
             likes: { $first: "$likes" },
@@ -574,10 +581,7 @@ class PostReposotory implements IPostRepo {
     }
   }
 
-  async editPost(
-    postId: string,
-    text: string
-  ): Promise<any> {
+  async editPost(postId: string, text: string): Promise<any> {
     try {
       const editedPost = await postModel.findByIdAndUpdate(postId, {
         $set: { description: text },
@@ -594,7 +598,7 @@ class PostReposotory implements IPostRepo {
         {
           $match: { _id: new Types.ObjectId(postId) },
         },
-    
+
         {
           $lookup: {
             from: "comments",
@@ -716,7 +720,29 @@ class PostReposotory implements IPostRepo {
 
       const posts = await postModel.aggregate(pipeline);
       return posts;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async fetchSchedules(): Promise<Posts[] | null | undefined> {
+    try {
+      const posts = await postModel.find({ status: "Draft" }).lean();
 
+      return posts;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async updateSchedule(currentDate: Date, postId: string): Promise<void> {
+    try {
+      const post = await postModel.findOne({_id:postId,
+        date: { $lte: currentDate },
+        status: "Draft",
+      });
+      if (post) {
+        post.status = "Published";
+        await post.save();
+      }
     } catch (error) {
       console.log(error);
     }

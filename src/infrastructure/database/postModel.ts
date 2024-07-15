@@ -36,6 +36,14 @@ const postSchema = new Schema<Posts>(
       type: Boolean,
       default: false,
     },
+    status:{
+      type:String,
+      default:"Published"
+    },
+    date:{
+      type:Date,
+      required:false
+    }
   },
   {
     timestamps: true,

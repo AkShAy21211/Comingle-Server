@@ -40,6 +40,7 @@ passport.use(
               name: displayName,
               googleId: id,
               isVerified: emails?.[0].verified ? true : false,
+              username:'@'+displayName.toLocaleLowerCase(),
               email: emails?.[0].value as string,
               profile: {
                 image: photos?.[0].value,

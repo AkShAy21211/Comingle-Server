@@ -10,11 +10,13 @@ class PostController {
       const userId = req.user?.id as string;
       const text = req.body.text;
       const files: Express.Multer.File[] = req.files as Express.Multer.File[];
+      const schedule = req.body.schedule
 
       const newPostResponse = await this._postUserCase.createNewPost(
         userId,
         files,
-        text
+        text,
+        schedule
       );
 
       if (newPostResponse.status) {

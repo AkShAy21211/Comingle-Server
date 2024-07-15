@@ -9,6 +9,8 @@ import mongoose from "mongoose";
     comments:mongoose.Schema.Types.ObjectId;
     description:string;
     isHidden:boolean;
+    status:string;
+    date:Date;
     timestamp:Date;
 }
 

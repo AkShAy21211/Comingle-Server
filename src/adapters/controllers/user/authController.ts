@@ -9,7 +9,6 @@ class AuthController {
       const signUpResponse = await this._authUseCase.signUpandSendOtp(req.body);
 
       if (signUpResponse?.status) {
-        console.log(signUpResponse);
 
         res.cookie("token", signUpResponse.token, {
           expires: new Date(Date.now() + 25892000000),

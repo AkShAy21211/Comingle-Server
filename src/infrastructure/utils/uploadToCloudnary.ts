@@ -8,7 +8,7 @@ const uploadProfile = (path: string, folder: string) => {
   return cloudinary.uploader
     .upload(path, {
       folder:`Comingle/${folder}`,
-      allowed_formats: ['jpg', 'png', 'gif', 'pdf', 'mp3', 'mp4'],
+      allowed_formats: ['jpg', 'png', 'gif', 'pdf', 'mp3', 'mp4',"webp"],
       resource_type: "image"||"video",
     })
     .then((data) => {

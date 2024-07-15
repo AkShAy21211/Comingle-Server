@@ -31,6 +31,9 @@ import ChatReposotory from "../repository/chatRepo";
 import MessageReposotory from "../repository/messageRepo";
 import PlanRepo from "../repository/PlanRepo";
 import EngagementReposotory from "../repository/engagementRepo";
+import PostCronJob from "../utils/scheduler";
+
+
 
 const generateOTP = new GenerateOtp();
 const userReposotory = new UserReposotory();
@@ -109,6 +112,8 @@ const messageRepo = new MessageReposotory();
 const chatRepo = new ChatReposotory();
 const chatUseCase = new ChatUseCase(chatRepo, messageRepo);
 const chatController = new ChatController(chatUseCase);
+const cornJob = new PostCronJob(postUseCase)
+cornJob.start()
 
 const router = express.Router();
 

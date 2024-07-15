@@ -1,4 +1,3 @@
-import Posts from "../../domain/entities/post";
 import INotificationRepo from "../../domain/interfaces/user/INotificationRepo";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import IPostUseCase from "../../domain/interfaces/user/IPostUseCase";
@@ -7,6 +6,7 @@ import NotificationDetails from "../../domain/enum/notification";
 import notificationModel from "../../infrastructure/database/notificationModel";
 import IReportRepo from "../../domain/interfaces/user/IReportReopo";
 import IEngagementRepo from "../../domain/interfaces/admin/IEngagementRepo";
+import Posts from "../../domain/entities/post";
 class PostUseCase implements IPostUseCase {
   constructor(
     private _postRepo: IPostRepo,
@@ -18,9 +18,12 @@ class PostUseCase implements IPostUseCase {
   async createNewPost(
     userID: string,
     images: Express.Multer.File[],
-    text: string
+    text: string,
+    schedule: string | undefined
   ): Promise<any> {
     try {
+      const scheduleDate = schedule ? new Date(schedule) : undefined;
+
       let results: { url: string; resource: string }[];
       let uploadedFiles: { url: string; type: string }[] = [];
 
@@ -46,7 +49,8 @@ class PostUseCase implements IPostUseCase {
       const newPost = await this._postRepo.createPost(
         userID,
         uploadedFiles,
-        text
+        text,
+        scheduleDate
       );
 
       const existiingEngagement =
@@ -104,10 +108,10 @@ class PostUseCase implements IPostUseCase {
     try {
       const likePost = await this._postRepo.likePost(postId, userId);
 
-      console.log(postId,authorId,userId);
-      
+      console.log(postId, authorId, userId);
+
       if (likePost) {
-        if (authorId !== userId) {          
+        if (authorId !== userId) {
           await this._notficationRepo.createNotification(
             authorId,
             NotificationDetails.like.displayName,
@@ -158,7 +162,7 @@ class PostUseCase implements IPostUseCase {
     postId: string,
     userId: string,
     comment: string,
-    authorId:string
+    authorId: string
   ): Promise<any> {
     try {
       const commentPost = await this._postRepo.commentPost(
@@ -170,15 +174,15 @@ class PostUseCase implements IPostUseCase {
       if (commentPost) {
         const existiingEngagement =
           await this._engagementRepo.findEngagementOfTheDay();
-           
-          if(authorId!==userId){
-             await this._notficationRepo.createNotification(
+
+        if (authorId !== userId) {
+          await this._notficationRepo.createNotification(
             authorId,
             NotificationDetails.comment.displayName,
             NotificationDetails.comment.content,
             commentPost._id
           );
-          }
+        }
         if (existiingEngagement) {
           await this._engagementRepo.updateEngagement("commentCount");
         } else {
@@ -327,6 +331,23 @@ class PostUseCase implements IPostUseCase {
       };
     } catch (error) {
       console.log(error);
+    }
+  }
+  async fetchSchedules(): Promise<void> {
+    try {
+      console.log('checking...............');
+      
+      const shdulePosts:Posts[]|null|undefined = await this._postRepo.fetchSchedules();
+      const currentDate = new Date();
+
+      if (shdulePosts?.length) {
+        shdulePosts?.forEach(async (post) => {
+          await this._postRepo.updateSchedule(currentDate, post._id);
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      
     }
   }
 }
