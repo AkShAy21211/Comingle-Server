@@ -147,7 +147,7 @@ router.get(
 );
 
 router.get(
-  "/auth/callback",
+  "/auth/google/callback",
   passport.authenticate("google", { session: false }),
   (req, res) => {
     
