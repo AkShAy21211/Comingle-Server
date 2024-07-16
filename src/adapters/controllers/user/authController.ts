@@ -9,7 +9,6 @@ class AuthController {
       const signUpResponse = await this._authUseCase.signUpandSendOtp(req.body);
 
       if (signUpResponse?.status) {
-
         res.cookie("token", signUpResponse.token, {
           expires: new Date(Date.now() + 25892000000),
           secure: false,
@@ -35,12 +34,10 @@ class AuthController {
       );
 
       console.log(usernameResponse);
-      
+
       if (usernameResponse) {
         res.status(200).json(usernameResponse);
       }
-      
-
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
 
@@ -92,14 +89,10 @@ class AuthController {
         req.body.password
       );
 
-
       if (loginResponse.status) {
-        
         res.status(200).json(loginResponse);
-      }else{
-
+      } else {
         res.status(400).json(loginResponse);
-
       }
     } catch (error: any) {
       res.status(500).json(error.message);
