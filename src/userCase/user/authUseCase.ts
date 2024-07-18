@@ -139,11 +139,10 @@ class AuthUseCase implements IAuthUseCase {
     }
   }
 
-  async signinUser(email: string, password: string): Promise<any> {
+  async signinUser(name: string, password: string): Promise<any> {
     try {
-      const findUser = await this._reposotory.findUserByemail(email);
+      const findUser = await this._reposotory.findUserByemail(name);
 
-      console.log(findUser);
       
       if (!findUser) {
         return {

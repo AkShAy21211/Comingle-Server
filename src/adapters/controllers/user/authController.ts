@@ -33,7 +33,6 @@ class AuthController {
         username as string
       );
 
-      console.log(usernameResponse);
 
       if (usernameResponse) {
         res.status(200).json(usernameResponse);
