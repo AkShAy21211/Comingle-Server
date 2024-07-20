@@ -11,8 +11,7 @@ class AuthController {
       if (signUpResponse?.status) {
         res.cookie("token", signUpResponse.token, {
           expires: new Date(Date.now() + 25892000000),
-          secure: false,
-          httpOnly: true,
+          secure: true,
           sameSite: "strict",
         });
 
@@ -48,6 +47,8 @@ class AuthController {
     try {
       const userToken = req.cookies.token;
 
+      console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeee',userToken);
+      
       const verifyOtpResponse = await this._authUseCase.verifyUserByEmailOtp(
         userToken,
         req.body.otp

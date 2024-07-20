@@ -15,10 +15,10 @@ const configureSocket = (server: any) => {
   });
 
   io.on("connection", (socket: Socket) => {
-    console.log("use conneceted");
+  
 
     socket.on("login", ({ userId }) => {
-      console.log("login callied");
+ 
 
       onlineusers.set(userId, socket);
       socket.join(userId);
@@ -92,7 +92,6 @@ const configureSocket = (server: any) => {
 
     socket.on("message", ({ message, room, to }) => {
       const chat = message.chat;
-      console.log("new message from user", message);
 
       socket.to(to).emit("new:chat", { room });
 
@@ -130,7 +129,6 @@ const configureSocket = (server: any) => {
     /////////////////Admin socket events/////////////////
 
     socket.on("admin_block_user", (userId) => {
-      console.log('blaockeing',userId);
       
       io.to(userId).emit("user_blocked", {
         userId: userId,
@@ -144,7 +142,6 @@ const configureSocket = (server: any) => {
 
     socket.on("disconnect", () => {
       let disconnectedUserId: string | undefined;
-      console.log("user disconnected");
 
       onlineusers.forEach((sock, userId) => {
         if (sock.id === socket.id) {
