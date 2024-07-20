@@ -13,6 +13,7 @@ class AuthController {
           expires: new Date(Date.now() + 25892000000),
           secure: false,
           httpOnly: true,
+          sameSite:"strict"
         });
 
         res.status(201).json({ status: signUpResponse.status });
