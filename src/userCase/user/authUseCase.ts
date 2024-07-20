@@ -24,7 +24,6 @@ class AuthUseCase implements IAuthUseCase {
         return { status: false, message: "All feilds required" };
       }
 
-
       const userFound = await this._reposotory.findUserByemail(userData.email);
 
       if (userFound) {
@@ -37,7 +36,11 @@ class AuthUseCase implements IAuthUseCase {
 
         const OTP = this._generateOtp.generateOTP();
 
-        this._sendMail.sendEmail(userData.email, parseInt(OTP),"One Time Password for Commingle Account Verification");
+        this._sendMail.sendEmail(
+          userData.email,
+          parseInt(OTP),
+          "One Time Password for Commingle Account Verification"
+        );
 
         const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
           expiresIn: "3m",
@@ -60,24 +63,20 @@ class AuthUseCase implements IAuthUseCase {
 
   async findUserByUsername(username: string): Promise<any> {
     try {
-      
       const user = await this._reposotory.findUsername(username);
 
-      if(user){
-
+      if (user) {
         return {
-          status:false,
-          message:'Username already taken'
-        }
+          status: false,
+          message: "Username already taken",
+        };
       }
 
       return {
-        status:true,
-
-      }
+        status: true,
+      };
     } catch (error) {
       console.log(error);
-      
     }
   }
 
@@ -126,7 +125,11 @@ class AuthUseCase implements IAuthUseCase {
       if (decodeToken) {
         const otp = this._generateOtp.generateOTP();
         await this._OtpRepo.createOtpAndCollection(decodeToken?.email, otp);
-        await this._sendMail.sendEmail(decodeToken?.email, parseInt(otp),"One Time Password for Commingle Account Verification");
+        await this._sendMail.sendEmail(
+          decodeToken?.email,
+          parseInt(otp),
+          "One Time Password for Commingle Account Verification"
+        );
         return {
           status: true,
           message: `New OTP has send to ${decodeToken?.email}`,
@@ -143,7 +146,6 @@ class AuthUseCase implements IAuthUseCase {
     try {
       const findUser = await this._reposotory.findUserByemail(name);
 
-      
       if (!findUser) {
         return {
           status: false,
@@ -154,7 +156,9 @@ class AuthUseCase implements IAuthUseCase {
       if (findUser.isBlocked) {
         return { status: false, message: "You have been blocked by admin." };
       }
-
+      // if (!findUser.isVerified) {
+      //   return { status: false, message: "You have been blocked by admin." };
+      // }
       const matchPassword = await this._bcrypt.Decryption(
         password,
         findUser.password
@@ -169,10 +173,10 @@ class AuthUseCase implements IAuthUseCase {
       const filterUser = {
         _id: findUser._id,
         token: token,
-        name:findUser.name,
-        profile:findUser.profile.image,
-        authenticated:token?true:false,
-        isPremium:findUser.profile.isPremium
+        name: findUser.name,
+        profile: findUser.profile.image,
+        authenticated: token ? true : false,
+        isPremium: findUser.profile.isPremium,
       };
 
       return {
@@ -189,26 +193,19 @@ class AuthUseCase implements IAuthUseCase {
     }
   }
 
-  
-
   async googleLogin(user: any): Promise<any> {
     try {
-
-      
       const token = this._jwt.createToken(user._id, "user");
 
       return {
         statu: true,
         token: token,
-        authenticated:token?true:false
-
+        authenticated: token ? true : false,
       };
     } catch (error) {
       console.log(error);
     }
   }
-
-  
 }
 
 export default AuthUseCase;
