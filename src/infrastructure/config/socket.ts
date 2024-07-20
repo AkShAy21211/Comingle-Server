@@ -103,7 +103,7 @@ const configureSocket = (server: any) => {
           socket.emit("new message sent", { message, room });
         } else {
           socket.in(to).emit("message received", { message, room });
-          socket.in(room).emit("message received", { message, room });
+          // socket.in(room).emit("message received", { message, room });
         }
       });
     });
