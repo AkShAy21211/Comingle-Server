@@ -55,8 +55,10 @@ const configureSocket = (server: any) => {
       });
     });
 
-    socket.on("call:rejcted", ({ room }) => {
-      socket.to(room).emit("call:rejcted", { message: "call rejected" });
+    socket.on("call:rejcted", ({ room ,remoteId}) => {
+      // socket.to(room).emit("call:rejcted", { message: "call rejected" });
+      socket.to(remoteId).emit("call:rejcted", { message: "call rejected" });
+
     });
 
     // socket.on("another:call", ({ room }) => {

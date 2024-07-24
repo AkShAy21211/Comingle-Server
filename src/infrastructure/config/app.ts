@@ -19,7 +19,7 @@ export const expressServer = () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(
       express.json({
-        limit: "50mb",
+        limit: "100mb",
       })
     );
     app.use(cookieParser());
