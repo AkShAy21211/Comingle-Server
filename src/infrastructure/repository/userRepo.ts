@@ -351,14 +351,16 @@ class UserReposotory implements IUserReop {
         },
         {
           $project: {
-            totalUsers: { $arrayElemAt: ["$totalUsers.totalUsers", 0] || 0 },
+            totalUsers: {
+              $ifNull: [{ $arrayElemAt: ["$totalUsers.totalUsers", 0] }, 0],
+            },
             blockedUsers: {
-              $arrayElemAt: ["$blockedUsers.blockedUsers", 0] || 0,
+              $ifNull: [{ $arrayElemAt: ["$blockedUsers.blockedUsers", 0] }, 0],
             },
             premiumUsers: {
-              $arrayElemAt: ["$premiumUsers.premiumUsers", 0] || 0,
+              $ifNull: [{ $arrayElemAt: ["$premiumUsers.premiumUsers", 0] }, 0],
             },
-            ageGroups: { $arrayElemAt: ["$ageGroups", 0] || {} },
+            ageGroups: { $ifNull: [{ $arrayElemAt: ["$ageGroups", 0] }, {}] },
           },
         },
         {
