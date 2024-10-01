@@ -9,7 +9,7 @@ const uploadProfile = (path: string, folder: string) => {
     .upload(path, {
       folder:`Comingle/${folder}`,
       allowed_formats: ['jpg', 'png', 'gif', 'pdf', 'mp3', 'mp4',"webp"],
-      resource_type: "image"||"video",
+      resource_type: "auto",
     })
     .then((data) => {
     
