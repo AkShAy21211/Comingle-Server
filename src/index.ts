@@ -12,12 +12,7 @@ const startServer = async ()=>{
     try {
         connectDB()
         const app = expressServer();
-        app?.listen(5000,()=>{
-
-            console.log(`Server running on ${"http://localhost:5000"}`);
-
-            
-        });
+        return app;
     } catch (error) {
         console.log(error);
         
