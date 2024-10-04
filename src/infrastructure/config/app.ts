@@ -43,9 +43,10 @@ export const expressServer = () => {
       })
     );
 
-    app.get("/", (req, res) => {
+    app.get("/test", (req, res) => {
       res.send("api running successfully");
     });
+    //===== routes =====//
     app.use("/user", userRoute);
     app.use("/admin", adminRote);
 
