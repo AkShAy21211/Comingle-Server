@@ -1,4 +1,5 @@
-FROM node:19.5.0-alpine
+# Use the official Node.js 20.15.1 Alpine image as the base image
+FROM node:20.15.1-alpine
 
 # Set the working directory
 WORKDIR /app
@@ -12,10 +13,11 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Build the application (if applicable)
+RUN npm run build
 
 # Expose the port the app runs on
 EXPOSE 5000
 
 # Start the application
-CMD ["node", "dist/index.js"]
-
+CMD ["npm", "start"]

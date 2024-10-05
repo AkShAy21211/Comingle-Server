@@ -8,11 +8,13 @@ import createAdmin from "../utils/createAdmin";
 import userRoute from "../routes/userRoute";
 import adminRote from "../routes/adminRoute";
 import "../config/passport";
+import connectDB from "./db";
 import configureSocket from "./socket";
-
 
 export const expressServer = () => {
   try {
+    const PORT = process.env.PORT || 5000;
+    connectDB();
     const app = express();
     const server = http.createServer(app);
 
@@ -51,6 +53,10 @@ export const expressServer = () => {
     app.use("/admin", adminRote);
 
     configureSocket(server);
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
 
     return server;
   } catch (error: any) {
