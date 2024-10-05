@@ -13,8 +13,6 @@ const startServer = async ()=>{
         connectDB()
         const app = expressServer();
         app?.listen(5000,()=>{
-
-
             
         });
     } catch (error) {
