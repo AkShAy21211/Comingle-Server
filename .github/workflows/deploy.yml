@@ -24,5 +24,3 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: docker push achu2002/comingle-server:latest
-        
-
