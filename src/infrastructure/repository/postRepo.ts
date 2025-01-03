@@ -231,7 +231,7 @@ class PostReposotory implements IPostRepo {
         $set: { likes: likePost?._id },
       });
       await likePost.save();
-      return likePost.toObject();
+      return likePost;
     } catch (error) {
       console.log(error);
     }

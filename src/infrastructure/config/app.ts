@@ -54,7 +54,7 @@ export const expressServer = () => {
 
     configureSocket(server);
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
 

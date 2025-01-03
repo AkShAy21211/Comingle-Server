@@ -48,7 +48,6 @@ class AuthController {
     try {
       const userToken = req.cookies.token;
 
-      console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeee',userToken);
       
       const verifyOtpResponse = await this._authUseCase.verifyUserByEmailOtp(
         userToken,

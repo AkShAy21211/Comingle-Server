@@ -15,11 +15,8 @@ const configureSocket = (server: any) => {
   });
 
   io.on("connection", (socket: Socket) => {
-  
 
     socket.on("login", ({ userId }) => {
- 
-
       onlineusers.set(userId, socket);
       socket.join(userId);
       socket.broadcast.emit("onlineUsers", Array.from(onlineusers.keys()));
@@ -42,7 +39,6 @@ const configureSocket = (server: any) => {
     });
 
     socket.on("calluser", ({ room, peerId, name, to }) => {
-
       socket.to(to).emit("call", {
         message: `${name} is calling`,
         to,
@@ -55,10 +51,9 @@ const configureSocket = (server: any) => {
       });
     });
 
-    socket.on("call:rejcted", ({ room ,remoteId}) => {
+    socket.on("call:rejcted", ({ room, remoteId }) => {
       // socket.to(room).emit("call:rejcted", { message: "call rejected" });
       socket.to(remoteId).emit("call:rejcted", { message: "call rejected" });
-
     });
 
     // socket.on("another:call", ({ room }) => {
@@ -69,11 +64,9 @@ const configureSocket = (server: any) => {
       socket.to(room).emit("call:ended", { message: "call ended" });
     });
     socket.on("audio:status", ({ room }) => {
-      
       socket.to(room).emit("audio:status");
     });
     socket.on("video:status", ({ room }) => {
-
       socket.to(room).emit("video:status");
     });
 
@@ -131,7 +124,6 @@ const configureSocket = (server: any) => {
     /////////////////Admin socket events/////////////////
 
     socket.on("admin_block_user", (userId) => {
-      
       io.to(userId).emit("user_blocked", {
         userId: userId,
         reason: "You have been blocked by the admin.",
