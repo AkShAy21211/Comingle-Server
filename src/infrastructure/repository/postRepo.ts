@@ -1,11 +1,11 @@
-import mongoose, { mongo, Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import Like from "../../domain/entities/like";
 import Posts from "../../domain/entities/post";
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 import likeModel from "../database/likeModel";
 import postModel from "../database/postModel";
 import PostModel from "../database/postModel";
-import Comment, { UpdatedCommetn } from "../../domain/entities/comment";
+import Comment from "../../domain/entities/comment";
 import commentModel from "../database/commentModal";
 
 class PostReposotory implements IPostRepo {
@@ -735,7 +735,8 @@ class PostReposotory implements IPostRepo {
   }
   async updateSchedule(currentDate: Date, postId: string): Promise<void> {
     try {
-      const post = await postModel.findOne({_id:postId,
+      const post = await postModel.findOne({
+        _id: postId,
         date: { $lte: currentDate },
         status: "Draft",
       });
