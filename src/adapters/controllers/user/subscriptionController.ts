@@ -1,6 +1,6 @@
 import SubscriptionUseCase from "../../../userCase/user/subscriptionUseCase";
 import { Request, Response } from "express";
-import { log } from "console";
+
 
 class SubscriptionController {
   constructor(private _subscriptionUseCase: SubscriptionUseCase) {}

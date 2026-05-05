@@ -56,11 +56,8 @@ class PostController {
         userId,
         authorId
       );
-      if (likeResponse) {
-
-        await 
         res.status(201).json(likeResponse);
-      }
+
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }

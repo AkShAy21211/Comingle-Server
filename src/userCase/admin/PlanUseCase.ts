@@ -1,7 +1,7 @@
 import { PlanDetails } from "../../domain/entities/subscription";
 import IPremiumPlanRepo from "../../domain/interfaces/admin/IPlanRepo";
 import IPlanUseCase from "../../domain/interfaces/admin/IPlanUseCase";
-import IPremiumUserCase from "../../domain/interfaces/admin/IPlanUseCase";
+
 import ISubscriptionRepo from "../../domain/interfaces/razorpay/ISubscriptionRepo";
 
 class PlanUserCase implements IPlanUseCase {

@@ -25,4 +25,14 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push achu2002/comingle-server:latest
 
- 
+      - name: Deploy to GCP
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.GCP_HOST }}
+          username: ${{ secrets.GCP_USERNAME }}
+          key: ${{ secrets.GCP_SSH_KEY }}
+          script: |
+            docker pull achu2002/comingle-server:latest
+            docker stop comingle-backend || true
+            docker rm comingle-backend || true
+            docker run -d --name comingle-backend -p 5000:5000 --env-file .env --restart unless-stopped achu2002/comingle-server:latest

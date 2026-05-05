@@ -8,7 +8,7 @@ import OtpReposotory from "../../infrastructure/repository/otpRepo";
 import NodeMailer from "../../infrastructure/utils/sendMail";
 import IProfileUserCase from "../../domain/interfaces/user/IProfileUseCase";
 import { uploadProfile } from "../../infrastructure/utils/uploadToCloudnary";
-import { log } from "console";
+
 import IPostRepo from "../../domain/interfaces/user/IPostRepo";
 
 class ProfileUseCase implements IProfileUserCase {
@@ -218,7 +218,7 @@ class ProfileUseCase implements IProfileUserCase {
 
       await this._OtpRepo.createOtpAndCollection(email, otp);
 
-      const response = await this._sendMail.sendEmail(
+      await this._sendMail.sendEmail(
         email,
         parseInt(otp),
         "Your OTP for changing password"

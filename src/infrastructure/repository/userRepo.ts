@@ -174,7 +174,7 @@ class UserReposotory implements IUserReop {
             "profile.followers": follower,
           },
         },
-        { new: true, useFindAndModify: false }
+        { new: true }
       ).lean();
 
       return updatedFollowers;
@@ -195,7 +195,7 @@ class UserReposotory implements IUserReop {
             "profile.following": following,
           },
         },
-        { new: true, useFindAndModify: false }
+        { new: true }
       ).lean();
 
       return updatedFollowers;
@@ -216,8 +216,9 @@ class UserReposotory implements IUserReop {
             "profile.following": following,
           },
         },
-        { new: true, useFindAndModify: false }
+        { new: true }
       ).lean();
+
 
       return updatedFollowers;
     } catch (error) {
@@ -394,8 +395,5 @@ class UserReposotory implements IUserReop {
   }
 }
 
-const repo = new UserReposotory();
-
-repo.getTotalUsersAnalytics();
-
 export default UserReposotory;
+

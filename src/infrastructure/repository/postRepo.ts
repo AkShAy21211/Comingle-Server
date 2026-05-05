@@ -388,7 +388,7 @@ class PostReposotory implements IPostRepo {
     try {
       const pipeline: any[] = [
         {
-          $match: { userId: userId },
+          $match: { userId: new mongoose.Types.ObjectId(userId) },
         },
         {
           $sort: { createdAt: -1 },

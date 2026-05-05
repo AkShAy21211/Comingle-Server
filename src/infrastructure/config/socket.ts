@@ -42,9 +42,10 @@ const configureSocket = (server: any) => {
       socket.to(to).emit("call", {
         message: `${name} is calling`,
         to,
+        from: peerId,
         room,
       });
-      socket.to(room).emit("incommingCall", {
+      socket.to(to).emit("incommingCall", {
         from: peerId,
         room,
         message: `${name} is calling `,
@@ -113,7 +114,7 @@ const configureSocket = (server: any) => {
         const deletedUser = rooms[room].delete(peerId);
 
         if (deletedUser) {
-          io.emit("user:left", {
+          io.to(room).emit("user:left", {
             room,
             members: Array.from(rooms[room]),
           });

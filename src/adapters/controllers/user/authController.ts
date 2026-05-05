@@ -114,7 +114,7 @@ class AuthController {
       res
         .status(200)
         .redirect(
-          `https://comingle.vercel.app/login/success?token=${googleSignUpResponse.token}`
+          `${process.env.FRONTEND_URL}/login/success?token=${googleSignUpResponse.token}`
         );
     } catch (error) {
       console.log(error);

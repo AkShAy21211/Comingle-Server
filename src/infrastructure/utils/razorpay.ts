@@ -26,29 +26,18 @@ class SubscriptionManager implements ISubscriptionManager {
     razorpay_payment_id: string,
     razorpay_order_id: string,
     razorpay_signature: string
-  ): Promise<any> {
-    console.log( '------------------------------------',razorpay_payment_id,
-    razorpay_order_id,
-    razorpay_signature);
-    
+  ): Promise<boolean> {
     try {
-
       const isExpectedSignature = crypto
         .createHmac("sha256", process.env.RAZOR_KEY_SECRET as string)
-        .update(razorpay_order_id+"|"+razorpay_payment_id)
+        .update(razorpay_order_id + "|" + razorpay_payment_id)
         .digest("hex");
 
       const isAuthentic = isExpectedSignature === razorpay_signature;
-
-      console.log(razorpay_signature);
-      
-      console.log('00000000000000000000000000000000000',isExpectedSignature);
-      
       return isAuthentic;
     } catch (error) {
-
       console.log(error);
-      
+      return false;
     }
   }
 }

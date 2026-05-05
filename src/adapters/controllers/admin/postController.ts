@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import PostUseCase from "../../../userCase/admin/postUseCase";
-import { log } from "console";
+
 
 class PostController {
   constructor(private _postUseCase: PostUseCase) {}

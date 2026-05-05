@@ -3,6 +3,7 @@ import cors from "cors";
 import http from "http";
 import passport from "passport";
 import cookieParser from "cookie-parser";
+import { ExpressPeerServer } from "peer";
 import createDemoUser from "../utils/demoUser";
 import createAdmin from "../utils/createAdmin";
 import userRoute from "../routes/userRoute";
@@ -48,6 +49,14 @@ export const expressServer = () => {
     app.get("/test", (req, res) => {
       res.send("api running successfully");
     });
+
+    const peerServer = ExpressPeerServer(server, {
+      path: "/",
+      proxied: true,
+    });
+
+    app.use("/peerjs", peerServer);
+
     //===== routes =====//
     app.use("/user", userRoute);
     app.use("/admin", adminRote);

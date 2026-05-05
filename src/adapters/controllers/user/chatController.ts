@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import ChatUseCase from "../../../userCase/user/chatUseCase";
-import { Express } from "express";
+
 class ChatController {
   constructor(private _chatUseCase: ChatUseCase) {}
 
@@ -45,8 +45,8 @@ class ChatController {
     try {
       const { chatId, message } = req.body;
 
-      const files: Express.Multer.File[] =
-        req.files as Express.Multer.File[];
+      const files = req.files as Express.Multer.File[];
+
 
         
         

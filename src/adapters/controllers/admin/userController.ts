@@ -18,9 +18,10 @@ class UserController {
 
    async adminGetUsers(req: Request, res: Response): Promise<void> {
     try {
-      const {page,limit} = req.query as any;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
       
-      const userResponse = await this._userUseCase.fetchAlluserAdmin(page,limit);
+      const userResponse = await this._userUseCase.fetchAlluserAdmin(page, limit);
 
       if (userResponse) {
         res.status(200).json(userResponse);

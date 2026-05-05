@@ -1,8 +1,7 @@
-import { responseEncoding } from "axios";
-import SubscriptionPlanRepo from "../../../infrastructure/repository/PlanRepo";
+
 import PlanUserCase from "../../../userCase/admin/PlanUseCase";
-import SubscriptionUseCase from "../../../userCase/user/subscriptionUseCase";
 import { Request, Response } from "express";
+
 class PlanController {
   constructor(private _planUseCase: PlanUserCase) {}
 
