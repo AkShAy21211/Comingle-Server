@@ -252,24 +252,44 @@ class InteractionUseCase implements IInteractionUseCase {
 
       const following = user.profile.following;
       const followers = user.profile.followers;
-      const suggestions = new Set();
+      const excludedIds = new Set<string>([
+        currentUser,
+        ...following.map((id: any) => id.toString()),
+        ...followers.map((id: any) => id.toString()),
+      ]);
+      const suggestionsMap = new Map<string, any>();
 
       for (const f of following) {
         const friends = await this._userRepo.findUserById({ _id: f });
 
         if (friends && friends.profile?.following) {
           for (const fof of friends.profile.following) {
-            if (
-              fof.toString() !== currentUser &&
-              !followers.toString().includes(fof.toString()) &&
-              !following.toString().includes(fof.toString())
-            ) {
+            const suggestedId = fof.toString();
+
+            if (!excludedIds.has(suggestedId)) {
               const suggestedFriend = await this._userRepo.findUserById({
-                _id: fof,
+                _id: suggestedId,
               });
 
-              suggestions.add(suggestedFriend);
+              if (suggestedFriend?._id) {
+                suggestionsMap.set(
+                  suggestedFriend._id.toString(),
+                  suggestedFriend
+                );
+              }
             }
+          }
+        }
+      }
+
+      if (suggestionsMap.size === 0) {
+        const allUsers = await this._userRepo.getAllUsers(currentUser);
+
+        for (const candidate of allUsers || []) {
+          const candidateId = candidate?._id?.toString();
+
+          if (candidateId && !excludedIds.has(candidateId)) {
+            suggestionsMap.set(candidateId, candidate);
           }
         }
       }
@@ -277,7 +297,7 @@ class InteractionUseCase implements IInteractionUseCase {
       
       return {
         status: true,
-        suggestions: Array.from(suggestions),
+        suggestions: Array.from(suggestionsMap.values()).slice(0, 8),
       };
     } catch (error) {
       console.log(error);
