@@ -39,6 +39,7 @@ export const expressServer = () => {
           "http://localhost:5173",
           "http://192.168.1.3:5173",
           "https://comingle.vercel.app",
+          "https://comingle.duckdns.org",
         ],
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true,

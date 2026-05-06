@@ -80,7 +80,7 @@ router.patch("/user/block-unblock/:userId", authenticate, (req, res) => {
   userController.blockAndUnblaockUser(req, res);
 });
 
-router.get("/post/all/:page", authenticate, authenticate, (req, res) => {
+router.get("/post/all/:page", authenticate, (req, res) => {
   postController.getAlllPosts(req, res);
 });
 
