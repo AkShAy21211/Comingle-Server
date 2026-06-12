@@ -1,5 +1,8 @@
 # Comingle Backend
 
+![Build](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+
+
 This backend is an Express + TypeScript server that powers authentication, posts, social graph actions, notifications, chat, subscription flows, moderation, analytics, Socket.IO realtime events, and integrated PeerJS signaling for video/audio calls.
 
 ## Stack
